@@ -363,6 +363,8 @@
   @keyframes boltFlash{ 0%,70%,100%{ opacity:1; } 75%{ opacity:.25; } 80%{ opacity:1; } 85%{ opacity:.4; } }
   .alert-row{ display:flex; align-items:center; gap:12px; padding:11px 0; border-top:1px solid var(--line); cursor:pointer; }
   .alert-row:first-of-type{ border-top:none; } .alert-row .name{ flex:1; font-size:.86rem; font-weight:600; }
+  .notif-status{ margin-top:12px; font-size:.8rem; line-height:1.7; padding:10px 12px; border-radius:14px; background:rgba(255,255,255,.04); border:1px solid var(--line); }
+  .notif-status b{ color:var(--cool-1); } .notif-status .warn{ color:var(--heat-1); }
   .alert-note{ font-size:.74rem; color:var(--text-2); line-height:1.7; margin-top:8px; }
 
   /* ---------- 3D qibla compass ---------- */
@@ -665,6 +667,11 @@
       <div class="card-head"><h2>تنبيهات الطقس</h2></div>
       <div class="alert-row" id="alertThunderRow"><span style="font-size:1.2rem">⚡</span><span class="name">تنبيه الرعد والبرق</span><div class="toggle" id="alertThunderTg"></div></div>
       <div class="alert-row" id="alertRainRow"><span style="font-size:1.2rem">🌧️</span><span class="name">تنبيه الأمطار</span><div class="toggle" id="alertRainTg"></div></div>
+      <div class="notif-status" id="notifStatus"></div>
+      <div class="qibla-btns" style="margin-top:10px">
+        <button class="muzna-btn primary" id="notifTest" type="button">🔔 إرسال إشعار تجريبي</button>
+        <button class="muzna-btn" id="notifLink" type="button">📲 ربط ntfy</button>
+      </div>
       <div class="alert-note" id="alertNote">نفحص طقس مدينتك كل 15 دقيقة للثلاث ساعات الجاية، ونرسل لك تنبيه إذا فيه عواصف رعدية أو أمطار.</div>
     </div>
   
@@ -1955,15 +1962,19 @@
       if(window.L) return Promise.resolve();
       if(leafletPromise) return leafletPromise;
       leafletPromise = new Promise((resolve, reject) => {
+        let left = 2;
+        const done = () => { if(--left === 0) resolve(); };
+        const fail = () => { leafletPromise = null; reject(new Error('leaflet')); };
         const css = document.createElement('link');
         css.rel = 'stylesheet';
         css.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css';
+        css.onload = done; css.onerror = fail;
         document.head.appendChild(css);
         const js = document.createElement('script');
         js.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js';
-        js.onload = resolve;
-        js.onerror = () => { leafletPromise = null; reject(new Error('leaflet')); };
+        js.onload = done; js.onerror = fail;
         document.head.appendChild(js);
+        setTimeout(() => { if(left > 0 && window.L) resolve(); }, 8000);
       });
       return leafletPromise;
     }
@@ -1984,6 +1995,7 @@
         }).addTo(map);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', { subdomains:'abcd', maxZoom:11, pane:'labelsPane' }).addTo(map);
         map.attributionControl.addAttribution('Radar: <a href="https://www.rainviewer.com/" target="_blank">RainViewer</a> · Weather: <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a>');
+        if(window.ResizeObserver) new ResizeObserver(() => map.invalidateSize()).observe($('wxMap'));
         radarGroup = L.layerGroup().addTo(map);
         thunderGroup = L.layerGroup().addTo(map);
         map.on('moveend', () => {
@@ -1991,7 +2003,7 @@
           if(!lastThunderCenter || Math.abs(c.lat - lastThunderCenter.lat) > 2.5 || Math.abs(c.lng - lastThunderCenter.lng) > 2.5) loadThunder();
         });
       }
-      setTimeout(() => map.invalidateSize(), 60);
+      [60, 400, 900].forEach(t => setTimeout(() => map.invalidateSize(), t));
       if(Date.now() - radarLoadedAt > 10*60*1000) loadRadar();
       else if(showRadar) playRadar();
       loadThunder();
@@ -2358,6 +2370,30 @@
       });
     };
     window.showPage = showPage;
+  })();
+
+
+  // ---------- notification status + test ----------
+  (function(){
+    const st = document.getElementById('notifStatus');
+    function paint(){
+      const lines = [];
+      lines.push(notifOn ? '✅ الإشعارات مفعّلة داخل التطبيق' : '<span class="warn">⛔ الإشعارات موقوفة من الإعدادات</span>');
+      lines.push(ntfyTopic ? ('✅ مربوط بقناة ntfy: <b dir="ltr">' + ntfyTopic + '</b>')
+                           : '<span class="warn">⚠️ ntfy غير مربوط — الإشعارات ما بتوصل جوالك</span>');
+      st.innerHTML = lines.join('<br>');
+      document.getElementById('notifLink').textContent = ntfyTopic ? '✏️ تغيير القناة' : '📲 ربط ntfy';
+    }
+    paint();
+    document.addEventListener('tabchange', e => { if(e.detail.tab === 'alerts') paint(); });
+    document.getElementById('rowNtfy').addEventListener('click', () => setTimeout(paint, 300));
+    document.getElementById('rowNotif').addEventListener('click', () => setTimeout(paint, 50));
+    document.getElementById('notifLink').addEventListener('click', () => document.getElementById('rowNtfy').click());
+    document.getElementById('notifTest').addEventListener('click', () => {
+      if(!notifOn){ showToast('فعّل الإشعارات من الإعدادات أولًا'); return; }
+      sendNtfy('✅ إشعار تجريبي من مناخ', 'إذا وصلك هذا الإشعار على جوالك، فالتنبيهات شغالة تمام.', ['white_check_mark']);
+      if(!ntfyTopic) setTimeout(() => showToast('ظهر التنبيه هنا فقط — اربط ntfy عشان يوصل جوالك'), 2400);
+    });
   })();
 
 })();
