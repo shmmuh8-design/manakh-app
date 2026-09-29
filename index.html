@@ -404,6 +404,21 @@
   .qibla-btns{ display:flex; gap:8px; }
   .qibla-btns .muzna-btn{ flex:1; justify-content:center; padding:11px 10px; }
   @media (prefers-reduced-motion: reduce){ .bolt-icon{ animation:none; } }
+
+  /* ---------- horizontal tabs (swipe between sections) ---------- */
+  .tabs{ position:sticky; top:0; z-index:40; display:flex; gap:4px; padding:4px; margin:0 0 14px; border-radius:14px;
+    background:rgba(13,22,38,.92); border:1px solid var(--line); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    overflow-x:auto; scrollbar-width:none; }
+  .tabs::-webkit-scrollbar, .panes::-webkit-scrollbar{ display:none; }
+  .tab{ flex:1 0 auto; white-space:nowrap; font:inherit; font-size:.78rem; font-weight:600; color:var(--text-2); background:none; border:none;
+    padding:9px 8px; border-radius:10px; cursor:pointer; transition:background .2s, color .2s; }
+  .tab.on{ color:#06232a; background:linear-gradient(150deg,#7af0da,#2bb6c9); box-shadow:0 6px 14px -8px rgba(45,180,190,.8); }
+  .tab:focus-visible{ outline:2px solid var(--cool-1); outline-offset:1px; }
+  .panes{ display:flex; align-items:flex-start; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; scrollbar-width:none;
+    overscroll-behavior-x:contain; transition:height .25s ease; }
+  .pane{ flex:0 0 100%; min-width:100%; scroll-snap-align:start; scroll-snap-stop:always; }
+  .pane > p:first-child{ margin-top:0 !important; }
+  @media (prefers-reduced-motion: reduce){ .panes{ transition:none; } }
 </style>
 </head>
 <body>
@@ -519,7 +534,7 @@
       <p class="comfort-caption">الرطوبة والحرارة داخل النطاق المثالي الآن</p>
     </div>
 
-    <div class="card season-entry" onclick="showPage('page-seasons')">
+    <div class="card season-entry" onclick="showPage('page-seasons:seasons')">
       <div class="icon3d amber" id="homeSeasonIcon"><svg viewBox="0 0 24 24"><path d="M12 22s7-4.6 7-11.5A7 7 0 005 10.5C5 17.4 12 22 12 22z"/></svg></div>
       <div>
         <div style="font-weight:700; font-size:.92rem;" id="homeSeasonName">الخريف</div>
@@ -548,8 +563,11 @@
   </section>
 
   <!-- ============ WEATHER PAGE ============ -->
-  <section class="page" id="page-weather">
-    <div class="back-row"><h1>الحرارة والرطوبة الآن</h1></div>
+  <section class="page tabbed" id="page-weather">
+    <div class="back-row"><h1>الطقس</h1></div>
+    <div class="tabs" role="tablist"><button class="tab on" type="button" data-tab="now">🌡️ الآن</button><button class="tab" type="button" data-tab="map">🗺️ الخريطة</button><button class="tab" type="button" data-tab="alerts">🔔 التنبيهات</button></div>
+    <div class="panes">
+    <div class="pane" data-pane="now">
     <p style="color:var(--text-2); font-size:.82rem; margin:-8px 0 16px;">قراءة مباشرة من موقعك الحالي</p>
 
     <div class="ticker-wrap">
@@ -615,16 +633,51 @@
       <div class="axis-labels"><span>12ص</span><span>6ص</span><span>12م</span><span>6م</span><span>الآن</span></div>
       <div class="legend"><span><i style="background:var(--cool-1)"></i>داخلي</span><span><i style="background:var(--heat-1)"></i>خارجي</span></div>
     </div>
-    <div class="card link-card" onclick="showPage('page-map')">
-      <div class="icon3d blue"><svg viewBox="0 0 24 24"><path d="M9 4L3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg></div>
-      <div><div class="lc-title">خريطة الطقس والرادار</div><div class="lc-sub">الأمطار الآن، العواصف الرعدية، والتنبيهات</div></div>
-      <svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+    
+  
+    </div>
+    <div class="pane" data-pane="map">
+    <p style="color:var(--text-2); font-size:.82rem; margin:-8px 0 12px;">رادار الأمطار لآخر ساعتين، ومناطق العواصف الرعدية المتوقعة</p>
+    <div class="map-chips">
+      <button class="map-chip on" id="chipRadar" type="button">🌧️ رادار الأمطار</button>
+      <button class="map-chip on thunder" id="chipThunder" type="button">⚡ الرعد والبرق</button>
+      <button class="map-chip" id="chipLocate" type="button">📍 موقعي</button>
+    </div>
+    <div class="map-wrap" dir="ltr">
+      <div id="wxMap"></div>
+      <div class="map-status" id="mapStatus" dir="rtl">جاري تحميل الخريطة…</div>
+    </div>
+    <div class="radar-bar" id="radarBar">
+      <button class="radar-play" id="radarPlay" type="button" aria-label="تشغيل الرادار">▶</button>
+      <input type="range" id="radarSlider" min="0" max="0" value="0" aria-label="وقت الرادار" />
+      <div class="radar-time" id="radarTime">--:--</div>
+    </div>
+    <div class="map-legend">
+      <span><span class="rbar"></span>شدة المطر</span>
+      <span><i style="background:#ff4d6d"></i>عواصف رعدية متوقعة</span>
+      <span><i style="background:#ffb066"></i>احتمال رعد</span>
+      <span><i style="background:#ffe27a"></i>جو غير مستقر</span>
+    </div>
+
+
+    </div>
+    <div class="pane" data-pane="alerts">    <div class="card">
+      <div class="card-head"><h2>تنبيهات الطقس</h2></div>
+      <div class="alert-row" id="alertThunderRow"><span style="font-size:1.2rem">⚡</span><span class="name">تنبيه الرعد والبرق</span><div class="toggle" id="alertThunderTg"></div></div>
+      <div class="alert-row" id="alertRainRow"><span style="font-size:1.2rem">🌧️</span><span class="name">تنبيه الأمطار</span><div class="toggle" id="alertRainTg"></div></div>
+      <div class="alert-note" id="alertNote">نفحص طقس مدينتك كل 15 دقيقة للثلاث ساعات الجاية، ونرسل لك تنبيه إذا فيه عواصف رعدية أو أمطار.</div>
+    </div>
+  
+    </div>
     </div>
   </section>
 
   <!-- ============ PRAYER PAGE ============ -->
-  <section class="page" id="page-prayer">
-    <div class="back-row"><h1>مواقيت الصلاة والمناسبات</h1></div>
+  <section class="page tabbed" id="page-prayer">
+    <div class="back-row"><h1>الصلاة والقبلة</h1></div>
+    <div class="tabs" role="tablist"><button class="tab on" type="button" data-tab="times">🕌 المواقيت</button><button class="tab" type="button" data-tab="qibla">🕋 القبلة</button><button class="tab" type="button" data-tab="occ">🌙 المناسبات</button></div>
+    <div class="panes">
+    <div class="pane" data-pane="times">
     <p style="color:var(--text-2); font-size:.82rem; margin:-8px 0 16px;">حسابات حسب موقعك وتاريخ اليوم</p>
 
     <div class="ticker-wrap">
@@ -650,61 +703,11 @@
     </div>
 
 
-    <div class="card link-card" onclick="showPage('page-qibla')">
-      <div class="icon3d gold"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v10l-8 4-8-4V7z"/><path d="M4 7l8 4 8-4M12 11v10"/><path d="M4.5 10.5l7.5 3.8 7.5-3.8"/></svg></div>
-      <div><div class="lc-title">بوصلة القبلة ثلاثية الأبعاد</div><div class="lc-sub">حدّد اتجاه الكعبة المشرفة من موقعك</div></div>
-      <svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
-    </div>
-
-    <div class="occ-grid">
-      <div class="card occ-card"><div class="icon3d amber"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5z"/></svg></div>
-        <div class="num" id="occFitrDays">171 يوم</div><div class="lbl2">عيد الفطر المبارك</div><div class="date" id="occFitrDate">9 مارس، 2027</div></div>
-      <div class="card occ-card"><div class="icon3d green"><svg viewBox="0 0 24 24"><path d="M21 12.5A8.5 8.5 0 1111.5 3a7 7 0 009.5 9.5z"/></svg></div>
-        <div class="num" id="occRamadanDays">142 يوم</div><div class="lbl2">شهر رمضان</div><div class="date" id="occRamadanDate">8 فبراير، 2027</div></div>
-      <div class="card occ-card"><div class="icon3d amber"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5z"/></svg></div>
-        <div class="num" id="occAdhaDays">239 يوم</div><div class="lbl2">عيد الأضحى المبارك</div><div class="date" id="occAdhaDate">16 مايو، 2027</div></div>
-      <div class="card occ-card"><div class="icon3d blue"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.5 7-11a7 7 0 10-14 0c0 4.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg></div>
-        <div class="num" id="occArafahDays">238 يوم</div><div class="lbl2">يوم عرفة</div><div class="date" id="occArafahDate">15 مايو، 2027</div></div>
-    </div>
-  </section>
+    
 
 
-  <!-- ============ WEATHER MAP PAGE ============ -->
-  <section class="page" id="page-map">
-    <div class="back-row"><button class="back-btn" onclick="showPage('page-home')"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><h1>خريطة الطقس</h1></div>
-    <p style="color:var(--text-2); font-size:.82rem; margin:-8px 0 12px;">رادار الأمطار لآخر ساعتين، ومناطق العواصف الرعدية المتوقعة</p>
-    <div class="map-chips">
-      <button class="map-chip on" id="chipRadar" type="button">🌧️ رادار الأمطار</button>
-      <button class="map-chip on thunder" id="chipThunder" type="button">⚡ الرعد والبرق</button>
-      <button class="map-chip" id="chipLocate" type="button">📍 موقعي</button>
     </div>
-    <div class="map-wrap" dir="ltr">
-      <div id="wxMap"></div>
-      <div class="map-status" id="mapStatus" dir="rtl">جاري تحميل الخريطة…</div>
-    </div>
-    <div class="radar-bar" id="radarBar">
-      <button class="radar-play" id="radarPlay" type="button" aria-label="تشغيل الرادار">▶</button>
-      <input type="range" id="radarSlider" min="0" max="0" value="0" aria-label="وقت الرادار" />
-      <div class="radar-time" id="radarTime">--:--</div>
-    </div>
-    <div class="map-legend">
-      <span><span class="rbar"></span>شدة المطر</span>
-      <span><i style="background:#ff4d6d"></i>عواصف رعدية متوقعة</span>
-      <span><i style="background:#ffb066"></i>احتمال رعد</span>
-      <span><i style="background:#ffe27a"></i>جو غير مستقر</span>
-    </div>
-
-    <div class="card">
-      <div class="card-head"><h2>تنبيهات الطقس</h2></div>
-      <div class="alert-row" id="alertThunderRow"><span style="font-size:1.2rem">⚡</span><span class="name">تنبيه الرعد والبرق</span><div class="toggle" id="alertThunderTg"></div></div>
-      <div class="alert-row" id="alertRainRow"><span style="font-size:1.2rem">🌧️</span><span class="name">تنبيه الأمطار</span><div class="toggle" id="alertRainTg"></div></div>
-      <div class="alert-note" id="alertNote">نفحص طقس مدينتك كل 15 دقيقة للثلاث ساعات الجاية، ونرسل لك تنبيه إذا فيه عواصف رعدية أو أمطار.</div>
-    </div>
-  </section>
-
-  <!-- ============ QIBLA PAGE ============ -->
-  <section class="page" id="page-qibla">
-    <div class="back-row"><button class="back-btn" onclick="showPage('page-home')"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><h1>بوصلة القبلة</h1></div>
+    <div class="pane" data-pane="qibla">
     <p style="color:var(--text-2); font-size:.82rem; margin:-8px 0 6px;">ضع الجوال بشكل أفقي بعيدًا عن المعادن، ولفّ حتى يتطابق المؤشر مع الكعبة</p>
 
     <div class="qibla-stage" id="qiblaStage">
@@ -737,7 +740,27 @@
       <button class="muzna-btn" id="qiblaGps" type="button">📍 موقعي الدقيق</button>
     </div>
     <div class="alert-note" id="qiblaSrc" style="text-align:center">الموقع: مسقط</div>
+  
+    </div>
+    <div class="pane" data-pane="occ">    <div class="occ-grid">
+      <div class="card occ-card"><div class="icon3d amber"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5z"/></svg></div>
+        <div class="num" id="occFitrDays">171 يوم</div><div class="lbl2">عيد الفطر المبارك</div><div class="date" id="occFitrDate">9 مارس، 2027</div></div>
+      <div class="card occ-card"><div class="icon3d green"><svg viewBox="0 0 24 24"><path d="M21 12.5A8.5 8.5 0 1111.5 3a7 7 0 009.5 9.5z"/></svg></div>
+        <div class="num" id="occRamadanDays">142 يوم</div><div class="lbl2">شهر رمضان</div><div class="date" id="occRamadanDate">8 فبراير، 2027</div></div>
+      <div class="card occ-card"><div class="icon3d amber"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5z"/></svg></div>
+        <div class="num" id="occAdhaDays">239 يوم</div><div class="lbl2">عيد الأضحى المبارك</div><div class="date" id="occAdhaDate">16 مايو، 2027</div></div>
+      <div class="card occ-card"><div class="icon3d blue"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.5 7-11a7 7 0 10-14 0c0 4.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg></div>
+        <div class="num" id="occArafahDays">238 يوم</div><div class="lbl2">يوم عرفة</div><div class="date" id="occArafahDate">15 مايو، 2027</div></div>
+    </div>
+  
+    </div>
+    </div>
   </section>
+
+
+  
+
+  
 
   <!-- ============ SETTINGS PAGE ============ -->
   <section class="page" id="page-settings">
@@ -761,56 +784,11 @@
   </section>
 
   <!-- ============ SEASONS SUBPAGE ============ -->
-  <section class="page" id="page-seasons">
-    <div class="back-row"><h1>فصول السنة</h1></div>
-    <p style="color:var(--text-2); font-size:.82rem; margin:-8px 0 16px;">الأبراج ومنازل القمر لكل فصل — التقويم الفلكي التقليدي</p>
-
-    <div class="ticker-wrap">
-      <div class="ticker-track" id="mansionTicker">
-        <span>المنزلة الحالية: —</span>
-        <span>المنزلة الحالية: —</span>
-      </div>
-    </div>
-
-    <div id="seasonsList"></div>
-
-    <div class="card season-entry" onclick="showPage('page-zodiac-guide')" style="margin-top:4px;">
-      <div class="icon3d violet"><span style="font-size:1.2rem">♈</span></div>
-      <div>
-        <div style="font-weight:700; font-size:.92rem;">دليل الأبراج</div>
-        <div style="font-size:.76rem; color:var(--text-2); margin-top:2px;">بداية ونهاية كل برج ومدته، مع تنبيه فوري</div>
-      </div>
-      <div class="arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
-    </div>
-
-    <div class="card season-entry" onclick="showPage('page-anwaa')" style="margin-top:4px;">
-      <div class="icon3d amber"><span style="font-size:1.1rem">✦</span></div>
-      <div>
-        <div style="font-weight:700; font-size:.92rem;">الأنواء</div>
-        <div style="font-size:.76rem; color:var(--text-2); margin-top:2px;">النوء الحالي، نجمه، وصفه، والإرشادات الزراعية</div>
-      </div>
-      <div class="arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
-    </div>
-
-    <div class="card" style="margin-top:4px;">
-      <div class="card-head"><h2>ساعات النجوم اليوم</h2><span class="chip live"><i class="dot-live"></i>مباشر</span></div>
-      <p style="color:var(--text-2); font-size:.78rem; margin:-6px 0 10px;">تقسيم النهار والليل إلى 12 ساعة لكل منهما، كل ساعة يحكمها أحد الكواكب السبعة وله خواصه الفلكية التقليدية</p>
-      <div id="starHoursList"></div>
-    </div>
-  </section>
-
-  <!-- ============ ZODIAC GUIDE SUBPAGE ============ -->
-  <section class="page" id="page-zodiac-guide">
-    <div class="back-row"><button class="back-btn" onclick="showPage('page-seasons')"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><h1>دليل الأبراج</h1></div>
-    <p style="color:var(--text-2); font-size:.82rem; margin:-8px 0 16px;">تاريخ بداية ونهاية كل برج، ومدته، مع تنبيه فوري عند دخول برج جديد أو اقتراب انتهائه</p>
-    <div class="card">
-      <div id="zodiacGuideList"></div>
-    </div>
-  </section>
-
-  <!-- ============ ANWAA SUBPAGE ============ -->
-  <section class="page" id="page-anwaa">
-    <div class="back-row"><button class="back-btn" onclick="showPage('page-seasons')"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><h1>الأنواء</h1></div>
+  <section class="page tabbed" id="page-seasons">
+    <div class="back-row"><h1>الأنواء والفلك</h1></div>
+    <div class="tabs" role="tablist"><button class="tab on" type="button" data-tab="anwaa">✦ الأنواء</button><button class="tab" type="button" data-tab="seasons">🍂 الفصول</button><button class="tab" type="button" data-tab="zodiac">♈ الأبراج</button><button class="tab" type="button" data-tab="stars">⭐ النجوم</button></div>
+    <div class="panes">
+    <div class="pane" data-pane="anwaa">
     <p style="color:var(--text-2); font-size:.82rem; margin:-8px 0 16px;">التقويم الفلكي الزراعي التقليدي — 28 نوءًا، كل واحد نجمه ووصفه وإرشاداته الزراعية</p>
 
     <div class="ticker-wrap">
@@ -826,7 +804,48 @@
       <div class="card-head"><h2>كل الأنواء</h2></div>
       <div id="anwaaList" class="mansion-grid"></div>
     </div>
+  
+    </div>
+    <div class="pane" data-pane="seasons">
+    <p style="color:var(--text-2); font-size:.82rem; margin:-8px 0 16px;">الأبراج ومنازل القمر لكل فصل — التقويم الفلكي التقليدي</p>
+
+    <div class="ticker-wrap">
+      <div class="ticker-track" id="mansionTicker">
+        <span>المنزلة الحالية: —</span>
+        <span>المنزلة الحالية: —</span>
+      </div>
+    </div>
+
+    <div id="seasonsList"></div>
+
+    
+
+    
+
+
+    </div>
+    <div class="pane" data-pane="zodiac">
+    <p style="color:var(--text-2); font-size:.82rem; margin:-8px 0 16px;">تاريخ بداية ونهاية كل برج، ومدته، مع تنبيه فوري عند دخول برج جديد أو اقتراب انتهائه</p>
+    <div class="card">
+      <div id="zodiacGuideList"></div>
+    </div>
+  
+    </div>
+    <div class="pane" data-pane="stars">    <div class="card" style="margin-top:4px;">
+      <div class="card-head"><h2>ساعات النجوم اليوم</h2><span class="chip live"><i class="dot-live"></i>مباشر</span></div>
+      <p style="color:var(--text-2); font-size:.78rem; margin:-6px 0 10px;">تقسيم النهار والليل إلى 12 ساعة لكل منهما، كل ساعة يحكمها أحد الكواكب السبعة وله خواصه الفلكية التقليدية</p>
+      <div id="starHoursList"></div>
+    </div>
+  
+    </div>
+    </div>
   </section>
+
+  <!-- ============ ZODIAC GUIDE SUBPAGE ============ -->
+  
+
+  <!-- ============ ANWAA SUBPAGE ============ -->
+  
 
 </div>
 
@@ -851,7 +870,7 @@
     <button class="nav-btn active" data-page="page-home"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>الرئيسية</span></button>
     <button class="nav-btn" data-page="page-weather"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg><span>الطقس</span></button>
     <button class="nav-btn" data-page="page-prayer"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.5 7-11a7 7 0 10-14 0c0 4.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg><span>الصلاة</span></button>
-    <button class="nav-btn" data-page="page-seasons"><svg viewBox="0 0 24 24"><path d="M12 22s7-4.6 7-11.5A7 7 0 005 10.5C5 17.4 12 22 12 22z"/></svg><span>الفصول</span></button>
+    <button class="nav-btn" data-page="page-seasons"><svg viewBox="0 0 24 24"><path d="M12 22s7-4.6 7-11.5A7 7 0 005 10.5C5 17.4 12 22 12 22z"/></svg><span>الأنواء</span></button>
     <button class="nav-btn" data-page="page-settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.6V21a2 2 0 01-4 0v-.2a1.7 1.7 0 00-1-1.5 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.6-1H3a2 2 0 010-4h.2a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3H9a1.7 1.7 0 001-1.6V3a2 2 0 014 0v.2a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9V9a1.7 1.7 0 001.6 1H21a2 2 0 010 4h-.2a1.7 1.7 0 00-1.5 1z"/></svg><span>الإعدادات</span></button>
   </div>
 </div>
@@ -1921,14 +1940,11 @@
     function load(key, def){ try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; }catch(e){ return def; } }
 
     // ---------------- page hooks ----------------
-    const baseShow = showPage;
-    showPage = function(id){
-      baseShow(id);
-      if(id === 'page-map') openMap();
-      else stopRadar();
-      if(id === 'page-qibla') openQibla();
-    };
-    window.showPage = showPage;
+    document.addEventListener('tabchange', e => {
+      const t = e.detail.tab;
+      if(t === 'map') openMap(); else stopRadar();
+      if(t === 'qibla') openQibla();
+    });
 
     // ================= WEATHER MAP =================
     let map = null, radarFrames = [], radarIdx = 0, radarTimer = null, radarHost = '';
@@ -2110,7 +2126,7 @@
         L.circleMarker(ll, { radius:7, color:'#fff', weight:2, fillColor:'#2bb6c9', fillOpacity:1 }).addTo(map).bindPopup('موقعك الحالي');
       }, () => showToast('لم نتمكن من تحديد موقعك'), { enableHighAccuracy:true, timeout:10000 });
     });
-    setInterval(() => { if(map && $('page-map').classList.contains('active')){ loadRadar(); loadThunder(); } }, 10*60*1000);
+    setInterval(() => { if(map && $('page-weather').classList.contains('active') && $('page-weather')._tabs && $('page-weather')._tabs.current() === 'map'){ loadRadar(); loadThunder(); } }, 10*60*1000);
 
     // ================= ALERTS (thunder + rain) =================
     const alertPrefs = load('manakh_alerts', { thunder:true, rain:true });
@@ -2278,6 +2294,70 @@
         { enableHighAccuracy:true, timeout:10000 });
     });
     setQiblaLoc(cityPos(), false);
+  })();
+
+
+  // ---------- horizontal tabs: swipe or tap between sections of one page ----------
+  (function(){
+    function setup(sec){
+      const tabs = [...sec.querySelectorAll('.tab')];
+      const panes = sec.querySelector('.panes');
+      const list = [...panes.children];
+      let active = tabs[0].dataset.tab, lock = false;
+      const paneOf = n => list.find(p => p.dataset.pane === n);
+      function fit(){ const p = paneOf(active); if(p && p.offsetHeight) panes.style.height = p.offsetHeight + 'px'; }
+      function emit(){ document.dispatchEvent(new CustomEvent('tabchange', { detail:{ page:sec.id, tab:active } })); }
+      function mark(n){
+        const changed = n !== active;
+        active = n;
+        tabs.forEach(t => { const on = t.dataset.tab === n; t.classList.toggle('on', on); t.setAttribute('aria-selected', on); if(on) t.scrollIntoView({ block:'nearest', inline:'nearest' }); });
+        fit();
+        if(changed && sec.classList.contains('active')) emit();
+      }
+      function go(n, instant){
+        const p = paneOf(n); if(!p) return;
+        lock = true;
+        panes.scrollBy({ left: p.getBoundingClientRect().left - panes.getBoundingClientRect().left, behavior: instant ? 'instant' : 'smooth' });
+        mark(n);
+        const tabsTop = sec.querySelector('.tabs').getBoundingClientRect().top;
+        if(tabsTop < 0) window.scrollBy({ top: tabsTop - 8, behavior: instant ? 'instant' : 'smooth' });
+        clearTimeout(go._t); go._t = setTimeout(() => { lock = false; }, instant ? 50 : 600);
+      }
+      tabs.forEach(t => t.addEventListener('click', () => go(t.dataset.tab)));
+      let st;
+      panes.addEventListener('scroll', () => {
+        if(lock) return;
+        clearTimeout(st);
+        st = setTimeout(() => {
+          const base = panes.getBoundingClientRect().left;
+          let best = list[0], bestD = Infinity;
+          list.forEach(p => { const d = Math.abs(p.getBoundingClientRect().left - base); if(d < bestD){ bestD = d; best = p; } });
+          if(best.dataset.pane !== active) mark(best.dataset.pane);
+        }, 90);
+      }, { passive:true });
+      if(window.ResizeObserver){ const ro = new ResizeObserver(() => fit()); list.forEach(p => ro.observe(p)); }
+      sec._tabs = { go, fit, emit, current: () => active };
+    }
+    document.querySelectorAll('section.tabbed').forEach(setup);
+
+    // page switching knows about tabs; old page names still work ("page-map" opens the map tab, etc.)
+    const ALIAS = { 'page-map':'page-weather:map', 'page-qibla':'page-prayer:qibla', 'page-anwaa':'page-seasons:anwaa', 'page-zodiac-guide':'page-seasons:zodiac' };
+    const prevShow = showPage;
+    showPage = function(id){
+      id = ALIAS[id] || id;
+      const [pid, tab] = id.split(':');
+      prevShow(pid);
+      const sec = document.getElementById(pid);
+      requestAnimationFrame(() => {
+        if(sec && sec._tabs){
+          if(tab && tab !== sec._tabs.current()) sec._tabs.go(tab, true);
+          else { sec._tabs.fit(); sec._tabs.emit(); }
+        } else {
+          document.dispatchEvent(new CustomEvent('tabchange', { detail:{ page:pid, tab:null } }));
+        }
+      });
+    };
+    window.showPage = showPage;
   })();
 
 })();
