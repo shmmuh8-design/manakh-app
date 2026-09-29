@@ -416,12 +416,17 @@
     padding:9px 8px; border-radius:10px; cursor:pointer; transition:background .2s, color .2s; }
   .tab.on{ color:#06232a; background:linear-gradient(150deg,#7af0da,#2bb6c9); box-shadow:0 6px 14px -8px rgba(45,180,190,.8); }
   .tab:focus-visible{ outline:2px solid var(--cool-1); outline-offset:1px; }
-  .panes{ display:flex; align-items:flex-start; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; scrollbar-width:none;
-    overscroll-behavior-x:contain; transition:height .25s ease; }
-  .pane{ flex:0 0 100%; min-width:100%; scroll-snap-align:start; scroll-snap-stop:always; }
+  .panes{ position:relative; touch-action:pan-y; }
+  .pane{ display:none; }
+  .pane.on{ display:block; animation:paneIn .28s ease; }
+  .pane.on.from-left{ animation-name:paneInL; }
+  @keyframes paneIn{ from{ opacity:0; transform:translateX(24px); } to{ opacity:1; transform:none; } }
+  @keyframes paneInL{ from{ opacity:0; transform:translateX(-24px); } to{ opacity:1; transform:none; } }
   .pane > p:first-child{ margin-top:0 !important; }
-  @media (prefers-reduced-motion: reduce){ .panes{ transition:none; } }
+  @media (prefers-reduced-motion: reduce){ .pane.on{ animation:none; } }
 </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" defer></script>
 </head>
 <body>
 <div class="app">
@@ -1961,6 +1966,14 @@
     function loadLeaflet(){
       if(window.L) return Promise.resolve();
       if(leafletPromise) return leafletPromise;
+      const pre = document.querySelector('head script[src*="leaflet.js"]');
+      if(pre && !pre.dataset.failed){
+        // the page already asked for Leaflet; give it a few seconds before loading a second copy
+        leafletPromise = new Promise(resolve => {
+          let n = 0; const t = setInterval(() => { if(window.L || ++n > 40){ clearInterval(t); resolve(); } }, 100);
+        }).then(() => { if(window.L) return; pre.dataset.failed = '1'; leafletPromise = null; return loadLeaflet(); });
+        return leafletPromise;
+      }
       leafletPromise = new Promise((resolve, reject) => {
         let left = 2;
         const done = () => { if(--left === 0) resolve(); };
@@ -1982,18 +1995,37 @@
 
     async function openMap(){
       try{ await loadLeaflet(); }
-      catch(e){ setStatus('تعذّر تحميل الخريطة، تأكد من الاتصال بالإنترنت'); return; }
+      catch(e){ setStatus('تعذّر تحميل مكتبة الخريطة، تأكد من الاتصال بالإنترنت'); return; }
+      if(!$('wxMap').offsetWidth){ setTimeout(openMap, 150); return; } // wait until the tab is really visible
+      try{ buildMap(); }catch(e){ setStatus('خطأ في الخريطة: ' + (e && e.message ? e.message : e)); return; }
+      [60, 400, 900].forEach(t => setTimeout(() => map.invalidateSize(), t));
+      if(Date.now() - radarLoadedAt > 10*60*1000) loadRadar();
+      else if(showRadar) playRadar();
+      loadThunder();
+    }
+    function buildMap(){
       const p = cityPos();
       if(!map){
         map = L.map('wxMap', { zoomControl:true, worldCopyJump:true, minZoom:3, maxZoom:11 }).setView([p.lat, p.lon], 6);
         map.createPane('radarPane');   map.getPane('radarPane').style.zIndex = 350;
         map.createPane('thunderPane'); map.getPane('thunderPane').style.zIndex = 420;
         map.createPane('labelsPane');  map.getPane('labelsPane').style.zIndex = 460; map.getPane('labelsPane').style.pointerEvents = 'none';
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+        const base = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
           subdomains:'abcd', maxZoom:11,
           attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
         }).addTo(map);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', { subdomains:'abcd', maxZoom:11, pane:'labelsPane' }).addTo(map);
+        const labels = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', { subdomains:'abcd', maxZoom:11, pane:'labelsPane' }).addTo(map);
+        // if the dark map can't load on this network, switch to standard OpenStreetMap
+        let baseOk = false, baseErr = 0;
+        base.on('tileload', () => { baseOk = true; });
+        base.on('tileerror', () => {
+          if(baseOk || ++baseErr < 4) return;
+          baseOk = true;
+          map.removeLayer(base); map.removeLayer(labels);
+          L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:11, attribution:'&copy; OpenStreetMap' }).addTo(map);
+          setStatus('تم التحويل لخريطة بديلة');
+          setTimeout(() => setStatus(''), 3000);
+        });
         map.attributionControl.addAttribution('Radar: <a href="https://www.rainviewer.com/" target="_blank">RainViewer</a> · Weather: <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a>');
         if(window.ResizeObserver) new ResizeObserver(() => map.invalidateSize()).observe($('wxMap'));
         radarGroup = L.layerGroup().addTo(map);
@@ -2003,11 +2035,11 @@
           if(!lastThunderCenter || Math.abs(c.lat - lastThunderCenter.lat) > 2.5 || Math.abs(c.lng - lastThunderCenter.lng) > 2.5) loadThunder();
         });
       }
-      [60, 400, 900].forEach(t => setTimeout(() => map.invalidateSize(), t));
-      if(Date.now() - radarLoadedAt > 10*60*1000) loadRadar();
-      else if(showRadar) playRadar();
-      loadThunder();
     }
+    window.addEventListener('error', e => {
+      if($('page-weather').classList.contains('active') && $('page-weather')._tabs && $('page-weather')._tabs.current() === 'map')
+        setStatus('خطأ: ' + (e.message || 'غير معروف'));
+    });
 
     // ---- radar (RainViewer, last 2 hours) ----
     async function loadRadar(){
@@ -2309,46 +2341,48 @@
   })();
 
 
-  // ---------- horizontal tabs: swipe or tap between sections of one page ----------
+  // ---------- horizontal tabs: tap or swipe between sections of one page ----------
   (function(){
     function setup(sec){
       const tabs = [...sec.querySelectorAll('.tab')];
       const panes = sec.querySelector('.panes');
       const list = [...panes.children];
-      let active = tabs[0].dataset.tab, lock = false;
-      const paneOf = n => list.find(p => p.dataset.pane === n);
-      function fit(){ const p = paneOf(active); if(p && p.offsetHeight) panes.style.height = p.offsetHeight + 'px'; }
+      const names = list.map(p => p.dataset.pane);
+      let active = null;
       function emit(){ document.dispatchEvent(new CustomEvent('tabchange', { detail:{ page:sec.id, tab:active } })); }
-      function mark(n){
+      function go(n){
+        if(!names.includes(n)) return;
+        const back = active && names.indexOf(n) < names.indexOf(active);
         const changed = n !== active;
         active = n;
+        list.forEach(p => {
+          const on = p.dataset.pane === n;
+          p.classList.toggle('on', on);
+          p.classList.toggle('from-left', on && back);
+        });
         tabs.forEach(t => { const on = t.dataset.tab === n; t.classList.toggle('on', on); t.setAttribute('aria-selected', on); if(on) t.scrollIntoView({ block:'nearest', inline:'nearest' }); });
-        fit();
+        const top = sec.querySelector('.tabs').getBoundingClientRect().top;
+        if(changed && top < 0) window.scrollBy({ top: top - 8, behavior:'instant' });
         if(changed && sec.classList.contains('active')) emit();
       }
-      function go(n, instant){
-        const p = paneOf(n); if(!p) return;
-        lock = true;
-        panes.scrollBy({ left: p.getBoundingClientRect().left - panes.getBoundingClientRect().left, behavior: instant ? 'instant' : 'smooth' });
-        mark(n);
-        const tabsTop = sec.querySelector('.tabs').getBoundingClientRect().top;
-        if(tabsTop < 0) window.scrollBy({ top: tabsTop - 8, behavior: instant ? 'instant' : 'smooth' });
-        clearTimeout(go._t); go._t = setTimeout(() => { lock = false; }, instant ? 50 : 600);
-      }
       tabs.forEach(t => t.addEventListener('click', () => go(t.dataset.tab)));
-      let st;
-      panes.addEventListener('scroll', () => {
-        if(lock) return;
-        clearTimeout(st);
-        st = setTimeout(() => {
-          const base = panes.getBoundingClientRect().left;
-          let best = list[0], bestD = Infinity;
-          list.forEach(p => { const d = Math.abs(p.getBoundingClientRect().left - base); if(d < bestD){ bestD = d; best = p; } });
-          if(best.dataset.pane !== active) mark(best.dataset.pane);
-        }, 90);
+      // swipe (RTL: swipe left = next tab). Ignore swipes that start on the map or a slider.
+      let sx = 0, sy = 0, track = false;
+      panes.addEventListener('touchstart', e => {
+        const t = e.target;
+        track = !(t.closest('#wxMap') || t.closest('input[type=range]') || t.closest('.qibla-stage'));
+        sx = e.touches[0].clientX; sy = e.touches[0].clientY;
       }, { passive:true });
-      if(window.ResizeObserver){ const ro = new ResizeObserver(() => fit()); list.forEach(p => ro.observe(p)); }
-      sec._tabs = { go, fit, emit, current: () => active };
+      panes.addEventListener('touchend', e => {
+        if(!track) return;
+        const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+        if(Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.6) return;
+        const i = names.indexOf(active);
+        const next = dx < 0 ? i + 1 : i - 1;
+        if(next >= 0 && next < names.length) go(names[next]);
+      }, { passive:true });
+      go(names[0]);
+      sec._tabs = { go, fit(){}, emit, current: () => active };
     }
     document.querySelectorAll('section.tabbed').forEach(setup);
 
@@ -2362,8 +2396,8 @@
       const sec = document.getElementById(pid);
       requestAnimationFrame(() => {
         if(sec && sec._tabs){
-          if(tab && tab !== sec._tabs.current()) sec._tabs.go(tab, true);
-          else { sec._tabs.fit(); sec._tabs.emit(); }
+          if(tab && tab !== sec._tabs.current()) sec._tabs.go(tab);
+          else sec._tabs.emit();
         } else {
           document.dispatchEvent(new CustomEvent('tabchange', { detail:{ page:pid, tab:null } }));
         }
