@@ -323,6 +323,87 @@
     .mz-eyes, .muzna-avatar svg .mz-body, .muzna-live i{ animation:none; }
     .muzna.talking .mz-mouth-open{ animation:none; transform:scaleY(.8); }
   }
+
+  /* ---------- quick tiles (home) ---------- */
+  .quick-tiles{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; }
+  .quick-tile{ font:inherit; color:var(--text-1); text-align:start; cursor:pointer; display:flex; align-items:center; gap:10px;
+    padding:12px; border-radius:18px; border:1px solid var(--line); background:linear-gradient(180deg,var(--bg-panel),var(--bg-panel-2)); }
+  .quick-tile .qt-title{ font-size:.9rem; font-weight:700; }
+  .quick-tile .qt-sub{ font-size:.7rem; color:var(--text-2); margin-top:2px; }
+  .link-card{ display:flex; align-items:center; gap:14px; cursor:pointer; }
+  .link-card .lc-title{ font-weight:700; font-size:.95rem; } .link-card .lc-sub{ font-size:.76rem; color:var(--text-2); margin-top:2px; }
+  .link-card .arrow{ width:16px; height:16px; stroke:var(--text-3); stroke-width:2; fill:none; margin-inline-start:auto; transform:scaleX(-1); }
+
+  /* ---------- weather map ---------- */
+  .map-chips{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+  .map-chip{ font:inherit; font-size:.78rem; font-weight:600; cursor:pointer; color:var(--text-2); padding:7px 12px; border-radius:99px;
+    border:1px solid var(--line); background:rgba(255,255,255,.04); }
+  .map-chip.on{ color:#06232a; border-color:transparent; background:linear-gradient(150deg,#7af0da,#2bb6c9); }
+  .map-chip.on.thunder{ background:linear-gradient(150deg,#ffe27a,#ffb066); }
+  .map-wrap{ position:relative; border-radius:20px; overflow:hidden; border:1px solid var(--line); margin-bottom:10px; }
+  #wxMap{ height:56vh; min-height:340px; background:#0a1120; }
+  .leaflet-container{ background:#0a1120; font-family:"IBM Plex Sans Arabic",sans-serif; }
+  .leaflet-bar a{ background:#16233b; color:#eef2f8; border-bottom-color:rgba(255,255,255,.08); }
+  .leaflet-bar a:hover{ background:#1d2c49; color:#fff; }
+  .leaflet-control-attribution{ background:rgba(10,17,32,.75) !important; color:#93a0ba; font-size:9px; }
+  .leaflet-control-attribution a{ color:#79f0d8; }
+  .leaflet-popup-content-wrapper, .leaflet-popup-tip{ background:#16233b; color:#eef2f8; }
+  .leaflet-popup-content{ direction:rtl; text-align:right; font-size:.82rem; line-height:1.6; margin:10px 14px; }
+  .map-status{ position:absolute; z-index:500; bottom:26px; left:50%; transform:translateX(-50%); max-width:80%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:.72rem; color:var(--text-1);
+    background:rgba(10,17,32,.82); border:1px solid var(--line); padding:6px 10px; border-radius:12px; backdrop-filter:blur(6px); }
+  .radar-bar{ display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+  .radar-play{ width:40px; height:40px; border-radius:12px; border:none; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(150deg,#7af0da,#2bb6c9); color:#06232a; font-size:1rem; }
+  .radar-bar input[type=range]{ flex:1; accent-color:#2bb6c9; }
+  .radar-time{ font-family:"Sora",sans-serif; font-size:.8rem; min-width:48px; text-align:center; color:var(--text-1); }
+  .map-legend{ display:flex; flex-wrap:wrap; gap:10px 14px; font-size:.72rem; color:var(--text-2); margin-bottom:12px; }
+  .map-legend i{ display:inline-block; width:10px; height:10px; border-radius:50%; margin-inline-end:5px; vertical-align:-1px; }
+  .map-legend .rbar{ width:54px; height:8px; border-radius:4px; background:linear-gradient(90deg,#8ad0ff,#2f86ff,#1b3fd6,#ffe066,#ff7a1a,#e0203a); display:inline-block; margin-inline-end:5px; vertical-align:0; }
+  .bolt-icon{ font-size:20px; line-height:1; filter:drop-shadow(0 0 6px rgba(255,220,90,.9)); animation:boltFlash 1.6s infinite; }
+  @keyframes boltFlash{ 0%,70%,100%{ opacity:1; } 75%{ opacity:.25; } 80%{ opacity:1; } 85%{ opacity:.4; } }
+  .alert-row{ display:flex; align-items:center; gap:12px; padding:11px 0; border-top:1px solid var(--line); cursor:pointer; }
+  .alert-row:first-of-type{ border-top:none; } .alert-row .name{ flex:1; font-size:.86rem; font-weight:600; }
+  .alert-note{ font-size:.74rem; color:var(--text-2); line-height:1.7; margin-top:8px; }
+
+  /* ---------- 3D qibla compass ---------- */
+  .qibla-stage{ position:relative; height:330px; perspective:900px; display:flex; align-items:center; justify-content:center; margin:4px 0 6px; }
+  .qibla-tilt{ position:relative; width:270px; height:270px; transform:rotateX(34deg); transform-style:preserve-3d; }
+  .qibla-shadow{ position:absolute; inset:-6px; border-radius:50%; transform:translateZ(-26px); background:rgba(0,0,0,.55); filter:blur(14px); }
+  .qibla-rim{ position:absolute; inset:0; border-radius:50%; transform:translateZ(-10px);
+    background:conic-gradient(from 200deg,#6b7a99,#e6ecf7,#7d8aa6,#3b4760,#c9d3e6,#6b7a99);
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.25), 0 14px 30px -8px rgba(0,0,0,.7); }
+  .qibla-rim::after{ content:""; position:absolute; inset:0; border-radius:50%; transform:translateZ(-8px); background:#2a3448; }
+  .qibla-dial{ position:absolute; inset:9px; border-radius:50%; transform-style:preserve-3d; will-change:transform;
+    background:radial-gradient(circle at 50% 40%, #1c2b47, #0c1424 72%); box-shadow:inset 0 0 0 1px rgba(255,255,255,.08), inset 0 -10px 30px rgba(0,0,0,.5);
+    transition:box-shadow .3s ease; }
+  .qibla-dial svg{ position:absolute; inset:0; width:100%; height:100%; }
+  .qibla-arm{ position:absolute; left:50%; top:50%; width:0; height:0; transform-style:preserve-3d; }
+  .qibla-needle{ position:absolute; left:-3px; bottom:0; width:6px; height:94px; border-radius:3px;
+    background:linear-gradient(0deg, rgba(255,207,122,.15), #ffcf7a 70%, #fff4d6); box-shadow:0 0 12px rgba(255,190,90,.6); transform:translateZ(3px); }
+  .kaaba{ position:absolute; left:0; top:-112px; width:0; height:0; transform-style:preserve-3d; transform:translateZ(15px); }
+  .kaaba .f{ position:absolute; left:-15px; top:-15px; width:30px; height:30px; backface-visibility:hidden;
+    background:linear-gradient(180deg,#141414 0 68%, #c9a14a 68% 78%, #141414 78% 100%); box-shadow:inset 0 0 0 1px rgba(255,255,255,.06); }
+  .kaaba .f.door::after{ content:""; position:absolute; left:58%; top:0; width:24%; height:44%; background:linear-gradient(0deg,#e3c16f,#a67c2e); border-radius:0 0 2px 2px; }
+  .kaaba .f.top{ background:#1d1d1d; transform:translateZ(15px); }
+  .kaaba .s0{ transform:rotateZ(0deg) rotateX(90deg) translateZ(15px); }
+  .kaaba .s1{ transform:rotateZ(90deg) rotateX(90deg) translateZ(15px); }
+  .kaaba .s2{ transform:rotateZ(180deg) rotateX(90deg) translateZ(15px); }
+  .kaaba .s3{ transform:rotateZ(270deg) rotateX(90deg) translateZ(15px); }
+  .qibla-hub{ position:absolute; left:50%; top:50%; width:22px; height:22px; margin:-11px 0 0 -11px; border-radius:50%; transform:translateZ(5px);
+    background:radial-gradient(circle at 35% 30%, #fff, #c9d3e6 40%, #5c6a86); box-shadow:0 2px 6px rgba(0,0,0,.5); }
+  .qibla-pointer{ position:absolute; left:50%; top:-20px; margin-left:-10px; width:0; height:0; transform:translateZ(6px);
+    border-left:10px solid transparent; border-right:10px solid transparent; border-top:18px solid #ff6a3d; filter:drop-shadow(0 0 6px rgba(255,106,61,.7)); transition:border-top-color .3s; }
+  .qibla-stage.aligned .qibla-dial{ box-shadow:inset 0 0 0 2px #3ee08f, 0 0 40px rgba(62,224,143,.45), inset 0 -10px 30px rgba(0,0,0,.5); }
+  .qibla-stage.aligned .qibla-pointer{ border-top-color:#3ee08f; filter:drop-shadow(0 0 8px rgba(62,224,143,.9)); }
+  .qibla-msg{ text-align:center; font-size:1.05rem; font-weight:700; min-height:28px; }
+  .qibla-msg.ok{ color:#3ee08f; }
+  .qibla-stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:12px 0; }
+  .qibla-stats div{ background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:14px; padding:10px 6px; text-align:center; }
+  .qibla-stats b{ display:block; font-family:"Sora",sans-serif; font-size:1.05rem; }
+  .qibla-stats span{ font-size:.7rem; color:var(--text-2); }
+  .qibla-btns{ display:flex; gap:8px; }
+  .qibla-btns .muzna-btn{ flex:1; justify-content:center; padding:11px 10px; }
+  @media (prefers-reduced-motion: reduce){ .bolt-icon{ animation:none; } }
 </style>
 </head>
 <body>
@@ -404,6 +485,17 @@
           <button class="muzna-btn primary" id="muznaSpeak" type="button">🔊 <span id="muznaSpeakLbl">اسمع النشرة</span></button>
         </div>
       </div>
+    </div>
+
+    <div class="quick-tiles">
+      <button class="quick-tile" type="button" onclick="showPage('page-map')">
+        <div class="icon3d blue"><svg viewBox="0 0 24 24"><path d="M9 4L3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg></div>
+        <div><div class="qt-title">خريطة الطقس</div><div class="qt-sub">رادار · رعد وبرق</div></div>
+      </button>
+      <button class="quick-tile" type="button" onclick="showPage('page-qibla')">
+        <div class="icon3d gold"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v10l-8 4-8-4V7z"/><path d="M4 7l8 4 8-4M12 11v10"/><path d="M4.5 10.5l7.5 3.8 7.5-3.8"/></svg></div>
+        <div><div class="qt-title">بوصلة القبلة</div><div class="qt-sub">اتجاه الكعبة</div></div>
+      </button>
     </div>
 
     <div class="hero">
@@ -523,6 +615,11 @@
       <div class="axis-labels"><span>12ص</span><span>6ص</span><span>12م</span><span>6م</span><span>الآن</span></div>
       <div class="legend"><span><i style="background:var(--cool-1)"></i>داخلي</span><span><i style="background:var(--heat-1)"></i>خارجي</span></div>
     </div>
+    <div class="card link-card" onclick="showPage('page-map')">
+      <div class="icon3d blue"><svg viewBox="0 0 24 24"><path d="M9 4L3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg></div>
+      <div><div class="lc-title">خريطة الطقس والرادار</div><div class="lc-sub">الأمطار الآن، العواصف الرعدية، والتنبيهات</div></div>
+      <svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+    </div>
   </section>
 
   <!-- ============ PRAYER PAGE ============ -->
@@ -553,6 +650,12 @@
     </div>
 
 
+    <div class="card link-card" onclick="showPage('page-qibla')">
+      <div class="icon3d gold"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v10l-8 4-8-4V7z"/><path d="M4 7l8 4 8-4M12 11v10"/><path d="M4.5 10.5l7.5 3.8 7.5-3.8"/></svg></div>
+      <div><div class="lc-title">بوصلة القبلة ثلاثية الأبعاد</div><div class="lc-sub">حدّد اتجاه الكعبة المشرفة من موقعك</div></div>
+      <svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+    </div>
+
     <div class="occ-grid">
       <div class="card occ-card"><div class="icon3d amber"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5z"/></svg></div>
         <div class="num" id="occFitrDays">171 يوم</div><div class="lbl2">عيد الفطر المبارك</div><div class="date" id="occFitrDate">9 مارس، 2027</div></div>
@@ -563,6 +666,77 @@
       <div class="card occ-card"><div class="icon3d blue"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.5 7-11a7 7 0 10-14 0c0 4.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg></div>
         <div class="num" id="occArafahDays">238 يوم</div><div class="lbl2">يوم عرفة</div><div class="date" id="occArafahDate">15 مايو، 2027</div></div>
     </div>
+  </section>
+
+
+  <!-- ============ WEATHER MAP PAGE ============ -->
+  <section class="page" id="page-map">
+    <div class="back-row"><button class="back-btn" onclick="showPage('page-home')"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><h1>خريطة الطقس</h1></div>
+    <p style="color:var(--text-2); font-size:.82rem; margin:-8px 0 12px;">رادار الأمطار لآخر ساعتين، ومناطق العواصف الرعدية المتوقعة</p>
+    <div class="map-chips">
+      <button class="map-chip on" id="chipRadar" type="button">🌧️ رادار الأمطار</button>
+      <button class="map-chip on thunder" id="chipThunder" type="button">⚡ الرعد والبرق</button>
+      <button class="map-chip" id="chipLocate" type="button">📍 موقعي</button>
+    </div>
+    <div class="map-wrap" dir="ltr">
+      <div id="wxMap"></div>
+      <div class="map-status" id="mapStatus" dir="rtl">جاري تحميل الخريطة…</div>
+    </div>
+    <div class="radar-bar" id="radarBar">
+      <button class="radar-play" id="radarPlay" type="button" aria-label="تشغيل الرادار">▶</button>
+      <input type="range" id="radarSlider" min="0" max="0" value="0" aria-label="وقت الرادار" />
+      <div class="radar-time" id="radarTime">--:--</div>
+    </div>
+    <div class="map-legend">
+      <span><span class="rbar"></span>شدة المطر</span>
+      <span><i style="background:#ff4d6d"></i>عواصف رعدية متوقعة</span>
+      <span><i style="background:#ffb066"></i>احتمال رعد</span>
+      <span><i style="background:#ffe27a"></i>جو غير مستقر</span>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>تنبيهات الطقس</h2></div>
+      <div class="alert-row" id="alertThunderRow"><span style="font-size:1.2rem">⚡</span><span class="name">تنبيه الرعد والبرق</span><div class="toggle" id="alertThunderTg"></div></div>
+      <div class="alert-row" id="alertRainRow"><span style="font-size:1.2rem">🌧️</span><span class="name">تنبيه الأمطار</span><div class="toggle" id="alertRainTg"></div></div>
+      <div class="alert-note" id="alertNote">نفحص طقس مدينتك كل 15 دقيقة للثلاث ساعات الجاية، ونرسل لك تنبيه إذا فيه عواصف رعدية أو أمطار.</div>
+    </div>
+  </section>
+
+  <!-- ============ QIBLA PAGE ============ -->
+  <section class="page" id="page-qibla">
+    <div class="back-row"><button class="back-btn" onclick="showPage('page-home')"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><h1>بوصلة القبلة</h1></div>
+    <p style="color:var(--text-2); font-size:.82rem; margin:-8px 0 6px;">ضع الجوال بشكل أفقي بعيدًا عن المعادن، ولفّ حتى يتطابق المؤشر مع الكعبة</p>
+
+    <div class="qibla-stage" id="qiblaStage">
+      <div class="qibla-tilt">
+        <div class="qibla-shadow"></div>
+        <div class="qibla-rim"></div>
+        <div class="qibla-dial" id="qiblaDial">
+          <svg viewBox="0 0 252 252" aria-hidden="true" id="qiblaTicks"></svg>
+          <div class="qibla-arm" id="qiblaArm">
+            <div class="qibla-needle"></div>
+            <div class="kaaba">
+              <div class="f top"></div>
+              <div class="f s0 door"></div><div class="f s1"></div><div class="f s2"></div><div class="f s3"></div>
+            </div>
+          </div>
+          <div class="qibla-hub"></div>
+        </div>
+        <div class="qibla-pointer"></div>
+      </div>
+    </div>
+
+    <div class="qibla-msg" id="qiblaMsg">اضغط «تفعيل البوصلة» للبدء</div>
+    <div class="qibla-stats">
+      <div><b id="qiblaDeg" dir="ltr">--°</b><span>اتجاه القبلة</span></div>
+      <div><b id="qiblaHeading" dir="ltr">--°</b><span>اتجاه جوالك</span></div>
+      <div><b id="qiblaDist" dir="ltr">--</b><span>المسافة (كم)</span></div>
+    </div>
+    <div class="qibla-btns">
+      <button class="muzna-btn primary" id="qiblaStart" type="button">🧭 تفعيل البوصلة</button>
+      <button class="muzna-btn" id="qiblaGps" type="button">📍 موقعي الدقيق</button>
+    </div>
+    <div class="alert-note" id="qiblaSrc" style="text-align:center">الموقع: مسقط</div>
   </section>
 
   <!-- ============ SETTINGS PAGE ============ -->
@@ -1665,6 +1839,7 @@
       'إسطنبول':[41.008,28.978], 'برلين':[52.520,13.405], 'موسكو':[55.756,37.617], 'دلهي':[28.614,77.209]
     };
     const list = citiesData.filter(c => coords[c.name]);
+    list.forEach(c => { c.lat = coords[c.name][0]; c.lon = coords[c.name][1]; });
 
     function sky(code, isDay){
       if(code === 0) return isDay ? ['صافية','☀️'] : ['صافية','🌙'];
@@ -1729,6 +1904,380 @@
     }
     fetchLive();
     setInterval(fetchLive, 10 * 60 * 1000);
+  })();
+
+  // =====================================================================
+  //  خريطة الطقس + الرادار + الرعد والبرق + التنبيهات + بوصلة القبلة
+  // =====================================================================
+  (function(){
+    const $ = id => document.getElementById(id);
+    const pad = n => String(n).padStart(2, '0');
+    const hhmm = d => pad(d.getHours()) + ':' + pad(d.getMinutes());
+    function cityPos(){
+      const c = selectedCityRef;
+      return (c && typeof c.lat === 'number') ? { lat:c.lat, lon:c.lon, label:c.name } : { lat:23.588, lon:58.383, label:'مسقط' };
+    }
+    function store(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){} }
+    function load(key, def){ try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; }catch(e){ return def; } }
+
+    // ---------------- page hooks ----------------
+    const baseShow = showPage;
+    showPage = function(id){
+      baseShow(id);
+      if(id === 'page-map') openMap();
+      else stopRadar();
+      if(id === 'page-qibla') openQibla();
+    };
+    window.showPage = showPage;
+
+    // ================= WEATHER MAP =================
+    let map = null, radarFrames = [], radarIdx = 0, radarTimer = null, radarHost = '';
+    let radarGroup = null, thunderGroup = null, showRadar = true, showThunder = true;
+    let lastThunderCenter = null, leafletPromise = null, radarLoadedAt = 0;
+
+    function loadLeaflet(){
+      if(window.L) return Promise.resolve();
+      if(leafletPromise) return leafletPromise;
+      leafletPromise = new Promise((resolve, reject) => {
+        const css = document.createElement('link');
+        css.rel = 'stylesheet';
+        css.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css';
+        document.head.appendChild(css);
+        const js = document.createElement('script');
+        js.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js';
+        js.onload = resolve;
+        js.onerror = () => { leafletPromise = null; reject(new Error('leaflet')); };
+        document.head.appendChild(js);
+      });
+      return leafletPromise;
+    }
+    function setStatus(t){ $('mapStatus').textContent = t; $('mapStatus').style.display = t ? '' : 'none'; }
+
+    async function openMap(){
+      try{ await loadLeaflet(); }
+      catch(e){ setStatus('تعذّر تحميل الخريطة، تأكد من الاتصال بالإنترنت'); return; }
+      const p = cityPos();
+      if(!map){
+        map = L.map('wxMap', { zoomControl:true, worldCopyJump:true, minZoom:3, maxZoom:11 }).setView([p.lat, p.lon], 6);
+        map.createPane('radarPane');   map.getPane('radarPane').style.zIndex = 350;
+        map.createPane('thunderPane'); map.getPane('thunderPane').style.zIndex = 420;
+        map.createPane('labelsPane');  map.getPane('labelsPane').style.zIndex = 460; map.getPane('labelsPane').style.pointerEvents = 'none';
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+          subdomains:'abcd', maxZoom:11,
+          attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
+        }).addTo(map);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', { subdomains:'abcd', maxZoom:11, pane:'labelsPane' }).addTo(map);
+        map.attributionControl.addAttribution('Radar: <a href="https://www.rainviewer.com/" target="_blank">RainViewer</a> · Weather: <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a>');
+        radarGroup = L.layerGroup().addTo(map);
+        thunderGroup = L.layerGroup().addTo(map);
+        map.on('moveend', () => {
+          const c = map.getCenter();
+          if(!lastThunderCenter || Math.abs(c.lat - lastThunderCenter.lat) > 2.5 || Math.abs(c.lng - lastThunderCenter.lng) > 2.5) loadThunder();
+        });
+      }
+      setTimeout(() => map.invalidateSize(), 60);
+      if(Date.now() - radarLoadedAt > 10*60*1000) loadRadar();
+      else if(showRadar) playRadar();
+      loadThunder();
+    }
+
+    // ---- radar (RainViewer, last 2 hours) ----
+    async function loadRadar(){
+      setStatus('جاري تحميل الرادار…');
+      try{
+        const res = await fetch('https://api.rainviewer.com/public/weather-maps.json');
+        const j = await res.json();
+        radarHost = j.host;
+        radarFrames = ((j.radar && j.radar.past) || []).map(f => ({ time:f.time, path:f.path, layer:null }));
+        radarLoadedAt = Date.now();
+        radarGroup.clearLayers();
+        if(!radarFrames.length){ setStatus('لا توجد بيانات رادار حاليًا'); return; }
+        $('radarSlider').max = radarFrames.length - 1;
+        showFrame(radarFrames.length - 1);
+        setStatus('');
+        if(showRadar) playRadar();
+      }catch(e){ setStatus('تعذّر تحميل الرادار الآن'); }
+    }
+    function frameLayer(f){
+      if(!f.layer){
+        f.layer = L.tileLayer(radarHost + f.path + '/256/{z}/{x}/{y}/2/1_1.png', {
+          pane:'radarPane', opacity:0, maxNativeZoom:7, maxZoom:11, tileSize:256
+        });
+      }
+      return f.layer;
+    }
+    function showFrame(i){
+      if(!radarFrames.length) return;
+      radarIdx = (i + radarFrames.length) % radarFrames.length;
+      radarFrames.forEach((f, k) => {
+        if(k === radarIdx){
+          const l = frameLayer(f);
+          if(showRadar && !radarGroup.hasLayer(l)) radarGroup.addLayer(l);
+          l.setOpacity(showRadar ? 0.75 : 0);
+        } else if(f.layer){ f.layer.setOpacity(0); }
+      });
+      // preload the next frame so the animation is smooth
+      const nxt = radarFrames[(radarIdx + 1) % radarFrames.length];
+      if(showRadar && !radarGroup.hasLayer(frameLayer(nxt))) radarGroup.addLayer(nxt.layer);
+      const d = new Date(radarFrames[radarIdx].time * 1000);
+      const ago = Math.round((Date.now() - d.getTime()) / 60000);
+      $('radarTime').textContent = hhmm(d);
+      $('radarTime').title = ago <= 10 ? 'الآن' : ('قبل ' + ago + ' دقيقة');
+      $('radarSlider').value = radarIdx;
+    }
+    function playRadar(){
+      stopRadar();
+      if(!radarFrames.length) return;
+      $('radarPlay').textContent = '❚❚';
+      radarTimer = setInterval(() => {
+        // pause a little longer on the latest frame
+        if(radarIdx === radarFrames.length - 1 && !playRadar._hold){ playRadar._hold = true; return; }
+        playRadar._hold = false;
+        showFrame(radarIdx + 1);
+      }, 650);
+    }
+    function stopRadar(){ clearInterval(radarTimer); radarTimer = null; $('radarPlay').textContent = '▶'; }
+    $('radarPlay').addEventListener('click', () => { radarTimer ? stopRadar() : playRadar(); });
+    $('radarSlider').addEventListener('input', e => { stopRadar(); showFrame(+e.target.value); });
+
+    // ---- thunderstorms (Open-Meteo, next 3–4 hours on a grid) ----
+    function thunderRisk(h, i){
+      const codes = (h.weather_code || []).slice(0, 4);
+      const cape = (h.cape || []).slice(0, 4).filter(v => v != null);
+      const prob = (h.precipitation_probability || []).slice(0, 4).filter(v => v != null);
+      const tIdx = codes.findIndex(c => c >= 95);
+      const maxCape = cape.length ? Math.max(...cape) : 0;
+      const maxP = prob.length ? Math.max(...prob) : 0;
+      if(tIdx >= 0) return { level:3, inH:tIdx, prob:maxP, cape:maxCape };
+      if(maxCape >= 1500 && maxP >= 40) return { level:2, prob:maxP, cape:maxCape };
+      if(maxCape >= 800 && maxP >= 30) return { level:1, prob:maxP, cape:maxCape };
+      return { level:0 };
+    }
+    async function loadThunder(){
+      if(!map || !showThunder) return;
+      const c = map.getCenter();
+      lastThunderCenter = { lat:c.lat, lng:c.lng };
+      const lats = [], lons = [];
+      for(let dy = -4; dy <= 4; dy++) for(let dx = -4; dx <= 4; dx++){
+        const la = Math.max(-80, Math.min(80, Math.round(c.lat) + dy));
+        let lo = Math.round(c.lng) + dx; lo = ((lo + 540) % 360) - 180;
+        lats.push(la); lons.push(lo);
+      }
+      const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + lats.join(',') + '&longitude=' + lons.join(',') +
+        '&hourly=weather_code,cape,precipitation_probability&forecast_hours=4&timezone=auto';
+      try{
+        const res = await fetch(url);
+        let data = await res.json();
+        if(!Array.isArray(data)) data = [data];
+        thunderGroup.clearLayers();
+        let storms = 0;
+        data.forEach((d, i) => {
+          if(!d || !d.hourly) return;
+          const r = thunderRisk(d.hourly);
+          if(!r.level) return;
+          const color = r.level === 3 ? '#ff4d6d' : r.level === 2 ? '#ffb066' : '#ffe27a';
+          const txt = r.level === 3
+            ? ('⚡ <b>عواصف رعدية متوقعة</b> ' + (r.inH === 0 ? 'الآن' : 'خلال ' + r.inH + ' ساعة') + '<br>احتمال الأمطار: ' + r.prob + '%')
+            : r.level === 2 ? ('🌩️ <b>احتمال تكوّن سحب رعدية</b><br>احتمال الأمطار: ' + r.prob + '%')
+            : ('☁️ <b>جو غير مستقر</b><br>احتمال الأمطار: ' + r.prob + '%');
+          L.circle([lats[i], lons[i]], { pane:'thunderPane', radius:52000, color, weight:1, opacity:.7, fillColor:color, fillOpacity: r.level === 3 ? .35 : r.level === 2 ? .22 : .12 })
+            .bindPopup(txt).addTo(thunderGroup);
+          if(r.level === 3){
+            storms++;
+            L.marker([lats[i], lons[i]], { pane:'thunderPane', icon:L.divIcon({ className:'', html:'<div class="bolt-icon">⚡</div>', iconSize:[20,20], iconAnchor:[10,10] }) })
+              .bindPopup(txt).addTo(thunderGroup);
+          }
+        });
+        setStatus(storms ? ('⚡ ' + storms + ' منطقة فيها عواصف رعدية متوقعة') : '');
+      }catch(e){ /* keep the map usable even if this layer fails */ }
+    }
+
+    $('chipRadar').addEventListener('click', e => {
+      showRadar = !showRadar; e.currentTarget.classList.toggle('on', showRadar);
+      $('radarBar').style.opacity = showRadar ? 1 : .4;
+      if(showRadar){ showFrame(radarIdx); playRadar(); } else { stopRadar(); radarFrames.forEach(f => f.layer && f.layer.setOpacity(0)); }
+    });
+    $('chipThunder').addEventListener('click', e => {
+      showThunder = !showThunder; e.currentTarget.classList.toggle('on', showThunder);
+      if(showThunder) loadThunder(); else { thunderGroup && thunderGroup.clearLayers(); setStatus(''); }
+    });
+    $('chipLocate').addEventListener('click', () => {
+      if(!map) return;
+      if(!navigator.geolocation){ showToast('تحديد الموقع غير مدعوم في هذا المتصفح'); return; }
+      navigator.geolocation.getCurrentPosition(pos => {
+        const ll = [pos.coords.latitude, pos.coords.longitude];
+        map.setView(ll, 8);
+        L.circleMarker(ll, { radius:7, color:'#fff', weight:2, fillColor:'#2bb6c9', fillOpacity:1 }).addTo(map).bindPopup('موقعك الحالي');
+      }, () => showToast('لم نتمكن من تحديد موقعك'), { enableHighAccuracy:true, timeout:10000 });
+    });
+    setInterval(() => { if(map && $('page-map').classList.contains('active')){ loadRadar(); loadThunder(); } }, 10*60*1000);
+
+    // ================= ALERTS (thunder + rain) =================
+    const alertPrefs = load('manakh_alerts', { thunder:true, rain:true });
+    function paintToggles(){
+      $('alertThunderTg').classList.toggle('on', !!alertPrefs.thunder);
+      $('alertRainTg').classList.toggle('on', !!alertPrefs.rain);
+    }
+    paintToggles();
+    $('alertThunderRow').addEventListener('click', () => { alertPrefs.thunder = !alertPrefs.thunder; store('manakh_alerts', alertPrefs); paintToggles(); if(alertPrefs.thunder) checkAlerts(); });
+    $('alertRainRow').addEventListener('click', () => { alertPrefs.rain = !alertPrefs.rain; store('manakh_alerts', alertPrefs); paintToggles(); if(alertPrefs.rain) checkAlerts(); });
+
+    function alreadySent(key){
+      const sent = load('manakh_alert_sent', {});
+      const now = Date.now();
+      Object.keys(sent).forEach(k => { if(now - sent[k] > 6*3600*1000) delete sent[k]; });
+      if(sent[key] && now - sent[key] < 3*3600*1000){ store('manakh_alert_sent', sent); return true; }
+      sent[key] = now; store('manakh_alert_sent', sent); return false;
+    }
+    async function checkAlerts(){
+      if(!alertPrefs.thunder && !alertPrefs.rain) return;
+      const p = cityPos();
+      const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + p.lat + '&longitude=' + p.lon +
+        '&hourly=weather_code,precipitation_probability,precipitation&forecast_hours=4&timezone=auto';
+      try{
+        const d = await (await fetch(url)).json();
+        const h = d.hourly || {};
+        const codes = h.weather_code || [], prob = h.precipitation_probability || [];
+        const tIdx = codes.findIndex(c => c >= 95);
+        const rIdx = codes.findIndex((c, i) => (c >= 51 && c <= 67) || (c >= 80 && c <= 82) || (prob[i] || 0) >= 70);
+        const when = i => i <= 0 ? 'الآن' : ('خلال ' + i + ' ساعة');
+        if(alertPrefs.thunder && tIdx >= 0 && !alreadySent(p.label + '|thunder')){
+          sendNtfy('⚡ تنبيه رعد وبرق — ' + p.label, 'عواصف رعدية متوقعة ' + when(tIdx) + '. ابتعد عن الأودية والأماكن المكشوفة والأعمدة المعدنية.', ['zap','warning']);
+        } else if(alertPrefs.rain && tIdx < 0 && rIdx >= 0 && !alreadySent(p.label + '|rain')){
+          sendNtfy('🌧️ تنبيه أمطار — ' + p.label, 'أمطار متوقعة ' + when(rIdx) + ' (الاحتمال ' + (prob[rIdx] || 0) + '%). انتبه في الطرق وابتعد عن مجاري الأودية.', ['cloud_with_rain']);
+        }
+        $('alertNote').textContent = 'آخر فحص ' + hhmm(new Date()) + ' لطقس ' + p.label +
+          '. نفحص كل 15 دقيقة للثلاث ساعات الجاية. التنبيهات تظهر والتطبيق مفتوح، وتوصل جوالك عبر ntfy إذا ربطته من الإعدادات.';
+      }catch(e){ /* try again next cycle */ }
+    }
+    setTimeout(checkAlerts, 6000);
+    setInterval(checkAlerts, 15*60*1000);
+    const selectBeforeAlerts = selectCity;
+    selectCity = function(city){ selectBeforeAlerts(city); setTimeout(checkAlerts, 800); if(qiblaUsingCity) setQiblaLoc(cityPos(), false); };
+
+    // ================= 3D QIBLA COMPASS =================
+    const KAABA = { lat:21.422487, lon:39.826206 };
+    const rad = d => d * Math.PI / 180, deg = r => r * 180 / Math.PI;
+    function qiblaBearing(lat, lon){
+      const f1 = rad(lat), f2 = rad(KAABA.lat), dl = rad(KAABA.lon - lon);
+      const y = Math.sin(dl) * Math.cos(f2);
+      const x = Math.cos(f1) * Math.sin(f2) - Math.sin(f1) * Math.cos(f2) * Math.cos(dl);
+      return (deg(Math.atan2(y, x)) + 360) % 360;
+    }
+    function distKm(lat, lon){
+      const f1 = rad(lat), f2 = rad(KAABA.lat), df = f2 - f1, dl = rad(KAABA.lon - lon);
+      const a = Math.sin(df/2)**2 + Math.cos(f1) * Math.cos(f2) * Math.sin(dl/2)**2;
+      return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    // dial ticks & Arabic cardinal letters
+    (function drawTicks(){
+      const svg = $('qiblaTicks'), c = 126;
+      let h = '<circle cx="126" cy="126" r="118" fill="none" stroke="rgba(255,255,255,.08)"/>';
+      for(let a = 0; a < 360; a += 5){
+        const big = a % 30 === 0, r1 = big ? 104 : 110, r2 = 117;
+        const x1 = c + r1 * Math.sin(rad(a)), y1 = c - r1 * Math.cos(rad(a));
+        const x2 = c + r2 * Math.sin(rad(a)), y2 = c - r2 * Math.cos(rad(a));
+        h += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${big ? 'rgba(255,255,255,.55)' : 'rgba(255,255,255,.18)'}" stroke-width="${big ? 2 : 1}"/>`;
+      }
+      [['ش',0,'#ff6a3d'],['ق',90,'#eef2f8'],['ج',180,'#eef2f8'],['غ',270,'#eef2f8']].forEach(([t,a,col]) => {
+        const x = c + 88 * Math.sin(rad(a)), y = c - 88 * Math.cos(rad(a));
+        h += `<text x="${x.toFixed(1)}" y="${(y + 7).toFixed(1)}" text-anchor="middle" font-size="20" font-weight="700" fill="${col}" font-family="IBM Plex Sans Arabic, sans-serif">${t}</text>`;
+      });
+      svg.innerHTML = h;
+    })();
+
+    let qLoc = null, qBearing = 0, qiblaUsingCity = true;
+    let heading = null, shown = 0, rafOn = false, lastAligned = false, gotAbsolute = false, listening = false, sensorSeen = false;
+
+    function setQiblaLoc(p, fromGps){
+      qLoc = p; qiblaUsingCity = !fromGps;
+      qBearing = qiblaBearing(p.lat, p.lon);
+      $('qiblaArm').style.transform = `rotateZ(${qBearing}deg)`;
+      $('qiblaDeg').textContent = Math.round(qBearing) + '°';
+      $('qiblaDist').textContent = Math.round(distKm(p.lat, p.lon)).toLocaleString('en-US');
+      $('qiblaSrc').textContent = 'الموقع: ' + p.label + (fromGps ? ' (GPS)' : ' — للدقة اضغط «موقعي الدقيق»');
+      if(heading === null) paintQibla();
+    }
+    function openQibla(){
+      if(!qLoc || qiblaUsingCity) setQiblaLoc(cityPos(), false);
+      // Android & desktop don't need a permission tap
+      if(!(window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function')) startCompass();
+    }
+
+    function onAbsolute(e){
+      if(e.alpha == null) return;
+      gotAbsolute = true; feed(360 - e.alpha);
+    }
+    function onOrientation(e){
+      if(typeof e.webkitCompassHeading === 'number') feed(e.webkitCompassHeading);
+      else if(!gotAbsolute && e.absolute && e.alpha != null) feed(360 - e.alpha);
+    }
+    function feed(h){
+      const scr = (screen.orientation && typeof screen.orientation.angle === 'number') ? screen.orientation.angle : (window.orientation || 0);
+      h = (h + scr + 360) % 360;
+      sensorSeen = true;
+      if(heading === null){ heading = h; shown = h; }
+      else {
+        const diff = ((h - (heading % 360)) + 540) % 360 - 180; // shortest turn, no 360° spins
+        heading += diff;
+      }
+      if(!rafOn){ rafOn = true; requestAnimationFrame(tick); }
+    }
+    function tick(){
+      shown += (heading - shown) * 0.18;
+      paintQibla();
+      if(Math.abs(heading - shown) > 0.05) requestAnimationFrame(tick); else rafOn = false;
+    }
+    function paintQibla(){
+      const h = heading === null ? 0 : shown;
+      $('qiblaDial').style.transform = `rotateZ(${-h}deg)`;
+      if(heading === null) return;
+      const hm = ((h % 360) + 360) % 360;
+      $('qiblaHeading').textContent = Math.round(hm) + '°';
+      const delta = ((qBearing - hm) + 540) % 360 - 180;
+      const aligned = Math.abs(delta) <= 4;
+      $('qiblaStage').classList.toggle('aligned', aligned);
+      const msg = $('qiblaMsg');
+      msg.classList.toggle('ok', aligned);
+      msg.textContent = aligned ? '✓ أنت الآن باتجاه القبلة'
+        : ('لفّ ' + (delta > 0 ? 'يمينًا' : 'يسارًا') + ' ' + Math.round(Math.abs(delta)) + '°');
+      if(aligned && !lastAligned && navigator.vibrate) navigator.vibrate(60);
+      lastAligned = aligned;
+    }
+    function listen(){
+      if(listening) return;
+      listening = true;
+      window.addEventListener('deviceorientationabsolute', onAbsolute, true);
+      window.addEventListener('deviceorientation', onOrientation, true);
+      $('qiblaMsg').textContent = 'حرّك الجوال على شكل رقم 8 لمعايرة البوصلة';
+      setTimeout(() => {
+        if(!sensorSeen){
+          $('qiblaMsg').textContent = 'البوصلة غير متاحة على هذا الجهاز — القبلة على ' + Math.round(qBearing) + '° من الشمال باتجاه عقارب الساعة';
+        }
+      }, 2500);
+    }
+    function startCompass(){
+      if(window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function'){
+        DeviceOrientationEvent.requestPermission()
+          .then(r => { if(r === 'granted') listen(); else $('qiblaMsg').textContent = 'لازم تسمح بالوصول لحساسات الحركة عشان تشتغل البوصلة'; })
+          .catch(() => { $('qiblaMsg').textContent = 'تعذّر تفعيل البوصلة'; });
+      } else if('ondeviceorientationabsolute' in window || 'ondeviceorientation' in window){
+        listen();
+      } else {
+        $('qiblaMsg').textContent = 'البوصلة غير متاحة — القبلة على ' + Math.round(qBearing) + '° من الشمال';
+      }
+    }
+    $('qiblaStart').addEventListener('click', startCompass);
+    $('qiblaGps').addEventListener('click', () => {
+      if(!navigator.geolocation){ showToast('تحديد الموقع غير مدعوم'); return; }
+      $('qiblaSrc').textContent = 'جاري تحديد موقعك…';
+      navigator.geolocation.getCurrentPosition(
+        pos => setQiblaLoc({ lat:pos.coords.latitude, lon:pos.coords.longitude, label:'موقعك الحالي' }, true),
+        () => { showToast('لم نتمكن من تحديد موقعك'); setQiblaLoc(cityPos(), false); },
+        { enableHighAccuracy:true, timeout:10000 });
+    });
+    setQiblaLoc(cityPos(), false);
   })();
 
 })();
