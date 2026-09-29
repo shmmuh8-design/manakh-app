@@ -342,6 +342,7 @@
   .map-chip.on.thunder{ background:linear-gradient(150deg,#ffe27a,#ffb066); }
   .map-wrap{ position:relative; border-radius:20px; overflow:hidden; border:1px solid var(--line); margin-bottom:10px; }
   #wxMap{ height:56vh; min-height:340px; background:#0a1120; }
+  .osm-dark{ filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.92) saturate(.55); }
   .leaflet-container{ background:#0a1120; font-family:"IBM Plex Sans Arabic",sans-serif; }
   .leaflet-bar a{ background:#16233b; color:#eef2f8; border-bottom-color:rgba(255,255,255,.08); }
   .leaflet-bar a:hover{ background:#1d2c49; color:#fff; }
@@ -2010,21 +2011,20 @@
         map.createPane('radarPane');   map.getPane('radarPane').style.zIndex = 350;
         map.createPane('thunderPane'); map.getPane('thunderPane').style.zIndex = 420;
         map.createPane('labelsPane');  map.getPane('labelsPane').style.zIndex = 460; map.getPane('labelsPane').style.pointerEvents = 'none';
-        const base = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
-          subdomains:'abcd', maxZoom:11,
-          attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
-        }).addTo(map);
-        const labels = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', { subdomains:'abcd', maxZoom:11, pane:'labelsPane' }).addTo(map);
-        // if the dark map can't load on this network, switch to standard OpenStreetMap
+        // OpenStreetMap tiles (free, no key) darkened with a CSS filter to match the app
         let baseOk = false, baseErr = 0;
+        const base = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom:11, className:'osm-dark',
+          attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
         base.on('tileload', () => { baseOk = true; });
         base.on('tileerror', () => {
           if(baseOk || ++baseErr < 4) return;
           baseOk = true;
-          map.removeLayer(base); map.removeLayer(labels);
-          L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:11, attribution:'&copy; OpenStreetMap' }).addTo(map);
-          setStatus('تم التحويل لخريطة بديلة');
-          setTimeout(() => setStatus(''), 3000);
+          map.removeLayer(base);
+          L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom:11, attribution:'Tiles &copy; Esri'
+          }).addTo(map);
         });
         map.attributionControl.addAttribution('Radar: <a href="https://www.rainviewer.com/" target="_blank">RainViewer</a> · Weather: <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a>');
         if(window.ResizeObserver) new ResizeObserver(() => map.invalidateSize()).observe($('wxMap'));
