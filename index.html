@@ -434,6 +434,20 @@
   @keyframes paneInL{ from{ opacity:0; transform:translateX(-24px); } to{ opacity:1; transform:none; } }
   .pane > p:first-child{ margin-top:0 !important; }
   @media (prefers-reduced-motion: reduce){ .pane.on{ animation:none; } }
+
+  /* ---------- alert tones ---------- */
+  .tone-row{ display:flex; align-items:center; gap:10px; padding:11px 0; border-top:1px solid var(--line); }
+  .tone-row:first-of-type{ border-top:none; }
+  .tone-ic{ font-size:1.25rem; width:28px; text-align:center; }
+  .tone-meta{ flex:1; min-width:0; } .tone-name{ font-size:.88rem; font-weight:700; } .tone-sub{ font-size:.7rem; color:var(--text-2); margin-top:1px; }
+  .tone-sel{ font:inherit; font-size:.78rem; color:var(--text-1); background:#16233b; border:1px solid var(--line); border-radius:10px; padding:7px 8px; max-width:132px; }
+  .tone-play{ width:34px; height:34px; border-radius:10px; border:none; cursor:pointer; flex-shrink:0; background:linear-gradient(150deg,#7af0da,#2bb6c9); color:#06232a; font-size:.8rem; }
+  .tone-play.playing{ background:linear-gradient(150deg,#ffe27a,#ffb066); }
+  .tone-vol{ display:flex; align-items:center; gap:10px; padding-top:12px; border-top:1px solid var(--line); }
+  .tone-vol input{ flex:1; accent-color:#2bb6c9; } .tone-vol b{ font-family:"Sora",sans-serif; font-size:.78rem; min-width:38px; text-align:center; }
+  #alertBanner.storm{ background:linear-gradient(135deg,#6d28d9,#dc2626) !important; animation:stormPulse .5s ease-in-out 4; }
+  #alertBanner.rainy{ background:linear-gradient(135deg,#1d4ed8,#0891b2) !important; }
+  @keyframes stormPulse{ 0%,100%{ filter:brightness(1); } 50%{ filter:brightness(1.6); } }
 </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" defer></script>
@@ -802,6 +816,14 @@
       <div class="settings-row" id="rowNtfy"><div class="icon3d sm rose"><svg viewBox="0 0 24 24"><path d="M4 4l16 8-16 8V4z"/></svg></div><span class="name" id="ntfyRowLabel">ربط إشعارات فعلية عبر ntfy</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
       <div class="settings-row" id="rowAbout"><div class="icon3d sm slate"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg></div><span class="name">عن التطبيق</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
     </div>
+      <div class="card">
+      <div class="card-head"><h2>🔊 نغمات التنبيه</h2></div>
+      <div class="tone-row"><span class="tone-ic">⚡</span><div class="tone-meta"><div class="tone-name">الرعد والبرق</div><div class="tone-sub">أعلى أولوية + اهتزاز</div></div><select class="tone-sel" data-kind="thunder"></select><button class="tone-play" type="button" data-kind="thunder" aria-label="جرّب">▶</button></div>
+      <div class="tone-row"><span class="tone-ic">🌧️</span><div class="tone-meta"><div class="tone-name">المطر</div><div class="tone-sub">أولوية عالية</div></div><select class="tone-sel" data-kind="rain"></select><button class="tone-play" type="button" data-kind="rain" aria-label="جرّب">▶</button></div>
+      <div class="tone-row"><span class="tone-ic">🔔</span><div class="tone-meta"><div class="tone-name">باقي التنبيهات</div><div class="tone-sub">الحرارة والرطوبة والأبراج</div></div><select class="tone-sel" data-kind="general"></select><button class="tone-play" type="button" data-kind="general" aria-label="جرّب">▶</button></div>
+      <div class="tone-vol"><span>🔈</span><input type="range" id="toneVol" min="10" max="100" step="5" aria-label="مستوى الصوت" /><span>🔊</span><b id="toneVolTxt" dir="ltr">90%</b></div>
+      <div class="alert-note">الصوت يشتغل والتطبيق مفتوح. على الآيفون ارفع صوت الجهاز، والتنبيهات اللي توصل عبر ntfy تاخذ نغمة برنامج ntfy، وتنبيه الرعد يوصل بأعلى أولوية.</div>
+    </div>
   </section>
 
   <!-- ============ CITIES SUBPAGE ============ -->
@@ -947,17 +969,19 @@
       }catch(e){}
     }, delay);
   }
-  function playAlertSound(){ unlockAudio(); beepTone(880,0); beepTone(660,220); }
+  function playAlertSound(kind){ unlockAudio(); try{ toneForKind(kind || 'general'); }catch(e){ beepTone(880,0); beepTone(660,220); } }
 
   // ---------- prominent local alert banner (written + audible) ----------
-  function fireLocalAlert(title, message){
+  function fireLocalAlert(title, message, kind){
     const b = document.getElementById('alertBanner');
+    b.classList.toggle('storm', kind === 'thunder');
+    b.classList.toggle('rainy', kind === 'rain');
     document.getElementById('abTitle').textContent = title;
     document.getElementById('abMsg').textContent = message;
     b.classList.add('show');
     clearTimeout(b._tm);
-    b._tm = setTimeout(()=> b.classList.remove('show'), 4500);
-    playAlertSound();
+    b._tm = setTimeout(()=> b.classList.remove('show'), kind === 'thunder' ? 9000 : 4500);
+    playAlertSound(kind);
   }
   document.getElementById('alertBanner').addEventListener('click', (e)=> e.currentTarget.classList.remove('show'));
 
@@ -1025,10 +1049,11 @@
   }
   updateNtfyLabel();
 
-  async function sendNtfy(title, message, tags){
+  async function sendNtfy(title, message, tags, kind){
     if(!notifOn) return;
     // Always fire the immediate written + audible in-app alert regardless of ntfy link
-    fireLocalAlert(title, message);
+    kind = kind || ((tags||[]).includes('zap') ? 'thunder' : (tags||[]).includes('cloud_with_rain') ? 'rain' : 'general');
+    fireLocalAlert(title, message, kind);
     showToast(title);
     if(!ntfyTopic) return;
     try{
@@ -1037,7 +1062,7 @@
       await fetch('https://ntfy.sh/', {
         method:'POST',
         headers:{ 'Content-Type':'application/json; charset=utf-8' },
-        body: JSON.stringify({ topic: ntfyTopic, title: title, message: message, priority:4, tags: tags||['warning'] })
+        body: JSON.stringify({ topic: ntfyTopic, title: title, message: message, priority: kind === 'thunder' ? 5 : kind === 'rain' ? 4 : 3, tags: tags||['warning'] })
       });
     }catch(e){ /* offline or blocked network — local alert already fired above */ }
   }
@@ -2500,6 +2525,107 @@
       sendNtfy('✅ إشعار تجريبي من مناخ', 'إذا وصلك هذا الإشعار على جوالك، فالتنبيهات شغالة تمام.', ['white_check_mark']);
       if(!ntfyTopic) setTimeout(() => showToast('ظهر التنبيه هنا فقط — اربط ntfy عشان يوصل جوالك'), 2400);
     });
+  })();
+
+
+  // ---------- alert tones: synthesised sounds, one per alert kind ----------
+  const TONES = {
+    storm:     'صاعقة ورعد',
+    lightning: 'برق',
+    siren:     'إنذار متصاعد',
+    rain:      'قطرات المطر',
+    bell:      'جرس',
+    chime:     'لحن هادئ',
+    beep:      'تن-تن'
+  };
+  const toneDefaults = { thunder:'storm', rain:'rain', general:'bell', vol:90 };
+  const toneCfg = (function(){ try{ return Object.assign({}, toneDefaults, JSON.parse(localStorage.getItem('manakh_tones') || '{}')); }catch(e){ return Object.assign({}, toneDefaults); } })();
+  function toneSave(){ try{ localStorage.setItem('manakh_tones', JSON.stringify(toneCfg)); }catch(e){} }
+
+  function toneOut(){
+    const ctx = audioCtx;
+    const master = ctx.createGain(); master.gain.value = (toneCfg.vol / 100) * 1.4;
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -18; comp.knee.value = 8; comp.ratio.value = 6; comp.attack.value = 0.003; comp.release.value = 0.2;
+    master.connect(comp); comp.connect(ctx.destination);
+    return master;
+  }
+  function toneNoise(sec){
+    const ctx = audioCtx, len = Math.floor(ctx.sampleRate * sec), buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
+    for(let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    const src = ctx.createBufferSource(); src.buffer = buf; return src;
+  }
+  function toneEnv(g, t, peak, a, dcy){
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak, t + a);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + a + dcy);
+  }
+  function toneOsc(out, type, f, t, a, dcy, peak, fEnd){
+    const ctx = audioCtx, o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t);
+    if(fEnd) o.frequency.exponentialRampToValueAtTime(fEnd, t + a + dcy);
+    toneEnv(g, t, peak, a, dcy); o.connect(g); g.connect(out); o.start(t); o.stop(t + a + dcy + 0.05);
+  }
+  function toneCrack(out, t, peak){
+    const ctx = audioCtx, n = toneNoise(0.3), hp = ctx.createBiquadFilter(), g = ctx.createGain();
+    hp.type = 'highpass'; hp.frequency.value = 1400;
+    toneEnv(g, t, peak, 0.004, 0.22); n.connect(hp); hp.connect(g); g.connect(out); n.start(t); n.stop(t + 0.3);
+  }
+  function toneRumble(out, t, dur, peak){
+    const ctx = audioCtx, n = toneNoise(dur + 0.2), lp = ctx.createBiquadFilter(), g = ctx.createGain();
+    lp.type = 'lowpass'; lp.frequency.setValueAtTime(420, t); lp.frequency.exponentialRampToValueAtTime(90, t + dur);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + 0.25);
+    g.gain.setValueAtTime(peak * 0.7, t + dur * 0.45); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    n.connect(lp); lp.connect(g); g.connect(out); n.start(t); n.stop(t + dur + 0.2);
+  }
+  const TONE_PLAY = {
+    storm(out, t){ toneCrack(out, t, 1.2); toneOsc(out, 'sawtooth', 2400, t, 0.003, 0.12, 0.25, 180); toneRumble(out, t + 0.12, 2.6, 1.4); toneCrack(out, t + 1.1, 0.5); return 2.9; },
+    lightning(out, t){ [0, 0.28, 0.5].forEach((d, i) => { toneCrack(out, t + d, 1 - i * 0.2); toneOsc(out, 'sawtooth', 3200, t + d, 0.002, 0.14, 0.35, 150); }); return 0.8; },
+    siren(out, t){ for(let i = 0; i < 3; i++){ const a = t + i * 0.7; toneOsc(out, 'sawtooth', 560, a, 0.02, 0.62, 0.35, 1500); toneOsc(out, 'square', 560, a, 0.02, 0.62, 0.12, 1500); } return 2.1; },
+    rain(out, t){
+      const ctx = audioCtx, n = toneNoise(2.2), bp = ctx.createBiquadFilter(), g = ctx.createGain();
+      bp.type = 'bandpass'; bp.frequency.value = 2200; bp.Q.value = 0.6;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.18, t + 0.4); g.gain.exponentialRampToValueAtTime(0.0001, t + 2.1);
+      n.connect(bp); bp.connect(g); g.connect(out); n.start(t); n.stop(t + 2.2);
+      for(let i = 0; i < 16; i++){ const d = t + 0.1 + Math.random() * 1.8, f = 1500 + Math.random() * 1400; toneOsc(out, 'sine', f, d, 0.003, 0.07, 0.45, f * 0.35); }
+      toneOsc(out, 'triangle', 988, t + 0.05, 0.01, 0.5, 0.3); toneOsc(out, 'triangle', 1319, t + 0.3, 0.01, 0.6, 0.3);
+      return 2.2;
+    },
+    bell(out, t){ [0, 0.55, 1.1].forEach(d => [[1, 0.5], [2.76, 0.22], [5.4, 0.1]].forEach(([m, p]) => toneOsc(out, 'sine', 880 * m, t + d, 0.004, 1.1, p))); return 2.2; },
+    chime(out, t){ [523, 659, 784, 1047, 784, 1047].forEach((f, i) => toneOsc(out, 'triangle', f, t + i * 0.16, 0.01, 0.55, 0.35)); return 1.6; },
+    beep(out, t){ toneOsc(out, 'sine', 880, t, 0.02, 0.33, 0.4); toneOsc(out, 'sine', 660, t + 0.22, 0.02, 0.33, 0.4); return 0.6; }
+  };
+  function tonePlay(name){
+    unlockAudio();
+    if(!audioCtx || !TONE_PLAY[name]) return 0;
+    try{ if(navigator.audioSession) navigator.audioSession.type = 'playback'; }catch(e){}
+    const out = toneOut();
+    const dur = TONE_PLAY[name](out, audioCtx.currentTime + 0.03);
+    setTimeout(() => { try{ out.disconnect(); if(navigator.audioSession) navigator.audioSession.type = 'auto'; }catch(e){} }, (dur + 0.5) * 1000);
+    return dur;
+  }
+  function toneForKind(kind){
+    const name = toneCfg[kind] || toneDefaults[kind] || 'bell';
+    tonePlay(name);
+    if(kind === 'thunder'){
+      if(navigator.vibrate) navigator.vibrate([400, 120, 400, 120, 800]);
+      setTimeout(() => tonePlay(name), 3200); // play the storm tone twice so it isn't missed
+    } else if(navigator.vibrate) navigator.vibrate(200);
+  }
+  (function toneUI(){
+    const opts = Object.entries(TONES).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+    document.querySelectorAll('.tone-sel').forEach(sel => {
+      sel.innerHTML = opts; sel.value = toneCfg[sel.dataset.kind];
+      sel.addEventListener('change', () => { toneCfg[sel.dataset.kind] = sel.value; toneSave(); tonePlay(sel.value); });
+    });
+    document.querySelectorAll('.tone-play').forEach(btn => btn.addEventListener('click', () => {
+      const d = tonePlay(toneCfg[btn.dataset.kind]);
+      btn.classList.add('playing'); setTimeout(() => btn.classList.remove('playing'), d * 1000);
+    }));
+    const vol = document.getElementById('toneVol'), txt = document.getElementById('toneVolTxt');
+    vol.value = toneCfg.vol; txt.textContent = toneCfg.vol + '%';
+    vol.addEventListener('input', () => { toneCfg.vol = +vol.value; txt.textContent = vol.value + '%'; });
+    vol.addEventListener('change', () => { toneSave(); tonePlay('beep'); });
   })();
 
 })();
