@@ -335,7 +335,16 @@
   .link-card .arrow{ width:16px; height:16px; stroke:var(--text-3); stroke-width:2; fill:none; margin-inline-start:auto; transform:scaleX(-1); }
 
   /* ---------- weather map ---------- */
-  .map-chips{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+  .map-chips{ display:flex; gap:8px; flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; margin:0 0 10px; padding-bottom:2px; }
+  .map-chips::-webkit-scrollbar{ display:none; }
+  .map-chip{ flex-shrink:0; white-space:nowrap; }
+  .map-chip.on.owm{ background:linear-gradient(150deg,#b9a6ff,#6f7bff); color:#0b1030; }
+  .owm-legend{ display:flex; flex-direction:column; gap:6px; margin-bottom:10px; }
+  .owm-legend .row{ display:flex; align-items:center; gap:8px; font-size:.72rem; color:var(--text-2); }
+  .owm-legend .bar{ flex:1; height:8px; border-radius:4px; }
+  .owm-legend .nm{ min-width:74px; color:var(--text-1); font-weight:600; }
+  .map-wrap .leaflet-bar a, .map-wrap .leaflet-bar a:hover{ background:#16233b; color:#eef2f8; border-bottom-color:rgba(255,255,255,.1); }
+  .map-wrap .leaflet-bar{ border:1px solid rgba(255,255,255,.12) !important; box-shadow:0 6px 16px -6px rgba(0,0,0,.6); }
   .map-chip{ font:inherit; font-size:.78rem; font-weight:600; cursor:pointer; color:var(--text-2); padding:7px 12px; border-radius:99px;
     border:1px solid var(--line); background:rgba(255,255,255,.04); }
   .map-chip.on{ color:#06232a; border-color:transparent; background:linear-gradient(150deg,#7af0da,#2bb6c9); }
@@ -649,6 +658,11 @@
     <div class="map-chips">
       <button class="map-chip on" id="chipRadar" type="button">🌧️ رادار الأمطار</button>
       <button class="map-chip on thunder" id="chipThunder" type="button">⚡ الرعد والبرق</button>
+      <button class="map-chip" type="button" data-owm="clouds_new">☁️ السحب</button>
+      <button class="map-chip" type="button" data-owm="precipitation_new">💧 الأمطار المتوقعة</button>
+      <button class="map-chip" type="button" data-owm="temp_new">🌡️ الحرارة</button>
+      <button class="map-chip" type="button" data-owm="wind_new">💨 الرياح</button>
+      <button class="map-chip" type="button" data-owm="pressure_new">🔽 الضغط</button>
       <button class="map-chip" id="chipLocate" type="button">📍 موقعي</button>
     </div>
     <div class="map-wrap" dir="ltr">
@@ -660,6 +674,7 @@
       <input type="range" id="radarSlider" min="0" max="0" value="0" aria-label="وقت الرادار" />
       <div class="radar-time" id="radarTime">--:--</div>
     </div>
+    <div class="owm-legend" id="owmLegend"></div>
     <div class="map-legend">
       <span><span class="rbar"></span>شدة المطر</span>
       <span><i style="background:#ff4d6d"></i>عواصف رعدية متوقعة</span>
@@ -1998,7 +2013,7 @@
       try{ await loadLeaflet(); }
       catch(e){ setStatus('تعذّر تحميل مكتبة الخريطة، تأكد من الاتصال بالإنترنت'); return; }
       if(!$('wxMap').offsetWidth){ setTimeout(openMap, 150); return; } // wait until the tab is really visible
-      try{ buildMap(); }catch(e){ setStatus('خطأ في الخريطة: ' + (e && e.message ? e.message : e)); return; }
+      try{ buildMap(); applyOwm(); }catch(e){ setStatus('خطأ في الخريطة: ' + (e && e.message ? e.message : e)); return; }
       [60, 400, 900].forEach(t => setTimeout(() => map.invalidateSize(), t));
       if(Date.now() - radarLoadedAt > 10*60*1000) loadRadar();
       else if(showRadar) playRadar();
@@ -2170,6 +2185,63 @@
         L.circleMarker(ll, { radius:7, color:'#fff', weight:2, fillColor:'#2bb6c9', fillOpacity:1 }).addTo(map).bindPopup('موقعك الحالي');
       }, () => showToast('لم نتمكن من تحديد موقعك'), { enableHighAccuracy:true, timeout:10000 });
     });
+
+    // ---- OpenWeatherMap layers (clouds, precipitation, temperature, wind, pressure) ----
+    const OWM_KEY = '2b023c64a2a6459fab95ae69b9192396';
+    const OWM_INFO = {
+      clouds_new:        { name:'السحب',   bar:'linear-gradient(90deg,rgba(255,255,255,0),#fff)', from:'0%', to:'100%' },
+      precipitation_new: { name:'الأمطار', bar:'linear-gradient(90deg,rgba(120,160,255,.2),#6b8cff,#8a4dff,#e040fb)', from:'خفيف', to:'غزير' },
+      temp_new:          { name:'الحرارة', bar:'linear-gradient(90deg,#8e44ff,#3b82f6,#22c55e,#facc15,#f97316,#dc2626)', from:'-20°', to:'+40°' },
+      wind_new:          { name:'الرياح',  bar:'linear-gradient(90deg,rgba(255,255,255,.1),#c4b5fd,#8b5cf6,#5b21b6)', from:'هادئة', to:'قوية' },
+      pressure_new:      { name:'الضغط',   bar:'linear-gradient(90deg,#1e40af,#38bdf8,#f8fafc,#fb923c,#b91c1c)', from:'950', to:'1070 hPa' }
+    };
+    const owmOn = new Set(load('manakh_owm_layers', []));
+    const owmLayers = {};
+    let owmWarned = false;
+    function owmLayer(id){
+      if(!owmLayers[id]){
+        if(!map.getPane('owmPane')){ map.createPane('owmPane'); map.getPane('owmPane').style.zIndex = 340; }
+        const l = L.tileLayer('https://tile.openweathermap.org/map/' + id + '/{z}/{x}/{y}.png?appid=' + OWM_KEY, {
+          pane:'owmPane', opacity: id === 'clouds_new' ? 0.85 : 0.7, maxNativeZoom:9, maxZoom:11,
+          attribution:'Layers: <a href="https://openweathermap.org/" target="_blank">OpenWeather</a>'
+        });
+        let ok = false, bad = 0;
+        l.on('tileload', () => { ok = true; });
+        l.on('tileerror', () => {
+          if(ok || ++bad < 3 || owmWarned) return;
+          owmWarned = true;
+          setStatus('طبقات OpenWeather ما اشتغلت — المفتاح الجديد يحتاج لين ساعتين يتفعّل');
+          setTimeout(() => setStatus(''), 6000);
+        });
+        owmLayers[id] = l;
+      }
+      return owmLayers[id];
+    }
+    function paintOwmLegend(){
+      const el = $('owmLegend');
+      el.innerHTML = [...owmOn].filter(id => OWM_INFO[id]).map(id => {
+        const i = OWM_INFO[id];
+        return `<div class="row"><span class="nm">${i.name}</span><span>${i.from}</span><span class="bar" style="background:${i.bar}"></span><span>${i.to}</span></div>`;
+      }).join('');
+    }
+    function applyOwm(){
+      document.querySelectorAll('.map-chip[data-owm]').forEach(ch => {
+        const id = ch.dataset.owm, on = owmOn.has(id);
+        ch.classList.toggle('on', on); ch.classList.toggle('owm', on);
+        if(!map) return;
+        const l = owmLayer(id);
+        if(on && !map.hasLayer(l)) l.addTo(map);
+        if(!on && map.hasLayer(l)) map.removeLayer(l);
+      });
+      paintOwmLegend();
+    }
+    document.querySelectorAll('.map-chip[data-owm]').forEach(ch => ch.addEventListener('click', () => {
+      const id = ch.dataset.owm;
+      owmOn.has(id) ? owmOn.delete(id) : owmOn.add(id);
+      store('manakh_owm_layers', [...owmOn]);
+      applyOwm();
+    }));
+    applyOwm();
     setInterval(() => { if(map && $('page-weather').classList.contains('active') && $('page-weather')._tabs && $('page-weather')._tabs.current() === 'map'){ loadRadar(); loadThunder(); } }, 10*60*1000);
 
     // ================= ALERTS (thunder + rain) =================
@@ -2370,7 +2442,7 @@
       let sx = 0, sy = 0, track = false;
       panes.addEventListener('touchstart', e => {
         const t = e.target;
-        track = !(t.closest('#wxMap') || t.closest('input[type=range]') || t.closest('.qibla-stage'));
+        track = !(t.closest('#wxMap') || t.closest('input[type=range]') || t.closest('.qibla-stage') || t.closest('.map-chips'));
         sx = e.touches[0].clientX; sy = e.touches[0].clientY;
       }, { passive:true });
       panes.addEventListener('touchend', e => {
