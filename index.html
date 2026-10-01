@@ -448,6 +448,25 @@
   #alertBanner.storm{ background:linear-gradient(135deg,#6d28d9,#dc2626) !important; animation:stormPulse .5s ease-in-out 4; }
   #alertBanner.rainy{ background:linear-gradient(135deg,#1d4ed8,#0891b2) !important; }
   @keyframes stormPulse{ 0%,100%{ filter:brightness(1); } 50%{ filter:brightness(1.6); } }
+
+  /* ---------- religious occasions with live countdown ---------- */
+  .hijri-today{ display:flex; align-items:center; gap:12px; padding:14px; margin-bottom:12px; }
+  .hijri-today .ht-lbl{ font-size:.72rem; color:var(--text-2); } .hijri-today .ht-date{ font-size:1rem; font-weight:700; margin-top:2px; }
+  .occ-hero{ padding:16px; margin-bottom:12px; text-align:center;
+    background:radial-gradient(120% 100% at 50% 0%, rgba(255,207,122,.16), transparent 60%), linear-gradient(180deg,var(--bg-panel),var(--bg-panel-2)); border:1px solid rgba(255,207,122,.22); }
+  .occ-hero .oh-tag{ display:inline-block; font-size:.7rem; color:#ffcf7a; background:rgba(255,207,122,.12); padding:3px 10px; border-radius:99px; }
+  .occ-hero .oh-emoji{ font-size:2.2rem; margin:8px 0 2px; }
+  .occ-hero .oh-name{ font-size:1.25rem; font-weight:800; }
+  .occ-hero .oh-date{ font-size:.75rem; color:var(--text-2); margin-top:3px; }
+  .occ-hero .oh-count{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:14px; direction:rtl; }
+  .occ-hero .oh-count div{ background:rgba(255,255,255,.05); border:1px solid var(--line); border-radius:14px; padding:10px 4px; }
+  .occ-hero .oh-count b{ display:block; font-family:"Sora",sans-serif; font-size:1.45rem; font-variant-numeric:tabular-nums; }
+  .occ-hero .oh-count span{ font-size:.68rem; color:var(--text-2); }
+  .occ-hero.today{ border-color:rgba(62,224,143,.5); } .occ-hero .oh-today{ font-size:1.4rem; font-weight:800; color:#3ee08f; margin-top:12px; }
+  .occ-card .emo{ font-size:1.25rem; }
+  .occ-card .tick{ font-family:"Sora",sans-serif; font-size:.74rem; color:var(--cool-1); font-variant-numeric:tabular-nums; margin-top:2px; }
+  .occ-card .hdate{ font-size:.7rem; color:var(--text-2); margin-top:4px; }
+  .occ-card.is-today{ border-color:rgba(62,224,143,.5); } .occ-card.is-today .num{ color:#3ee08f; }
 </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" defer></script>
@@ -784,16 +803,13 @@
     <div class="alert-note" id="qiblaSrc" style="text-align:center">الموقع: مسقط</div>
   
     </div>
-    <div class="pane" data-pane="occ">    <div class="occ-grid">
-      <div class="card occ-card"><div class="icon3d amber"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5z"/></svg></div>
-        <div class="num" id="occFitrDays">171 يوم</div><div class="lbl2">عيد الفطر المبارك</div><div class="date" id="occFitrDate">9 مارس، 2027</div></div>
-      <div class="card occ-card"><div class="icon3d green"><svg viewBox="0 0 24 24"><path d="M21 12.5A8.5 8.5 0 1111.5 3a7 7 0 009.5 9.5z"/></svg></div>
-        <div class="num" id="occRamadanDays">142 يوم</div><div class="lbl2">شهر رمضان</div><div class="date" id="occRamadanDate">8 فبراير، 2027</div></div>
-      <div class="card occ-card"><div class="icon3d amber"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5z"/></svg></div>
-        <div class="num" id="occAdhaDays">239 يوم</div><div class="lbl2">عيد الأضحى المبارك</div><div class="date" id="occAdhaDate">16 مايو، 2027</div></div>
-      <div class="card occ-card"><div class="icon3d blue"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.5 7-11a7 7 0 10-14 0c0 4.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg></div>
-        <div class="num" id="occArafahDays">238 يوم</div><div class="lbl2">يوم عرفة</div><div class="date" id="occArafahDate">15 مايو، 2027</div></div>
+    <div class="pane" data-pane="occ">    <div class="card hijri-today">
+      <div class="icon3d green"><svg viewBox="0 0 24 24"><path d="M21 12.5A8.5 8.5 0 1111.5 3a7 7 0 009.5 9.5z"/></svg></div>
+      <div><div class="ht-lbl">التاريخ الهجري اليوم</div><div class="ht-date" id="hijriTodayTxt">—</div></div>
     </div>
+    <div class="card occ-hero" id="occHero"></div>
+    <div class="occ-grid" id="occGrid"></div>
+    <div class="alert-note" style="text-align:center; margin-top:12px">التواريخ تُحسب تلقائيًا كل سنة حسب تقويم أم القرى، وقد تختلف يومًا حسب رؤية الهلال في سلطنة عُمان.</div>
   
     </div>
     </div>
@@ -2626,6 +2642,97 @@
     vol.value = toneCfg.vol; txt.textContent = toneCfg.vol + '%';
     vol.addEventListener('input', () => { toneCfg.vol = +vol.value; txt.textContent = vol.value + '%'; });
     vol.addEventListener('change', () => { toneSave(); tonePlay('beep'); });
+  })();
+
+
+  // ---------- religious occasions: dates computed every year from the Hijri calendar + live countdown ----------
+  (function(){
+    const grid = document.getElementById('occGrid'), hero = document.getElementById('occHero');
+    if(!grid) return;
+    const OCC = [
+      { m:1,  d:1,  name:'رأس السنة الهجرية',        emo:'🌙', c:'green'  },
+      { m:1,  d:10, name:'يوم عاشوراء',              emo:'🤲', c:'slate'  },
+      { m:3,  d:12, name:'المولد النبوي الشريف',      emo:'✨', c:'gold'   },
+      { m:7,  d:27, name:'الإسراء والمعراج',          emo:'🕌', c:'violet' },
+      { m:8,  d:15, name:'ليلة النصف من شعبان',       emo:'🌕', c:'blue',  night:true },
+      { m:9,  d:1,  name:'بداية شهر رمضان',           emo:'🏮', c:'green'  },
+      { m:9,  d:27, name:'ليلة القدر (المتوقعة)',     emo:'⭐', c:'gold',  night:true },
+      { m:10, d:1,  name:'عيد الفطر المبارك',         emo:'🎉', c:'amber'  },
+      { m:12, d:1,  name:'العشر من ذي الحجة',         emo:'📿', c:'rose'   },
+      { m:12, d:9,  name:'يوم عرفة',                  emo:'⛰️', c:'blue'   },
+      { m:12, d:10, name:'عيد الأضحى المبارك',        emo:'🐑', c:'amber'  }
+    ];
+    const HM = ['محرم','صفر','ربيع الأول','ربيع الآخر','جمادى الأولى','جمادى الآخرة','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'];
+    let cal = 'islamic-umalqura';
+    try{ if(new Intl.DateTimeFormat('en-u-ca-' + cal).resolvedOptions().calendar !== cal) cal = 'islamic-civil'; }catch(e){ cal = 'islamic-civil'; }
+    let fNum, fTxt, fGreg;
+    try{
+      fNum = new Intl.DateTimeFormat('en-u-ca-' + cal, { day:'numeric', month:'numeric', year:'numeric' });
+      fTxt = new Intl.DateTimeFormat('ar-u-ca-' + cal + '-nu-latn', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+      fGreg = new Intl.DateTimeFormat('ar-u-nu-latn', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+    }catch(e){ return; }
+    const hij = d => { const p = {}; fNum.formatToParts(d).forEach(x => p[x.type] = x.value); return { y:parseInt(p.year,10), m:+p.month, d:+p.day }; };
+
+    let items = [], builtFor = '';
+    function build(){
+      const now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      // walk forward up to ~13 months and pick the first matching day for each occasion
+      const found = {};
+      for(let i = 0; i < 400 && Object.keys(found).length < OCC.length; i++){
+        const day = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+        const h = hij(day);
+        OCC.forEach((o, k) => { if(!found[k] && h.m === o.m && h.d === o.d) found[k] = { day, h }; });
+      }
+      items = OCC.map((o, k) => found[k] ? Object.assign({}, o, found[k]) : null).filter(Boolean).sort((a, b) => a.day - b.day);
+      document.getElementById('hijriTodayTxt').textContent = fTxt.format(today);
+      builtFor = today.toDateString();
+      render();
+    }
+    const pad = n => String(n).padStart(2, '0');
+    function parts(ms){ ms = Math.max(0, ms); const s = Math.floor(ms / 1000); return { d:Math.floor(s / 86400), h:Math.floor(s % 86400 / 3600), m:Math.floor(s % 3600 / 60), s:s % 60 }; }
+    const isToday = it => it.day.toDateString() === new Date().toDateString();
+    const hLabel = it => (it.night ? 'ليلة ' : '') + it.h.d + ' ' + HM[it.h.m - 1] + ' ' + it.h.y + ' هـ';
+
+    function render(){
+      if(!items.length){ hero.innerHTML = '<div class="oh-name">تعذّر حساب التواريخ على هذا الجهاز</div>'; return; }
+      const f = items[0];
+      hero.classList.toggle('today', isToday(f));
+      hero.innerHTML = `<span class="oh-tag">${isToday(f) ? 'مناسبة اليوم' : 'أقرب مناسبة'}</span>
+        <div class="oh-emoji">${f.emo}</div><div class="oh-name">${f.name}</div>
+        <div class="oh-date">${hLabel(f)} · ${fGreg.format(f.day)}</div>` +
+        (isToday(f) ? `<div class="oh-today">🎉 اليوم — كل عام وأنتم بخير</div>`
+          : `<div class="oh-count"><div><b id="ohD">0</b><span>يوم</span></div><div><b id="ohH">00</b><span>ساعة</span></div><div><b id="ohM">00</b><span>دقيقة</span></div><div><b id="ohS">00</b><span>ثانية</span></div></div>`);
+      grid.innerHTML = items.slice(1).map((it, k) => `
+        <div class="card occ-card${isToday(it) ? ' is-today' : ''}">
+          <div class="icon3d ${it.c}"><span class="emo">${it.emo}</span></div>
+          <div class="num" data-k="${k + 1}">—</div>
+          <div class="tick" data-t="${k + 1}"></div>
+          <div class="lbl2">${it.name}</div>
+          <div class="hdate">${hLabel(it)}</div>
+          <div class="date">${fGreg.format(it.day)}</div>
+        </div>`).join('');
+      tick();
+    }
+    function tick(){
+      if(new Date().toDateString() !== builtFor){ build(); return; } // a new day: recompute
+      const now = Date.now();
+      if(items[0] && !isToday(items[0])){
+        const p = parts(items[0].day - now);
+        const set = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+        set('ohD', p.d); set('ohH', pad(p.h)); set('ohM', pad(p.m)); set('ohS', pad(p.s));
+      }
+      grid.querySelectorAll('.num').forEach(el => {
+        const it = items[+el.dataset.k];
+        if(isToday(it)){ el.textContent = '🎉 اليوم'; return; }
+        const p = parts(it.day - now);
+        el.textContent = p.d + ' يوم';
+        const t = grid.querySelector(`.tick[data-t="${el.dataset.k}"]`);
+        if(t) t.textContent = pad(p.h) + ':' + pad(p.m) + ':' + pad(p.s);
+      });
+    }
+    build();
+    setInterval(() => { const sec = document.getElementById('page-prayer'); if(sec && sec.classList.contains('active')) tick(); }, 1000);
+    document.addEventListener('tabchange', e => { if(e.detail.tab === 'occ') tick(); });
   })();
 
 })();
