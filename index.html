@@ -467,6 +467,16 @@
   .occ-card .tick{ font-family:"Sora",sans-serif; font-size:.74rem; color:var(--cool-1); font-variant-numeric:tabular-nums; margin-top:2px; }
   .occ-card .hdate{ font-size:.7rem; color:var(--text-2); margin-top:4px; }
   .occ-card.is-today{ border-color:rgba(62,224,143,.5); } .occ-card.is-today .num{ color:#3ee08f; }
+  .prayer-info{ text-align:center; font-size:.78rem; color:var(--text-1); margin-top:12px; line-height:1.8; }
+  .prayer-info span{ font-size:.7rem; color:var(--text-3); }
+  #nextPrayerEta{ font-family:"Sora","IBM Plex Sans Arabic",sans-serif; font-variant-numeric:tabular-nums; direction:rtl; }
+  .anwaa-cd{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:12px; }
+  .anwaa-cd div{ background:rgba(255,255,255,.05); border:1px solid var(--line); border-radius:12px; padding:7px 2px; text-align:center; }
+  .anwaa-cd b{ display:block; font-family:"Sora",sans-serif; font-size:1.15rem; font-variant-numeric:tabular-nums; }
+  .anwaa-cd span{ font-size:.64rem; color:var(--text-2); }
+  .anwaa-cd-lbl{ font-size:.72rem; color:var(--text-2); margin-top:10px; }
+  .mansion-tile .md.next{ color:var(--cool-1); }
+  .mansion-tile .md .t{ font-family:"Sora",sans-serif; font-variant-numeric:tabular-nums; }
 </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" defer></script>
@@ -739,7 +749,7 @@
     <div class="tabs" role="tablist"><button class="tab on" type="button" data-tab="times">🕌 المواقيت</button><button class="tab" type="button" data-tab="qibla">🕋 القبلة</button><button class="tab" type="button" data-tab="occ">🌙 المناسبات</button></div>
     <div class="panes">
     <div class="pane" data-pane="times">
-    <p style="color:var(--text-2); font-size:.82rem; margin:-8px 0 16px;">حسابات حسب موقعك وتاريخ اليوم</p>
+    <p style="color:var(--text-2); font-size:.82rem; margin:-8px 0 16px;">تُحسب فلكيًا لمدينتك المختارة، وتتحدث تلقائيًا كل يوم</p>
 
     <div class="ticker-wrap">
       <div class="ticker-track" id="prayerTicker">
@@ -761,6 +771,7 @@
         <div data-name="المغرب"><div class="pn">المغرب</div><div class="pt">18:05</div></div>
         <div data-name="العشاء"><div class="pn">العشاء</div><div class="pt">19:35</div></div>
       </div>
+      <div class="prayer-info" id="prayerInfo"></div>
     </div>
 
 
@@ -1108,30 +1119,140 @@
     btn.addEventListener('click', ()=> showPage(btn.dataset.page));
   });
 
-  // ---------- live prayer times + moving ticker ----------
-  const prayerTimes = [
-    {name:'الفجر', h:4, m:36}, {name:'الظهر', h:12, m:0}, {name:'العصر', h:15, m:26},
-    {name:'المغرب', h:18, m:5}, {name:'العشاء', h:19, m:35}
-  ];
+  // ---------- live prayer times: calculated daily for the selected city ----------
+  const PRAYER_CITY = {
+    'مسقط':['Asia/Muscat',23.588,58.383,'oman'], 'الرياض':['Asia/Riyadh',24.714,46.675,'uaq'], 'جدة':['Asia/Riyadh',21.486,39.193,'uaq'],
+    'دبي':['Asia/Dubai',25.205,55.271,'uae'], 'أبوظبي':['Asia/Dubai',24.454,54.377,'uae'], 'الدوحة':['Asia/Qatar',25.285,51.531,'qatar'],
+    'المنامة':['Asia/Bahrain',26.229,50.586,'oman'], 'الكويت':['Asia/Kuwait',29.376,47.977,'kuwait'], 'القاهرة':['Africa/Cairo',30.044,31.236,'egypt'],
+    'عمّان':['Asia/Amman',31.954,35.911,'mwl'], 'بيروت':['Asia/Beirut',33.894,35.502,'mwl'], 'بغداد':['Asia/Baghdad',33.315,44.366,'mwl'],
+    'الرباط':['Africa/Casablanca',34.021,-6.842,'morocco'], 'تونس':['Africa/Tunis',36.807,10.182,'oman'], 'الجزائر':['Africa/Algiers',36.754,3.059,'mwl'],
+    'دمشق':['Asia/Damascus',33.514,36.277,'mwl'], 'لندن':['Europe/London',51.507,-0.128,'isna'], 'نيويورك':['America/New_York',40.713,-74.006,'isna'],
+    'طوكيو':['Asia/Tokyo',35.676,139.650,'mwl'], 'باريس':['Europe/Paris',48.857,2.352,'isna'], 'إسطنبول':['Europe/Istanbul',41.008,28.978,'turkey'],
+    'برلين':['Europe/Berlin',52.520,13.405,'isna'], 'موسكو':['Europe/Moscow',55.756,37.617,'isna'], 'دلهي':['Asia/Kolkata',28.614,77.209,'karachi']
+  };
+  const PRAYER_METHODS = {
+    oman:   { fajr:18,   isha:18,   name:'زاوية 18° للفجر والعشاء' },
+    uaq:    { fajr:18.5, ishaMin:90, name:'أم القرى' },
+    uae:    { fajr:18.2, isha:18.2, name:'الهيئة العامة للشؤون الإسلامية (الإمارات)' },
+    qatar:  { fajr:18,   ishaMin:90, name:'وزارة الأوقاف القطرية' },
+    kuwait: { fajr:18,   isha:17.5, name:'وزارة الأوقاف الكويتية' },
+    egypt:  { fajr:19.5, isha:17.5, name:'الهيئة المصرية العامة للمساحة' },
+    morocco:{ fajr:19,   isha:17,   name:'وزارة الأوقاف المغربية' },
+    turkey: { fajr:18,   isha:17,   name:'رئاسة الشؤون الدينية التركية' },
+    karachi:{ fajr:18,   isha:18,   name:'جامعة العلوم الإسلامية (كراتشي)' },
+    isna:   { fajr:15,   isha:15,   name:'الجمعية الإسلامية لأمريكا الشمالية' },
+    mwl:    { fajr:18,   isha:17,   name:'رابطة العالم الإسلامي' }
+  };
+  const PRAYER_NAMES = ['الفجر','الظهر','العصر','المغرب','العشاء'];
+  const prayerTimes = PRAYER_NAMES.map((n, i) => ({ name:n, h:[4,12,15,18,19][i], m:0 }));
+  let prayerSunriseMin = 6 * 60, prayerDayKey = '', prayerTomorrowFajr = 0, prayerCityInfo = null;
+
+  const pdr = d => d * Math.PI / 180, prd = r => r * 180 / Math.PI;
+  const pSin = d => Math.sin(pdr(d)), pCos = d => Math.cos(pdr(d)), pTan = d => Math.tan(pdr(d));
+  const pAsin = x => prd(Math.asin(x)), pAcos = x => prd(Math.acos(x)), pAtan2 = (y, x) => prd(Math.atan2(y, x));
+  const pFix = (a, b) => { a = a - b * Math.floor(a / b); return a < 0 ? a + b : a; };
+  function pJulian(y, m, d){
+    if(m <= 2){ y -= 1; m += 12; }
+    const A = Math.floor(y / 100), B = 2 - A + Math.floor(A / 4);
+    return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + B - 1524.5;
+  }
+  function pSun(jd){
+    const D = jd - 2451545.0, g = pFix(357.529 + 0.98560028 * D, 360), q = pFix(280.459 + 0.98564736 * D, 360);
+    const L = pFix(q + 1.915 * pSin(g) + 0.020 * pSin(2 * g), 360), e = 23.439 - 0.00000036 * D;
+    const RA = pFix(pAtan2(pCos(e) * pSin(L), pCos(L)) / 15, 24);
+    return { decl: pAsin(pSin(e) * pSin(L)), eqt: q / 15 - RA };
+  }
+  // offset (hours) of an IANA time zone on a given date
+  function pTzOffset(tz, date){
+    try{
+      const p = {}; new Intl.DateTimeFormat('en-US', { timeZone:tz, hourCycle:'h23', year:'numeric', month:'numeric', day:'numeric', hour:'numeric', minute:'numeric' })
+        .formatToParts(date).forEach(x => p[x.type] = x.value);
+      const asUTC = Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour % 24, +p.minute);
+      return Math.round((asUTC - date.getTime()) / 60000) / 60;
+    }catch(e){ return -date.getTimezoneOffset() / 60; }
+  }
+  function pCityNow(tz){
+    const p = {}; new Intl.DateTimeFormat('en-US', { timeZone:tz, hourCycle:'h23', year:'numeric', month:'numeric', day:'numeric', hour:'numeric', minute:'numeric', second:'numeric' })
+      .formatToParts(new Date()).forEach(x => p[x.type] = x.value);
+    return { y:+p.year, mo:+p.month, d:+p.day, min:(+p.hour % 24) * 60 + (+p.minute) + (+p.second) / 60 };
+  }
+  // returns minutes after local midnight for fajr, sunrise, dhuhr, asr, maghrib, isha
+  function pCompute(y, mo, d, lat, lng, tz, method, ramadan){
+    const jd = pJulian(y, mo, d) - lng / (15 * 24);
+    const mid = t => pFix(12 - pSun(jd + t).eqt, 24);
+    const angleT = (ang, t, ccw) => {
+      const s = pSun(jd + t), noon = mid(t);
+      const T = pAcos((-pSin(ang) - pSin(s.decl) * pSin(lat)) / (pCos(s.decl) * pCos(lat))) / 15;
+      return noon + (ccw ? -T : T);
+    };
+    const asrT = t => { const s = pSun(jd + t); return angleT(-prd(Math.atan(1 / (1 + pTan(Math.abs(lat - s.decl))))), t); };
+    let t = { fajr:5, sunrise:6, dhuhr:12, asr:13, sunset:18, isha:18 };
+    for(let k = 0; k < 2; k++){
+      t = {
+        fajr: angleT(method.fajr, t.fajr / 24, true),
+        sunrise: angleT(0.833, t.sunrise / 24, true),
+        dhuhr: mid(t.dhuhr / 24),
+        asr: asrT(t.asr / 24),
+        sunset: angleT(0.833, t.sunset / 24),
+        isha: method.ishaMin ? 0 : angleT(method.isha, t.isha / 24)
+      };
+    }
+    if(method.ishaMin) t.isha = t.sunset + (method.ishaMin + (ramadan ? 30 : 0)) / 60;
+    // high latitudes: if twilight never ends, use the angle-based share of the night
+    const night = pFix(t.sunrise - t.sunset, 24);
+    if(isNaN(t.fajr) || pFix(t.sunrise - t.fajr, 24) > method.fajr / 60 * night) t.fajr = t.sunrise - method.fajr / 60 * night;
+    if(!method.ishaMin && (isNaN(t.isha) || pFix(t.isha - t.sunset, 24) > method.isha / 60 * night)) t.isha = t.sunset + method.isha / 60 * night;
+    const adj = tz - lng / 15;
+    const toMin = h => Math.round(pFix(h + adj, 24) * 60);
+    return { fajr:toMin(t.fajr), sunrise:toMin(t.sunrise), dhuhr:toMin(t.dhuhr + 1 / 60), asr:toMin(t.asr), maghrib:toMin(t.sunset), isha:toMin(t.isha) };
+  }
+  function pIsRamadan(date){
+    try{ return new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', { month:'numeric' }).format(date) === '9'; }catch(e){ return false; }
+  }
+  const pHM = m => String(Math.floor(m / 60) % 24).padStart(2, '0') + ':' + String(Math.round(m % 60)).padStart(2, '0');
+
+  function computePrayers(){
+    let cityName = 'مسقط';
+    try{ if(selectedCityRef && PRAYER_CITY[selectedCityRef.name]) cityName = selectedCityRef.name; }catch(e){}
+    const [tz, lat, lng, mk] = PRAYER_CITY[cityName], method = PRAYER_METHODS[mk];
+    const now = pCityNow(tz), date = new Date(Date.UTC(now.y, now.mo - 1, now.d, 12));
+    const off = pTzOffset(tz, date);
+    const r = pCompute(now.y, now.mo, now.d, lat, lng, off, method, pIsRamadan(date));
+    const tmr = new Date(Date.UTC(now.y, now.mo - 1, now.d + 1, 12));
+    prayerTomorrowFajr = pCompute(tmr.getUTCFullYear(), tmr.getUTCMonth() + 1, tmr.getUTCDate(), lat, lng, pTzOffset(tz, tmr), method, pIsRamadan(tmr)).fajr;
+    [r.fajr, r.dhuhr, r.asr, r.maghrib, r.isha].forEach((m, i) => { prayerTimes[i].h = Math.floor(m / 60); prayerTimes[i].m = m % 60; });
+    prayerSunriseMin = r.sunrise;
+    prayerCityInfo = { name:cityName, tz, method:method.name, sunrise:r.sunrise };
+    prayerDayKey = cityName + '|' + now.y + '-' + now.mo + '-' + now.d;
+    document.querySelectorAll('#prayerTimesRow > div').forEach((el, i) => { const pt = el.querySelector('.pt'); if(pt) pt.textContent = pHM(prayerTimes[i].h * 60 + prayerTimes[i].m); });
+    const info = document.getElementById('prayerInfo');
+    if(info) info.innerHTML = '🌅 الشروق <b dir="ltr">' + pHM(r.sunrise) + '</b> · ' + cityName + '<br><span>طريقة الحساب: ' + method.name + '</span>';
+    if(typeof renderStarHours === 'function') try{ renderStarHours(); }catch(e){}
+  }
   function updatePrayer(){
-    const now = new Date();
-    const nowMins = now.getHours()*60 + now.getMinutes();
-    let next = prayerTimes.find(p => (p.h*60+p.m) > nowMins);
-    if(!next) next = prayerTimes[0];
-    let diff = (next.h*60+next.m) - nowMins;
-    if(diff <= 0) diff += 24*60;
-    const hh = Math.floor(diff/60), mm = diff%60;
-    let eta = hh>0 ? ('بعد ' + hh + ' ساعة' + (mm>0 ? (' و' + mm + ' دقيقة') : '')) : ('بعد ' + mm + ' دقيقة');
+    let cityName = 'مسقط';
+    try{ if(selectedCityRef && PRAYER_CITY[selectedCityRef.name]) cityName = selectedCityRef.name; }catch(e){}
+    const tz = PRAYER_CITY[cityName][0], now = pCityNow(tz);
+    if(prayerDayKey !== cityName + '|' + now.y + '-' + now.mo + '-' + now.d) computePrayers();
+    let next = prayerTimes.find(p => p.h * 60 + p.m > now.min), diff;
+    if(next) diff = next.h * 60 + next.m - now.min;
+    else { next = prayerTimes[0]; diff = 24 * 60 - now.min + prayerTomorrowFajr; }
+    const secs = Math.max(0, Math.floor(diff * 60)), hh = Math.floor(secs / 3600), mm = Math.floor(secs % 3600 / 60), ss = secs % 60;
+    const eta = 'بعد ' + String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0') + ':' + String(ss).padStart(2, '0');
     document.getElementById('nextPrayerName').textContent = next.name;
     document.getElementById('nextPrayerEta').textContent = eta;
-    document.querySelectorAll('#prayerTimesRow > div').forEach(d=>{
-      d.classList.toggle('pactive', d.dataset.name === next.name);
-    });
-    const tickerText = 'الصلاة القادمة: ' + next.name + ' — ' + eta;
-    document.getElementById('prayerTicker').innerHTML = '<span>'+tickerText+'</span><span>'+tickerText+'</span>';
+    document.querySelectorAll('#prayerTimesRow > div').forEach(d => d.classList.toggle('pactive', d.dataset.name === next.name));
+    const words = hh > 0 ? ('بعد ' + hh + ' ساعة' + (mm > 0 ? ' و' + mm + ' دقيقة' : '')) : ('بعد ' + mm + ' دقيقة');
+    const tickerText = 'الصلاة القادمة: ' + next.name + ' — ' + words;
+    const tk = document.getElementById('prayerTicker');
+    if(tk.dataset.t !== tickerText){ tk.dataset.t = tickerText; tk.innerHTML = '<span>' + tickerText + '</span><span>' + tickerText + '</span>'; }
   }
-  updatePrayer();
-  setInterval(updatePrayer, 30000);
+  setTimeout(() => { computePrayers(); updatePrayer(); }, 0);
+  setInterval(() => {
+    const sec = document.getElementById('page-prayer');
+    if(sec && sec.classList.contains('active')) updatePrayer();
+    else if(Date.now() % 30000 < 1000) updatePrayer();
+  }, 1000);
 
   // ---------- home gauges / sim data ----------
   const ranges = { indoor:[16,32], outdoor:[10,48], humidity:[0,100] };
@@ -1568,34 +1689,34 @@
 
   // ---------- الأنواء: traditional agricultural star calendar (28 anwaa) ----------
   const anwaaData = [
-    {name:'الرشا (بطن الحوت)', translit:'Al-Risha', start:[3,1], end:[3,13], season:'الربيع', star:'بطن الحوت (فوم الحوت)', desc:'نجم منفرد خافت يؤذن بانقضاء البرد تدريجيًا.', agri:'بداية حرث الأرض وتجهيزها للزراعة الصيفية.'},
-    {name:'الشرطان', translit:'Al-Sharatan', start:[3,14], end:[3,26], season:'الربيع', star:'قرنا الحمل', desc:'نجمان صغيران يبشران باعتدال الجو.', agri:'غرس الخضروات الصيفية المبكرة.'},
-    {name:'البطين', translit:'Al-Butain', start:[3,27], end:[4,8], season:'الربيع', star:'بطن الحمل', desc:'نجوم خافتة تشير لبداية ثبات الحرارة نهارًا.', agri:'ري منتظم لبقايا المزروعات الشتوية.'},
-    {name:'الثريا', translit:'Al-Thurayya', start:[4,9], end:[4,22], season:'الربيع', star:'الثريا (Pleiades)', desc:'تجمع نجمي شهير من أبرز منازل القمر.', agri:'بداية جني بعض المحاصيل الشتوية المتأخرة.'},
-    {name:'الدبران', translit:'Al-Dabaran', start:[4,23], end:[5,5], season:'الربيع', star:'الدبران (عين الثور)', desc:'نجم أحمر ساطع يتبع الثريا في الظهور.', agri:'تشتد الحرارة تدريجيًا، يُنصح بالري المسائي.'},
-    {name:'الهقعة', translit:'Al-Haqah', start:[5,6], end:[5,18], season:'الربيع', star:'رأس الجوزاء', desc:'ثلاثة نجوم متقاربة قرب كوكبة الجبار.', agri:'بداية موسم تلقيح النخيل.'},
-    {name:'الهنعة', translit:'Al-Hanah', start:[5,19], end:[5,31], season:'الربيع', star:'كف الجوزاء', desc:'نجوم خافتة قرب منزلة الهقعة.', agri:'استمرار العناية بالنخيل وتقليم الأشجار.'},
-    {name:'الذراع', translit:'Al-Dhira', start:[6,1], end:[6,13], season:'الصيف', star:'كوكبة التوأمين', desc:'بداية اشتداد حرارة الصيف تدريجيًا.', agri:'تقليل الري الظهري وزيادة الري الليلي.'},
-    {name:'النثرة', translit:'Al-Nathrah', start:[6,14], end:[6,26], season:'الصيف', star:'خلية السرطان (M44)', desc:'تجمع نجمي خافت يُعرف بالمعلف.', agri:'بداية نضج بعض أصناف التمر المبكرة.'},
-    {name:'الطرف', translit:'Al-Tarf', start:[6,27], end:[7,9], season:'الصيف', star:'طرف الأسد', desc:'نجمان خافتان في رأس كوكبة الأسد.', agri:'أوج الحر، يُنصح بتظليل المزروعات الحساسة.'},
-    {name:'الجبهة', translit:'Al-Jabhah', start:[7,10], end:[7,22], season:'الصيف', star:'جبهة الأسد', desc:'أربعة نجوم مضيئة بارزة في رأس الأسد.', agri:'استمرار قطاف التمور المبكرة.'},
-    {name:'الزبرة', translit:'Al-Zubrah', start:[7,23], end:[8,4], season:'الصيف', star:'دلتا وثيتا الأسد (زوسما)', desc:'كوكبان نيّران، فيه تبدأ هجرة بعض الطيور.', agri:'يستمر غرس بعض الخضروات الصيفية المتأخرة.'},
-    {name:'الصرفة', translit:'Al-Sarfah', start:[8,5], end:[8,17], season:'الصيف', star:'قلب الأسد (Regulus)', desc:'نجم منفرد لامع يُقال إنه يصرف الحر تدريجيًا.', agri:'بداية تراجع شدة الحر مساءً.'},
-    {name:'العواء', translit:'Al-Awwa', start:[8,18], end:[8,31], season:'الصيف', star:'نجوم العذراء الشمالية', desc:'خمسة نجوم متقاربة تشبه هيئة عواء.', agri:'موسم جني التمور الرئيسي.'},
-    {name:'السماك', translit:'Al-Simak', start:[9,1], end:[9,13], season:'الخريف', star:'السماك الأعزل (Spica)', desc:'نجم أزرق ساطع منفرد لا سلاح له.', agri:'بداية اعتدال الجو ليلًا.'},
-    {name:'الغفر', translit:'Al-Ghafr', start:[9,14], end:[9,26], season:'الخريف', star:'نجوم خافتة بين العذراء والميزان', desc:'ثلاثة نجوم خافتة سُمّيت بذلك لخفائها.', agri:'مناسب لغرس الفسائل ونقلها.'},
-    {name:'الزبانا', translit:'Al-Zubana', start:[9,27], end:[10,9], season:'الخريف', star:'كفتا الميزان', desc:'نجمان يمثلان كفتي الميزان.', agri:'بداية موسم الحرث الشتوي.'},
-    {name:'الإكليل', translit:'Al-Iklil', start:[10,10], end:[10,22], season:'الخريف', star:'إكليل العقرب', desc:'ثلاثة نجوم متقاربة تشبه التاج.', agri:'غرس الحبوب الشتوية كالقمح والشعير.'},
-    {name:'القلب', translit:'Al-Qalb', start:[10,23], end:[11,4], season:'الخريف', star:'قلب العقرب (أنتاريس)', desc:'نجم أحمر عملاق ساطع.', agri:'استمرار زراعة المحاصيل الشتوية.'},
-    {name:'الشولة', translit:'Al-Shaulah', start:[11,5], end:[11,17], season:'الخريف', star:'ذنب العقرب', desc:'نجمان متقاربان في نهاية كوكبة العقرب.', agri:'غالبًا ما تبدأ فيه أولى الأمطار.'},
-    {name:'النعائم', translit:'Al-Naaim', start:[11,18], end:[11,30], season:'الخريف', star:'نعائم القوس', desc:'ثمانية نجوم خافتة تشبه هيئة النعام.', agri:'مناسب لزراعة الخضروات الشتوية.'},
-    {name:'البلدة', translit:'Al-Baldah', start:[12,1], end:[12,13], season:'الشتاء', star:'منطقة خالية من النجوم اللامعة', desc:'سُمّيت بالبلدة لخلوها من كواكب بارزة.', agri:'تشتد برودة الليل، حماية الشتلات الصغيرة.'},
-    {name:'سعد الذابح', translit:'Saad al-Dhabih', start:[12,14], end:[12,26], season:'الشتاء', star:'نجما الجدي', desc:'نجمان يشبهان الذابح وأداته.', agri:'موسم مناسب لزراعة البصل والثوم.'},
-    {name:'سعد بلع', translit:'Saad Bula', start:[12,27], end:[1,8], season:'الشتاء', star:'نجوم خافتة في الدلو', desc:'نجم يبدو وكأنه يبتلع نجمًا مجاورًا.', agri:'استمرار العناية بالمحاصيل الشتوية.'},
-    {name:'سعد السعود', translit:'Saad al-Suud', start:[1,9], end:[1,21], season:'الشتاء', star:'نجوم في الدلو', desc:'يُعد من أسعد المنازل عند العرب قديمًا.', agri:'وقت جيد لزراعة الفول والبازلاء.'},
-    {name:'سعد الأخبية', translit:'Saad al-Akhbiyah', start:[1,22], end:[2,3], season:'الشتاء', star:'أربعة نجوم حول خامس أخفى', desc:'تشبه الخيام المحيطة بخيمة صغيرة.', agri:'بداية الاستعداد لموسم الربيع.'},
-    {name:'الفرغ المقدم', translit:'Al-Fargh al-Muqaddam', start:[2,4], end:[2,16], season:'الشتاء', star:'الجزء الأول من مربع فرس الجرة', desc:'نجمان يمثلان الزاوية الأولى من المربع.', agri:'مناسب لتجهيز الأرض لموسم الربيع.'},
-    {name:'الفرغ المؤخر', translit:'Al-Fargh al-Mu\u2019akhkhar', start:[2,17], end:[2,28], season:'الشتاء', star:'الجزء الثاني من مربع فرس الجرة', desc:'آخر منازل السنة، يغلق دورة الأنواء.', agri:'نهاية الشتاء، تجهيز نهائي لموسم الزراعة الربيعية.'}
+    {name:'الشرطين', translit:'Al-Sharatain', start:[5,12], end:[5,24], season:'الربيع', star:'قرنا الحمل (الشرطان)', desc:'بداية اشتداد الحر وارتفاع درجات الحرارة نهارًا، مع نشاط الرياح الشمالية الغربية أحيانًا.', agri:'ري النخيل بانتظام، وبداية اكتمال نمو البسر.'},
+    {name:'البطين', translit:'Al-Butain', start:[5,25], end:[6,6], season:'الربيع', star:'بطن الحمل (ثلاثة نجوم خافتة)', desc:'آخر نجوم الربيع، يشتد فيه الحر وتجف الأرض وتنشط الرياح الجافة.', agri:'متابعة ري النخيل والأشجار، ووقاية الثمار من الحر.'},
+    {name:'الثريا', translit:'Al-Thurayya', start:[6,7], end:[6,19], season:'الصيف', star:'عنقود الثريا في كوكبة الثور', desc:'أول نجوم الصيف، تبدأ رياح البوارح والسموم ويرتفع الحر كثيرًا.', agri:'بداية نضج بواكير الرطب.'},
+    {name:'الدبران', translit:'Al-Dabaran', start:[6,20], end:[7,2], season:'الصيف', star:'الدبران (عين الثور)', desc:'فيه أطول نهار في السنة، حر شديد وسموم وجفاف.', agri:'موسم القيظ وجني الرطب، مع ري متكرر للمزروعات.'},
+    {name:'الهقعة', translit:'Al-Haqah', start:[7,3], end:[7,15], season:'الصيف', star:'رأس الجوزاء (ثلاثة نجوم صغيرة)', desc:'حرارة شديدة مع ارتفاع الرطوبة على السواحل.', agri:'استمرار جني الرطب وتجفيف التمور.'},
+    {name:'الهنعة', translit:'Al-Hanah', start:[7,16], end:[7,28], season:'الصيف', star:'نجمان في قدم التوأمين', desc:'ذروة الحر والرطوبة، وقد تتكون سحب ركامية على الجبال.', agri:'جني التمور وتغطية العذوق، والري في الصباح الباكر أو المساء.'},
+    {name:'الذراع', translit:'Al-Dhira', start:[7,29], end:[8,10], season:'الصيف', star:'رأسا التوأمين (كاستور وبولكس)', desc:'حر ورطوبة عالية، وتكثر الأمطار الصيفية على المرتفعات.', agri:'صرام النخيل وتخزين التمور.'},
+    {name:'النثرة', translit:'Al-Nathrah', start:[8,11], end:[8,23], season:'الصيف', star:'خلية النحل (M44) في كوكبة السرطان', desc:'أشد أيام الرطوبة وتعرف بجمرة القيظ.', agri:'استمرار صرام النخيل، وتجهيز المشاتل للموسم الشتوي.'},
+    {name:'الطرفة', translit:'Al-Tarfah', start:[8,24], end:[9,5], season:'الصيف', star:'عينا الأسد (كابا ولامدا الأسد)', desc:'أول نجوم سهيل، تنكسر فيه حدة الحر ليلًا مع استمرار الحرارة نهارًا.', agri:'بذر البذور الشتوية المبكرة في المشاتل.'},
+    {name:'الجبهة', translit:'Al-Jabhah', start:[9,6], end:[9,19], season:'الخريف', star:'جبهة الأسد (قلب الأسد - ريجولوس)', desc:'أول نجوم الخريف، يبرد الليل ويتحسن الطقس تدريجيًا.', agri:'زراعة الخضروات الشتوية وتقليم الأشجار.'},
+    {name:'الزبرة', translit:'Al-Zubrah', start:[9,20], end:[10,2], season:'الخريف', star:'زبرة الأسد (دلتا وثيتا الأسد)', desc:'يتساوى فيه الليل والنهار، وتزداد برودة الليل.', agri:'زراعة البواكير والخضار الشتوية.'},
+    {name:'الصرفة', translit:'Al-Sarfah', start:[10,3], end:[10,15], season:'الخريف', star:'ذنب الأسد (دينيبولا)', desc:'آخر نجوم سهيل، سميت لانصراف الحر عند طلوعها؛ يعتدل الجو نهارًا ويبرد ليلًا.', agri:'غرس النخيل والأشجار، وزراعة الخضار الشتوية.'},
+    {name:'العواء', translit:'Al-Awwa', start:[10,16], end:[10,28], season:'الخريف', star:'خمسة نجوم في كوكبة العذراء', desc:'أول نجوم الوسم، تبدأ فيه الأمطار وتلطف الأجواء.', agri:'بداية زراعة القمح والشعير وغرس الأشجار.'},
+    {name:'السماك', translit:'Al-Simak', start:[10,29], end:[11,10], season:'الخريف', star:'السماك الأعزل (سبيكا)', desc:'من أجمل أيام الوسم، أمطاره محمودة والجو معتدل.', agri:'أفضل وقت لزراعة الحبوب.'},
+    {name:'الغفر', translit:'Al-Ghafr', start:[11,11], end:[11,23], season:'الخريف', star:'ثلاثة نجوم خافتة في العذراء', desc:'تزداد البرودة ليلًا وتستمر أمطار الوسم.', agri:'زراعة الخضار والحبوب.'},
+    {name:'الزبانا', translit:'Al-Zubana', start:[11,24], end:[12,6], season:'الخريف', star:'زبانا العقرب (كفتا الميزان)', desc:'آخر نجوم الوسم والخريف، يزداد البرد تدريجيًا.', agri:'استمرار زراعة القمح والشعير.'},
+    {name:'الإكليل', translit:'Al-Iklil', start:[12,7], end:[12,19], season:'الشتاء', star:'إكليل العقرب (ثلاثة نجوم في رأسه)', desc:'أول المربعانية وبداية البرد الحقيقي.', agri:'تقليل الري وحماية الشتلات من البرد.'},
+    {name:'القلب', translit:'Al-Qalb', start:[12,20], end:[1,1], season:'الشتاء', star:'قلب العقرب (أنتاريس)', desc:'فيه أقصر نهار في السنة، ويشتد البرد.', agri:'غرس الأشجار المتساقطة الأوراق.'},
+    {name:'الشولة', translit:'Al-Shaulah', start:[1,2], end:[1,14], season:'الشتاء', star:'إبرة العقرب', desc:'آخر المربعانية، من أشد أيام البرد.', agri:'تقليم الأشجار والعناية بالمحاصيل الشتوية.'},
+    {name:'النعائم', translit:'Al-Naaim', start:[1,15], end:[1,27], season:'الشتاء', star:'نجوم في كوكبة القوس', desc:'أول الشبط، برد قارس ورياح شمالية باردة.', agri:'تسميد النخيل وتنظيفه.'},
+    {name:'البلدة', translit:'Al-Baldah', start:[1,28], end:[2,9], season:'الشتاء', star:'منطقة خالية من النجوم في القوس', desc:'برد مع بداية دفء النهار تدريجيًا.', agri:'بداية تلقيح النخيل المبكر.'},
+    {name:'سعد الذابح', translit:'Saad al-Dhabih', start:[2,10], end:[2,22], season:'الشتاء', star:'نجمان في كوكبة الجدي', desc:'أول العقارب، برد متقطع مع تقلبات في الطقس.', agri:'تلقيح النخيل.'},
+    {name:'سعد بلع', translit:'Saad Bula', start:[2,23], end:[3,7], season:'الشتاء', star:'نجوم في كوكبة الدلو', desc:'يعتدل الجو وتتحرك العصارة في النبات.', agri:'غرس الأشجار واستمرار تلقيح النخيل.'},
+    {name:'سعد السعود', translit:'Saad al-Suud', start:[3,8], end:[3,20], season:'الربيع', star:'نجوم في كوكبة الدلو', desc:'أول الربيع، يدفأ الجو وتخضر الأرض.', agri:'زراعة الخضروات الصيفية.'},
+    {name:'سعد الأخبية', translit:'Saad al-Akhbiyah', start:[3,21], end:[4,2], season:'الربيع', star:'أربعة نجوم في كوكبة الدلو', desc:'يتساوى الليل والنهار وتخرج الهوام من مخابئها.', agri:'زراعة البطيخ والخضار الصيفية.'},
+    {name:'المقدم', translit:'Al-Muqaddam', start:[4,3], end:[4,15], season:'الربيع', star:'الفرغ المقدم (نجمان من مربع الفرس الأعظم)', desc:'اعتدال مع بداية ارتفاع الحرارة، ونشاط الرياح والغبار.', agri:'زراعة الذرة والخضار الصيفية.'},
+    {name:'المؤخر', translit:'Al-Muakhkhar', start:[4,16], end:[4,28], season:'الربيع', star:'الفرغ المؤخر (نجمان من مربع الفرس الأعظم)', desc:'ترتفع الحرارة تدريجيًا، ويكثر الغبار أحيانًا.', agri:'خف ثمار النخيل.'},
+    {name:'الرشا', translit:'Al-Risha', start:[4,29], end:[5,11], season:'الربيع', star:'بطن الحوت (في المرأة المسلسلة)', desc:'نهاية الربيع، تزداد الحرارة ويقل الربيع.', agri:'ري النخيل بانتظام وتسميده.'}
   ];
 
   function anwaaDuration(a){
@@ -1631,11 +1752,13 @@
           <div class="anwaa-translit">${current.translit}</div>
           <div class="anwaa-progress"><div class="anwaa-progress-fill" style="width:${pct}%"></div></div>
           <div class="anwaa-daycount">اليوم ${daysIn} من أصل ${dur} يوم</div>
+          <div class="anwaa-cd-lbl">ينتهي ويبدأ ${anwaaData[(currentIdx+1)%anwaaData.length].name} بعد</div>
+          <div class="anwaa-cd" data-to="${currentEndDate.getTime()+1000}"><div><b class="d">0</b><span>يوم</span></div><div><b class="h">00</b><span>ساعة</span></div><div><b class="m">00</b><span>دقيقة</span></div><div><b class="s">00</b><span>ثانية</span></div></div>
         </div>
         <div class="anwaa-stats">
           <div class="anwaa-stat"><div class="lbl">البداية</div><div class="val">${fmt(current.start)}</div></div>
           <div class="anwaa-stat"><div class="lbl">النهاية</div><div class="val">${fmt(current.end)}</div></div>
-          <div class="anwaa-stat wide"><div class="lbl">المدة</div><div class="val">${dur} يوم — باقي ${left} يوم</div></div>
+          <div class="anwaa-stat wide"><div class="lbl">المدة</div><div class="val">${dur} يوم</div></div>
           <div class="anwaa-stat wide"><div class="lbl">الكوكبة</div><div class="val">${current.star}</div></div>
         </div>
         <div class="card">
@@ -1669,7 +1792,15 @@
 
     document.getElementById('anwaaList').innerHTML = anwaaData.map((a,i)=>{
       const isCur = i === currentIdx;
-      const md = isCur ? `<div class="md">باقي ${daysLeft(nowA, currentEndDate)} يوم</div>` : '';
+      let md;
+      if(isCur){
+        md = `<div class="md">باقي <span class="t" data-to="${currentEndDate.getTime()+1000}"></span></div>`;
+      } else {
+        const st = new Date(nowA.getFullYear(), a.start[0]-1, a.start[1]);
+        if(st <= nowA) st.setFullYear(st.getFullYear()+1);
+        const dd = Math.ceil((st - nowA) / 86400000);
+        md = `<div class="md next">يبدأ بعد ${dd} يوم</div>`;
+      }
       return `<div class="mansion-tile${isCur?' cur':''}"><div class="mn">${i+1}. ${a.name}</div><div class="mr">${fmt(a.start)} – ${fmt(a.end)}</div>${md}</div>`;
     }).join('');
   }
@@ -1692,7 +1823,7 @@
 
   function renderStarHours(){
     const nowD = new Date();
-    const sunriseMin = 6*60;         // 06:00 approximate sunrise
+    const sunriseMin = prayerSunriseMin; // real sunrise for the selected city
     const sunsetP = prayerTimes.find(p=>p.name==='المغرب');
     const sunsetMin = sunsetP.h*60 + sunsetP.m;
     const dayLen = (sunsetMin - sunriseMin) / 12;
@@ -2733,6 +2864,40 @@
     build();
     setInterval(() => { const sec = document.getElementById('page-prayer'); if(sec && sec.classList.contains('active')) tick(); }, 1000);
     document.addEventListener('tabchange', e => { if(e.detail.tab === 'occ') tick(); });
+  })();
+
+
+  // ---------- anwaa live countdowns ----------
+  (function(){
+    const pad = n => String(n).padStart(2,'0');
+    let lastName = null;
+    function tickAnwaa(){
+      const now = Date.now();
+      let expired = false;
+      document.querySelectorAll('.anwaa-cd[data-to]').forEach(el => {
+        const ms = +el.dataset.to - now; if(ms <= 0) expired = true;
+        const s = Math.max(0, Math.floor(ms/1000));
+        el.querySelector('.d').textContent = Math.floor(s/86400);
+        el.querySelector('.h').textContent = pad(Math.floor(s%86400/3600));
+        el.querySelector('.m').textContent = pad(Math.floor(s%3600/60));
+        el.querySelector('.s').textContent = pad(s%60);
+      });
+      document.querySelectorAll('.mansion-tile .t[data-to]').forEach(el => {
+        const s = Math.max(0, Math.floor((+el.dataset.to - now)/1000));
+        const d = Math.floor(s/86400);
+        el.textContent = (d ? d + ' يوم و ' : '') + pad(Math.floor(s%86400/3600)) + ':' + pad(Math.floor(s%3600/60)) + ':' + pad(s%60);
+      });
+      if(expired) renderAnwaa(); // a new mansion has begun
+    }
+    tickAnwaa();
+    setInterval(() => { const sec = document.getElementById('page-seasons'); if(sec && sec.classList.contains('active')) tickAnwaa(); }, 1000);
+    document.addEventListener('tabchange', e => { if(e.detail.tab === 'anwaa') tickAnwaa(); });
+  })();
+
+  // prayer times follow the chosen city
+  (function(){
+    const prev = selectCity;
+    selectCity = function(city){ prev(city); try{ computePrayers(); updatePrayer(); }catch(e){} };
   })();
 
 })();
