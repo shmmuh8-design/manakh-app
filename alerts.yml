@@ -1,0 +1,179 @@
+name: تنبيهات مناخ
+
+on:
+  schedule:
+    - cron: '5 * * * *'   # كل ساعة — GitHub قد يتأخر بضع دقائق
+  workflow_dispatch:        # تشغيل يدوي = إشعار تجريبي
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: فحص الطقس والبحر والقمر والطوالع
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          EVENT: ${{ github.event_name }}
+          # ---- الموقع ----
+          CITY: 'مسقط'
+          LAT: '23.588'
+          LON: '58.383'
+          # المناطق اللي يفحص طقسها كل ساعة (الاسم:خط العرض,خط الطول)
+          AREAS: >-
+            مطرح:23.618,58.567;
+            مسقط القديمة:23.614,58.593;
+            روي:23.598,58.545;
+            القرم:23.616,58.48;
+            الخوير:23.596,58.43;
+            الغبرة:23.592,58.39;
+            بوشر:23.578,58.4;
+            العذيبة:23.59,58.364;
+            الأنصب:23.557,58.331;
+            العامرات:23.522,58.499;
+            الخوض:23.587,58.158;
+            الحيل:23.651,58.181;
+            السيب:23.67,58.189;
+            الموالح:23.627,58.25;
+            المعبيلة:23.636,58.118;
+            قريات:23.264,58.919
+          SEA_LAT: '23.64'       # نقطة البحر للمد والجزر
+          SEA_LON: '58.58'
+          TZ_OFFSET: '4'          # توقيت عُمان
+          DIGEST_HOUR: '8'        # وقت رسالة الصباح (القمر والطوالع)
+          # ---- التنبيهات: 1 تشغيل، 0 إيقاف ----
+          ALERT_WEATHER: '1'      # الرعد والبرق والمطر
+          ALERT_TIDES: '1'        # المد والجزر
+          ALERT_MOON: '1'         # أطوار القمر والتربيعات
+          ALERT_ANWAA: '1'        # الطوالع والأنواء
+        run: |
+          python3 - <<'PY'
+          import json, math, os, urllib.request, datetime as dt
+
+          TOPIC = os.environ.get('NTFY_TOPIC', '')
+          CITY = os.environ.get('CITY', 'مسقط')
+          LAT, LON = float(os.environ.get('LAT', '23.588')), float(os.environ.get('LON', '58.383'))
+          SEA_LAT, SEA_LON = float(os.environ.get('SEA_LAT', '23.64')), float(os.environ.get('SEA_LON', '58.58'))
+          TZ = dt.timezone(dt.timedelta(hours=float(os.environ.get('TZ_OFFSET', '4'))))
+          ON = lambda k: os.environ.get(k, '1') == '1'
+          MANUAL = os.environ.get('EVENT') == 'workflow_dispatch'
+          DIGEST_HOUR = int(os.environ.get('DIGEST_HOUR', '8'))   # morning message time (local)
+
+          def send(title, msg, tag, prio=4):
+              print('SEND', prio, title, '|', msg)
+              if not TOPIC or os.environ.get('DRY_RUN'): return
+              body = json.dumps({'topic': TOPIC, 'title': title, 'message': msg, 'priority': prio, 'tags': [tag]}).encode()
+              req = urllib.request.Request('https://ntfy.sh/', data=body, headers={'Content-Type': 'application/json'})
+              try: urllib.request.urlopen(req, timeout=20).read()
+              except Exception as e: print('ntfy error', e)
+
+          def get(url):
+              try:
+                  with urllib.request.urlopen(url, timeout=25) as r: return json.load(r)
+              except Exception as e:
+                  print('fetch error', url, e); return None
+
+          now = dt.datetime.now(dt.timezone.utc) if not os.environ.get('FAKE_NOW') else dt.datetime.fromisoformat(os.environ['FAKE_NOW'])
+          # the hourly slot this run belongs to (cron runs at :05) — keeps alerts from repeating if GitHub starts late
+          slot = now.replace(minute=5, second=0, microsecond=0)
+          if now.minute < 5: slot -= dt.timedelta(hours=1)
+          slot_end = slot + dt.timedelta(hours=1)
+          local = slot.astimezone(TZ)
+          morning = local.hour == DIGEST_HOUR
+          hm = lambda t: t.astimezone(TZ).strftime('%H:%M')
+
+          if MANUAL:
+              cats = [n for k, n in [('ALERT_WEATHER', 'الرعد والمطر'), ('ALERT_TIDES', 'المد والجزر'), ('ALERT_MOON', 'أطوار القمر'), ('ALERT_ANWAA', 'الطوالع والأنواء')] if ON(k)]
+              send('✅ تنبيهات مناخ شغالة', 'التنبيهات المفعّلة: ' + '، '.join(cats) + '. توصلك حتى والتطبيق مقفول.', 'white_check_mark', 3)
+
+          # ---------- 1) thunder & rain: every area, grouped into one message ----------
+          if ON('ALERT_WEATHER'):
+              areas = []
+              for part in os.environ.get('AREAS', '').split(';'):
+                  if ':' in part:
+                      n, xy = part.split(':', 1); la, lo = xy.split(',')
+                      areas.append((n.strip(), float(la), float(lo)))
+              if not areas: areas = [(CITY, LAT, LON)]
+              lats = ','.join(str(a[1]) for a in areas); lons = ','.join(str(a[2]) for a in areas)
+              d = get(f'https://api.open-meteo.com/v1/forecast?latitude={lats}&longitude={lons}&hourly=weather_code,precipitation_probability&forecast_hours=3&timezone=auto')
+              if isinstance(d, dict): d = [d]
+              thunder, rain, pmax = [], [], 0
+              is_rain = lambda c: 51 <= c <= 67 or 80 <= c <= 82
+              for (name, _, _), r in zip(areas, d or []):
+                  h = (r or {}).get('hourly') or {}
+                  codes = h.get('weather_code') or [0, 0]; probs = h.get('precipitation_probability') or [0, 0]
+                  cnow, cnext, pnext = codes[0] or 0, codes[1] or 0, probs[1] or 0
+                  print('weather', name, cnow, cnext, pnext)
+                  if cnext >= 95 and cnow < 95: thunder.append(name)
+                  elif is_rain(cnext) and not is_rain(cnow) and cnow < 95: rain.append(name); pmax = max(pmax, pnext)
+              where = lambda lst: ('كل مناطق ' + CITY) if len(lst) == len(areas) and len(areas) > 1 else '، '.join(lst)
+              if thunder:
+                  send(f'⚡ تنبيه رعد وبرق — {CITY}', f'عواصف رعدية متوقعة خلال الساعة الجاية في: {where(thunder)}. ابتعد عن الأودية والأماكن المكشوفة.', 'zap', 5)
+              if rain:
+                  send(f'🌧️ تنبيه أمطار — {CITY}', f'أمطار متوقعة خلال الساعة الجاية في: {where(rain)} (الاحتمال حتى {pmax}%). انتبه في الطرق وابتعد عن مجاري الأودية.', 'cloud_with_rain', 4)
+
+          # ---------- 2) tides: high / low tide in the coming hour ----------
+          if ON('ALERT_TIDES'):
+              d = get(f'https://marine-api.open-meteo.com/v1/marine?latitude={SEA_LAT}&longitude={SEA_LON}&hourly=sea_level_height_msl&past_days=1&forecast_days=2&timezone=GMT')
+              if d and d.get('hourly'):
+                  ts = [dt.datetime.fromisoformat(t).replace(tzinfo=dt.timezone.utc) for t in d['hourly']['time']]
+                  lv = d['hourly'].get('sea_level_height_msl') or []
+                  for i in range(1, len(lv) - 1):
+                      a, b, c = lv[i - 1], lv[i], lv[i + 1]
+                      if None in (a, b, c): continue
+                      hi, lo = (b >= a and b > c), (b <= a and b < c)
+                      if not (hi or lo): continue
+                      den = a - 2 * b + c
+                      off = 0.5 * (a - c) / den if den else 0
+                      t, v = ts[i] + dt.timedelta(hours=off), b - 0.25 * (a - c) * off
+                      if slot <= t < slot_end:
+                          if hi: send(f'🌊 المد العالي — ساحل {CITY}', f'المد العالي الساعة {hm(t)} (ارتفاع {v:+.2f} م).', 'ocean', 3)
+                          else:  send(f'🏖️ الجزر — ساحل {CITY}', f'الجزر الساعة {hm(t)} (منسوب {v:+.2f} م). وقت مناسب للشاطئ.', 'beach_with_umbrella', 3)
+
+          # ---------- 3) moon phases (morning message on the day) ----------
+          def moon_phase(k, phase):
+              s, c = (lambda x: math.sin(math.radians(x))), (lambda x: math.cos(math.radians(x)))
+              k += phase; T = k / 1236.85; T2, T3 = T * T, T * T * T
+              pt = 2415020.75933 + 29.53058868 * k + 0.0001178 * T2 - 0.000000155 * T3 + 0.00033 * s(166.56 + 132.87 * T - 0.009173 * T2)
+              m = 359.2242 + 29.10535608 * k - 0.0000333 * T2 - 0.00000347 * T3
+              mp = 306.0253 + 385.81691806 * k + 0.0107306 * T2 + 0.00001236 * T3
+              f = 21.2964 + 390.67050646 * k - 0.0016528 * T2 - 0.00000239 * T3
+              if phase < 0.01 or abs(phase - 0.5) < 0.01:
+                  pt += ((0.1734 - 0.000393 * T) * s(m) + 0.0021 * s(2 * m) - 0.4068 * s(mp) + 0.0161 * s(2 * mp) - 0.0004 * s(3 * mp) + 0.0104 * s(2 * f)
+                         - 0.0051 * s(m + mp) - 0.0074 * s(m - mp) + 0.0004 * s(2 * f + m) - 0.0004 * s(2 * f - m) - 0.0006 * s(2 * f + mp) + 0.0010 * s(2 * f - mp) + 0.0005 * s(m + 2 * mp))
+              else:
+                  pt += ((0.1721 - 0.0004 * T) * s(m) + 0.0021 * s(2 * m) - 0.6280 * s(mp) + 0.0089 * s(2 * mp) - 0.0004 * s(3 * mp) + 0.0079 * s(2 * f)
+                         - 0.0119 * s(m + mp) - 0.0047 * s(m - mp) + 0.0003 * s(2 * f + m) - 0.0004 * s(2 * f - m) - 0.0006 * s(2 * f + mp) + 0.0021 * s(2 * f - mp)
+                         + 0.0003 * s(m + 2 * mp) + 0.0004 * s(m - 2 * mp) - 0.0003 * s(2 * m + mp))
+                  adj = 0.0028 - 0.0004 * c(m) + 0.0003 * c(mp)
+                  pt += adj if phase < 0.5 else -adj
+              return dt.datetime(1970, 1, 1, tzinfo=dt.timezone.utc) + dt.timedelta(days=pt - 2440587.5, seconds=-69)
+
+          if ON('ALERT_MOON') and morning:
+              names = {0: ('🌑 اليوم محاق', 'قمر جديد، والسماء مظلمة ومناسبة لرصد النجوم'), 0.25: ('🌓 اليوم التربيع الأول', 'نصف القمر الأيمن مضيء ويظهر مساءً'),
+                       0.5: ('🌕 اليوم بدر', 'القمر مكتمل الإضاءة'), 0.75: ('🌗 اليوم التربيع الأخير', 'نصف القمر الأيسر مضيء ويظهر قبل الفجر')}
+              k0 = math.floor((now.year + (now.month - 1) / 12 - 1900) * 12.3685)
+              for k in range(k0 - 1, k0 + 2):
+                  for p in (0, 0.25, 0.5, 0.75):
+                      t = moon_phase(k, p)
+                      if t.astimezone(TZ).date() == local.date():
+                          send(names[p][0], f'الساعة {hm(t)} — {names[p][1]}.', 'crescent_moon', 3)
+
+          # ---------- 4) anwaa (morning message on the first and last day) ----------
+          ANWAA = [(5,12,'الشرطين',13,''),(5,25,'البطين',13,''),(6,7,'الثريا',13,'أول نجوم الصيف وبداية البوارح'),(6,20,'الدبران',13,''),
+                   (7,3,'الهقعة',13,''),(7,16,'الهنعة',13,''),(7,29,'الذراع',13,''),(8,11,'النثرة',13,'جمرة القيظ'),
+                   (8,24,'الطرفة',13,'طلوع سهيل وانكسار حدة الحر ليلًا'),(9,6,'الجبهة',14,'أول نجوم الخريف'),(9,20,'الزبرة',13,''),(10,3,'الصرفة',13,'انصراف الحر وآخر نجوم سهيل'),
+                   (10,16,'العواء',13,'بداية الوسم وموسم الأمطار'),(10,29,'السماك',13,''),(11,11,'الغفر',13,''),(11,24,'الزبانا',13,'آخر نجوم الوسم'),
+                   (12,7,'الإكليل',13,'بداية المربعانية وبرد الشتاء'),(12,20,'القلب',13,'أقصر نهار في السنة'),(1,2,'الشولة',13,'آخر المربعانية'),(1,15,'النعائم',13,'بداية الشبط'),
+                   (1,28,'البلدة',13,''),(2,10,'سعد الذابح',13,'بداية العقارب'),(2,23,'سعد بلع',13,''),(3,8,'سعد السعود',13,'أول الربيع'),
+                   (3,21,'سعد الأخبية',13,'الاعتدال الربيعي'),(4,3,'المقدم',13,''),(4,16,'المؤخر',13,''),(4,29,'الرشا',13,'')]
+          if ON('ALERT_ANWAA') and morning:
+              today = local.date()
+              for i, (mo, dy, name, days, note) in enumerate(ANWAA):
+                  start = dt.date(today.year, mo, dy)
+                  if start > today: start = dt.date(today.year - 1, mo, dy)
+                  last = start + dt.timedelta(days=days - 1)
+                  if start == today:
+                      send(f'✦ دخل اليوم طالع {name}', f'يمتد {days} يومًا حتى {last.day}/{last.month}.' + (f' {note}.' if note else ''), 'star', 3)
+                  elif last == today:
+                      nxt = ANWAA[(i + 1) % len(ANWAA)][2]
+                      send(f'⏳ آخر يوم في طالع {name}', f'ويدخل بكرة طالع {nxt}.', 'hourglass', 3)
+          PY
