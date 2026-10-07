@@ -39,12 +39,15 @@ jobs:
             الموالح:23.627,58.25;
             المعبيلة:23.636,58.118;
             قريات:23.264,58.919
+          # مناطق تنبيه الرياح: فاضي = كل المناطق، أو اكتب أسماء مفصولة بـ ; مثل 'مطرح;السيب;قريات'
+          WIND_AREAS: ''
           SEA_LAT: '23.64'       # نقطة البحر للمد والجزر
           SEA_LON: '58.58'
           TZ_OFFSET: '4'          # توقيت عُمان
           DIGEST_HOUR: '8'        # وقت رسالة الصباح (القمر والطوالع)
           # ---- التنبيهات: 1 تشغيل، 0 إيقاف ----
           ALERT_WEATHER: '1'      # الرعد والبرق والمطر
+          ALERT_WIND: '1'         # الرياح واتجاهها
           ALERT_TIDES: '1'        # المد والجزر
           ALERT_MOON: '1'         # أطوار القمر والتربيعات
           ALERT_ANWAA: '1'        # الطوالع والأنواء
@@ -88,17 +91,19 @@ jobs:
           hm = lambda t: t.astimezone(TZ).strftime('%H:%M')
 
           if MANUAL:
-              cats = [n for k, n in [('ALERT_WEATHER', 'الرعد والمطر'), ('ALERT_TIDES', 'المد والجزر'), ('ALERT_MOON', 'أطوار القمر'), ('ALERT_ANWAA', 'الطوالع والأنواء')] if ON(k)]
+              cats = [n for k, n in [('ALERT_WEATHER', 'الرعد والمطر'), ('ALERT_WIND', 'الرياح واتجاهها'), ('ALERT_TIDES', 'المد والجزر'), ('ALERT_MOON', 'أطوار القمر'), ('ALERT_ANWAA', 'الطوالع والأنواء')] if ON(k)]
               send('✅ تنبيهات مناخ شغالة', 'التنبيهات المفعّلة: ' + '، '.join(cats) + '. توصلك حتى والتطبيق مقفول.', 'white_check_mark', 3)
+
+          AREAS_ALL = []
+          for part in os.environ.get('AREAS', '').split(';'):
+              if ':' in part:
+                  n, xy = part.split(':', 1); la, lo = xy.split(',')
+                  AREAS_ALL.append((n.strip(), float(la), float(lo)))
+          if not AREAS_ALL: AREAS_ALL = [(CITY, LAT, LON)]
 
           # ---------- 1) thunder & rain: every area, grouped into one message ----------
           if ON('ALERT_WEATHER'):
-              areas = []
-              for part in os.environ.get('AREAS', '').split(';'):
-                  if ':' in part:
-                      n, xy = part.split(':', 1); la, lo = xy.split(',')
-                      areas.append((n.strip(), float(la), float(lo)))
-              if not areas: areas = [(CITY, LAT, LON)]
+              areas = AREAS_ALL
               lats = ','.join(str(a[1]) for a in areas); lons = ','.join(str(a[2]) for a in areas)
               d = get(f'https://api.open-meteo.com/v1/forecast?latitude={lats}&longitude={lons}&hourly=weather_code,precipitation_probability&forecast_hours=3&timezone=auto')
               if isinstance(d, dict): d = [d]
@@ -116,6 +121,40 @@ jobs:
                   send(f'⚡ تنبيه رعد وبرق — {CITY}', f'عواصف رعدية متوقعة خلال الساعة الجاية في: {where(thunder)}. ابتعد عن الأودية والأماكن المكشوفة.', 'zap', 5)
               if rain:
                   send(f'🌧️ تنبيه أمطار — {CITY}', f'أمطار متوقعة خلال الساعة الجاية في: {where(rain)} (الاحتمال حتى {pmax}%). انتبه في الطرق وابتعد عن مجاري الأودية.', 'cloud_with_rain', 4)
+
+          # ---------- 1b) wind: direction change or strong wind, per area (compares this hour with the last) ----------
+          DIRS = ['شمالية', 'شمالية شرقية', 'شرقية', 'جنوبية شرقية', 'جنوبية', 'جنوبية غربية', 'غربية', 'شمالية غربية']
+          dir_name = lambda d: DIRS[int(round((d % 360) / 45)) % 8]
+          if ON('ALERT_WIND'):
+              pick = [n.strip() for n in os.environ.get('WIND_AREAS', '').split(';') if n.strip()]
+              wa = [a for a in AREAS_ALL if not pick or a[0] in pick]
+              if wa:
+                  lats = ','.join(str(a[1]) for a in wa); lons = ','.join(str(a[2]) for a in wa)
+                  d = get(f'https://api.open-meteo.com/v1/forecast?latitude={lats}&longitude={lons}&hourly=wind_speed_10m,wind_direction_10m&past_hours=3&forecast_hours=2&wind_speed_unit=kmh&timezone=GMT')
+                  if isinstance(d, dict): d = [d]
+                  hour_now = slot.replace(minute=0)
+                  turned, strong = [], []
+                  lvl = lambda v: 2 if v >= 45 else 1 if v >= 30 else 0
+                  for (name, _, _), r in zip(wa, d or []):
+                      h = (r or {}).get('hourly') or {}
+                      ts = [dt.datetime.fromisoformat(t).replace(tzinfo=dt.timezone.utc) for t in h.get('time', [])]
+                      if hour_now not in ts: continue
+                      i = ts.index(hour_now)
+                      if i == 0: continue
+                      sp, sp0 = h['wind_speed_10m'][i], h['wind_speed_10m'][i - 1]
+                      dg, dg0 = h['wind_direction_10m'][i], h['wind_direction_10m'][i - 1]
+                      if None in (sp, sp0, dg, dg0): continue
+                      diff = abs((dg - dg0 + 180) % 360 - 180)
+                      print('wind', name, round(dg0), '->', round(dg), round(sp0), '->', round(sp))
+                      if diff >= 90 and sp >= 10 and dir_name(dg) != dir_name(dg0):
+                          turned.append(f'{name} ({dir_name(dg0)} ← {dir_name(dg)}، {round(sp)} كم/س)')
+                      if lvl(sp) > lvl(sp0):
+                          strong.append((name, round(sp), lvl(sp)))
+                  if turned:
+                      send(f'💨 تغيّر اتجاه الرياح — {CITY}', 'تغيّر اتجاه الرياح في: ' + '، '.join(turned) + '.', 'dash', 3)
+                  if strong:
+                      top = max(x[2] for x in strong)
+                      send(f'💨 {"رياح قوية جدًا" if top == 2 else "رياح نشطة"} — {CITY}', 'سرعة الرياح ارتفعت في: ' + '، '.join(f'{n} {v} كم/س' for n, v, _ in strong) + '. انتبه من الغبار وارتفاع الموج.', 'dash', 4 if top == 2 else 3)
 
           # ---------- 2) tides: high / low tide in the coming hour ----------
           if ON('ALERT_TIDES'):
