@@ -505,6 +505,23 @@
   .phase-row .pn{ font-weight:700; font-size:.9rem; } .phase-row .pd{ font-size:.72rem; color:var(--text-2); margin-top:2px; }
   .phase-row .pc{ font-family:"Sora",sans-serif; font-size:.74rem; color:var(--cool-1); font-variant-numeric:tabular-nums; text-align:left; direction:ltr; white-space:nowrap; }
   .phase-row.quarter .pn{ color:#ffcf7a; }
+  .sky-row{ display:flex; align-items:center; gap:10px; padding:10px 0; border-top:1px solid var(--line); }
+  .sky-row:first-child{ border-top:none; }
+  .sky-row i{ width:10px; height:10px; border-radius:50%; flex-shrink:0; box-shadow:0 0 8px currentColor; }
+  .sky-row .sn{ flex:1; min-width:0; } .sky-row .sn b{ display:block; font-size:.9rem; } .sky-row .sn span{ font-size:.7rem; color:var(--text-2); }
+  .sky-row .sa{ font-family:"Sora",sans-serif; font-size:.85rem; color:var(--cool-1); font-variant-numeric:tabular-nums; }
+  .sky-row.down{ opacity:.55; } .sky-row.down .sa{ color:var(--text-3); }
+  .conj-month{ font-size:.78rem; font-weight:700; color:#ffcf7a; margin:14px 2px 8px; } .conj-month:first-child{ margin-top:0; }
+  .conj-card{ display:flex; align-items:center; gap:14px; padding:14px; margin-bottom:10px; border-radius:18px;
+    background:linear-gradient(160deg, #3a3f66 0%, #4a3f55 55%, #5a4636 100%); border:1px solid rgba(255,255,255,.06); }
+  .conj-card .cg{ position:relative; width:64px; height:46px; flex-shrink:0; }
+  .conj-card .cg svg{ width:46px; height:46px; }
+  .conj-card .cb{ position:absolute; left:2px; top:17px; width:9px; height:9px; border-radius:50%; box-shadow:0 0 10px currentColor; }
+  .conj-card .cb.star{ width:7px; height:7px; top:18px; }
+  .conj-card .ct{ flex:1; min-width:0; } .conj-card .cd{ font-size:.72rem; color:#d9d6e8; }
+  .conj-card .cn{ font-size:1.02rem; font-weight:800; margin:2px 0 3px; color:#fff; }
+  .conj-card .cm{ font-size:.74rem; color:#e6dcc8; } .conj-card .cm b{ color:#ffcf7a; font-family:"Sora",sans-serif; font-weight:600; }
+  .conj-card.hidden-ev{ background:var(--bg-panel-2); opacity:.6; } .conj-card.hidden-ev .cn{ color:var(--text-1); }
   /* ---------- tides ---------- */
   .tide-hero{ padding:16px; background:radial-gradient(100% 80% at 50% 0%, rgba(43,182,201,.16), transparent 70%), linear-gradient(180deg,var(--bg-panel),var(--bg-panel-2)); }
   .tide-place{ font-size:.78rem; color:var(--text-2); text-align:center; }
@@ -929,7 +946,7 @@
   <!-- ============ SEASONS SUBPAGE ============ -->
   <section class="page tabbed" id="page-seasons">
     <div class="back-row"><h1>الأنواء والفلك</h1></div>
-    <div class="tabs" role="tablist"><button class="tab on" type="button" data-tab="anwaa">✦ الأنواء</button><button class="tab" type="button" data-tab="seasons">🍂 الفصول</button><button class="tab" type="button" data-tab="zodiac">♈ الأبراج</button><button class="tab" type="button" data-tab="stars">⭐ النجوم</button><button class="tab" type="button" data-tab="moon">🌙 القمر</button></div>
+    <div class="tabs" role="tablist"><button class="tab on" type="button" data-tab="anwaa">✦ الأنواء</button><button class="tab" type="button" data-tab="seasons">🍂 الفصول</button><button class="tab" type="button" data-tab="zodiac">♈ الأبراج</button><button class="tab" type="button" data-tab="stars">⭐ النجوم</button><button class="tab" type="button" data-tab="moon">🌙 القمر</button><button class="tab" type="button" data-tab="conj">🪐 الاقترانات</button></div>
     <div class="panes">
     <div class="pane" data-pane="anwaa">
     <p style="color:var(--text-2); font-size:.82rem; margin:-8px 0 16px;">التقويم الفلكي الزراعي التقليدي — 28 نوءًا، كل واحد نجمه ووصفه وإرشاداته الزراعية</p>
@@ -998,6 +1015,19 @@
       <div id="moonPhaseList"></div>
     </div>
     <div class="alert-note" style="text-align:center">التربيع الأول: نصف القمر الأيمن مضيء ويرى مساءً · التربيع الأخير: النصف الأيسر مضيء ويرى قبل الفجر</div>
+    </div>
+    <div class="pane" data-pane="conj">
+    <p style="color:var(--text-2); font-size:.82rem; margin:0 0 12px;">اقترانات القمر بالكواكب والنجوم اللامعة مع أفضل وقت للمشاهدة من <b id="conjPlace">موقعك</b></p>
+    <div class="card">
+      <div class="card-head"><h2>✨ في السماء الآن</h2><span class="chip live"><i class="dot-live"></i>مباشر</span></div>
+      <div id="skyNowList"></div>
+      <div class="alert-note">الرقم هو ارتفاع الكوكب عن الأفق بالدرجات، والسالب يعني أنه تحت الأفق</div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>🌙 اقترانات القمر القادمة</h2></div>
+      <div id="conjList"><div class="alert-note">جارٍ الحساب…</div></div>
+    </div>
+    <div class="alert-note" style="text-align:center">الوقت المعروض هو أفضل لحظة للرؤية: السماء مظلمة والقمر والجرم فوق الأفق، والدرجة هي المسافة الظاهرية بينهما (عرض الإصبع عند مد الذراع ≈ 2°)</div>
     </div>
     </div>
   </section>
@@ -3211,6 +3241,188 @@
     setInterval(() => { const sec = document.getElementById('page-seasons'); if(sec && sec.classList.contains('active') && sec._tabs && sec._tabs.current() === 'moon') tick(); }, 1000);
     setInterval(render, 30 * 60 * 1000);
     document.addEventListener('tabchange', e => { if(e.detail.tab === 'moon') render(); });
+  })();
+
+  // ---------- conjunctions tab: Moon with planets & bright stars (self-contained ephemeris, works offline) ----------
+  const Sky = (function(){
+    const D2R = Math.PI / 180, R2D = 180 / Math.PI;
+    const sn = d => Math.sin(d * D2R), cs = d => Math.cos(d * D2R), nrm = d => ((d % 360) + 360) % 360;
+    const jdOf = t => t / 86400000 + 2440587.5;                 // UT
+    const TofJd = jd => (jd + 69 / 86400 - 2451545) / 36525;    // TT centuries from J2000
+    // JPL approximate Keplerian elements (1800–2050): a, e, I, L, ϖ, Ω and their rates per century
+    const EL = {
+      mercury:[0.38709927,0.00000037, 0.20563593,0.00001906, 7.00497902,-0.00594749, 252.25032350,149472.67411175, 77.45779628,0.16047689, 48.33076593,-0.12534081],
+      venus:  [0.72333566,0.00000390, 0.00677672,-0.00004107, 3.39467605,-0.00078890, 181.97909950,58517.81538729, 131.60246718,0.00268329, 76.67984255,-0.27769418],
+      earth:  [1.00000261,0.00000562, 0.01671123,-0.00004392, -0.00001531,-0.01294668, 100.46457166,35999.37244981, 102.93768193,0.32327364, 0,0],
+      mars:   [1.52371034,0.00001847, 0.09339410,0.00007882, 1.84969142,-0.00813131, -4.55343205,19140.30268499, -23.94362959,0.44441088, 49.55953891,-0.29257343],
+      jupiter:[5.20288700,-0.00011607, 0.04838624,-0.00013253, 1.30439695,-0.00183714, 34.39644051,3034.74612775, 14.72847983,0.21252668, 100.47390909,0.20469106],
+      saturn: [9.53667594,-0.00125060, 0.05386179,-0.00050991, 2.48599187,0.00193609, 49.95424423,1222.49362201, 92.59887831,-0.41897216, 113.66242448,-0.28867794]
+    };
+    function helio(name, T){ // heliocentric ecliptic J2000 (AU)
+      const k = EL[name], a = k[0] + k[1] * T, e = k[2] + k[3] * T, I = k[4] + k[5] * T, L = k[6] + k[7] * T, w = k[8] + k[9] * T, O = k[10] + k[11] * T;
+      const om = w - O, M = nrm(L - w) * D2R;
+      let E = M + e * Math.sin(M);
+      for(let i = 0; i < 8; i++) E -= (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));
+      const xp = a * (Math.cos(E) - e), yp = a * Math.sqrt(1 - e * e) * Math.sin(E);
+      const co = cs(om), so = sn(om), cO = cs(O), sO = sn(O), cI = cs(I), sI = sn(I);
+      return [ (co * cO - so * sO * cI) * xp + (-so * cO - co * sO * cI) * yp,
+               (co * sO + so * cO * cI) * xp + (-so * sO + co * cO * cI) * yp,
+               (so * sI) * xp + (co * sI) * yp ];
+    }
+    const E0 = 23.4392911;
+    function eclToEqVec(v, eps){ const c = cs(eps), s = sn(eps); return [v[0], c * v[1] - s * v[2], s * v[1] + c * v[2]]; }
+    function vecToRaDec(v){ const r = Math.hypot(v[0], v[1], v[2]); return { ra: nrm(Math.atan2(v[1], v[0]) * R2D), dec: Math.asin(v[2] / r) * R2D, r }; }
+    function precess(ra, dec, T){ // J2000 mean -> mean of date (Meeus 21.4)
+      const z0 = (2306.2181 * T + 0.30188 * T * T) / 3600, z = (2306.2181 * T + 1.09468 * T * T) / 3600, th = (2004.3109 * T - 0.42665 * T * T) / 3600;
+      const A = cs(dec) * sn(ra + z0), B = cs(th) * cs(dec) * cs(ra + z0) - sn(th) * sn(dec), C = sn(th) * cs(dec) * cs(ra + z0) + cs(th) * sn(dec);
+      return { ra: nrm(Math.atan2(A, B) * R2D + z), dec: Math.asin(C) * R2D };
+    }
+    function planetEq(name, T){ // geocentric RA/Dec of date
+      const p = helio(name, T), e = helio('earth', T);
+      const q = vecToRaDec(eclToEqVec([p[0] - e[0], p[1] - e[1], p[2] - e[2]], E0));
+      return precess(q.ra, q.dec, T);
+    }
+    function sunEq(T){ const e = helio('earth', T), q = vecToRaDec(eclToEqVec([-e[0], -e[1], -e[2]], E0)); return precess(q.ra, q.dec, T); }
+    // Moon (Meeus ch.47, main terms): ecliptic of date
+    const ML = [[0,0,1,0,6288774],[2,0,-1,0,1274027],[2,0,0,0,658314],[0,0,2,0,213618],[0,1,0,0,-185116],[0,0,0,2,-114332],[2,0,-2,0,58793],[2,-1,-1,0,57066],
+      [2,0,1,0,53322],[2,-1,0,0,45758],[0,1,-1,0,-40923],[1,0,0,0,-34720],[0,1,1,0,-30383],[2,0,0,-2,15327],[0,0,1,2,-12528],[0,0,1,-2,10980],[4,0,-1,0,10675],
+      [0,0,3,0,10034],[4,0,-2,0,8548],[2,1,-1,0,-7888],[2,1,0,0,-6766],[1,0,-1,0,-5163],[1,1,0,0,4987],[2,-1,1,0,4036],[2,0,2,0,3994],[4,0,0,0,3861],
+      [2,0,-3,0,3665],[0,1,-2,0,-2689],[2,0,-1,2,-2602],[2,-1,-2,0,2390],[1,0,1,0,-2348],[2,-2,0,0,2236],[0,1,2,0,-2120],[0,2,0,0,-2069]];
+    const MR = [[0,0,1,0,-20905355],[2,0,-1,0,-3699111],[2,0,0,0,-2955968],[0,0,2,0,-569925],[0,1,0,0,48888],[2,0,-2,0,246158],[2,-1,-1,0,-152138],
+      [2,0,1,0,-170733],[2,-1,0,0,-204586],[0,1,-1,0,-129620],[1,0,0,0,108743],[0,1,1,0,104755],[0,0,1,-2,79661]];
+    const MB = [[0,0,0,1,5128122],[0,0,1,1,280602],[0,0,1,-1,277693],[2,0,0,-1,173237],[2,0,-1,1,55413],[2,0,-1,-1,46271],[2,0,0,1,32573],[0,0,2,1,17198],
+      [2,0,1,-1,9266],[0,0,2,-1,8822],[2,-1,0,-1,8216],[2,0,-2,-1,4324],[2,0,1,1,4200],[2,1,0,-1,-3359],[2,-1,-1,1,2463],[2,-1,0,1,2211],[2,-1,-1,-1,2065],
+      [0,1,-1,-1,-1870],[4,0,-1,-1,1828],[0,1,0,1,-1794]];
+    function moonEcl(T){
+      const Lp = 218.3164477 + 481267.88123421 * T - 0.0015786 * T * T, D = 297.8501921 + 445267.1114034 * T - 0.0018819 * T * T;
+      const M = 357.5291092 + 35999.0502909 * T - 0.0001536 * T * T, Mp = 134.9633964 + 477198.8675055 * T + 0.0087414 * T * T;
+      const F = 93.2720950 + 483202.0175233 * T - 0.0036539 * T * T, E = 1 - 0.002516 * T - 0.0000074 * T * T;
+      const A1 = 119.75 + 131.849 * T, A2 = 53.09 + 479264.290 * T, A3 = 313.45 + 481266.484 * T;
+      const term = (r, f) => { const em = Math.abs(r[1]) === 2 ? E * E : r[1] ? E : 1; return r[4] * em * f(r[0] * D + r[1] * M + r[2] * Mp + r[3] * F); };
+      let l = 0, b = 0, d = 0;
+      ML.forEach(r => l += term(r, sn)); MR.forEach(r => d += term(r, cs)); MB.forEach(r => b += term(r, sn));
+      l += 3958 * sn(A1) + 1962 * sn(Lp - F) + 318 * sn(A2);
+      b += -2235 * sn(Lp) + 382 * sn(A3) + 175 * sn(A1 - F) + 175 * sn(A1 + F) + 127 * sn(Lp - Mp) - 115 * sn(Lp + Mp);
+      return { lon: nrm(Lp + l / 1e6), lat: b / 1e6, dist: 385000.56 + d / 1000 };
+    }
+    function moonEq(T, jd, lat, lon){ // topocentric RA/Dec of date
+      const m = moonEcl(T), eps = E0 - 0.0130042 * T;
+      const v = eclToEqVec([m.dist * cs(m.lat) * cs(m.lon), m.dist * cs(m.lat) * sn(m.lon), m.dist * sn(m.lat)], eps);
+      const lst = gmst(jd) + lon, R = 6371;
+      const q = vecToRaDec([v[0] - R * cs(lat) * cs(lst), v[1] - R * cs(lat) * sn(lst), v[2] - R * sn(lat)]);
+      return { ra: q.ra, dec: q.dec, lonEcl: m.lon };
+    }
+    const gmst = jd => nrm(280.46061837 + 360.98564736629 * (jd - 2451545));
+    function altAz(ra, dec, jd, lat, lon){
+      const H = gmst(jd) + lon - ra;
+      const alt = Math.asin(sn(lat) * sn(dec) + cs(lat) * cs(dec) * cs(H)) * R2D;
+      const az = nrm(Math.atan2(-cs(dec) * sn(H), cs(lat) * sn(dec) - sn(lat) * cs(dec) * cs(H)) * R2D);
+      return { alt, az };
+    }
+    const sep = (a, b) => Math.acos(Math.max(-1, Math.min(1, sn(a.dec) * sn(b.dec) + cs(a.dec) * cs(b.dec) * cs(a.ra - b.ra)))) * R2D;
+    // bright stars near the ecliptic (J2000)
+    const STARS = {
+      regulus:  { ra:152.0929, dec:11.9672 }, spica:{ ra:201.2983, dec:-11.1613 }, antares:{ ra:247.3519, dec:-26.4320 },
+      aldebaran:{ ra:68.9802, dec:16.5093 }, pleiades:{ ra:56.8711, dec:24.1051 }
+    };
+    const PLANETS = ['mercury','venus','mars','jupiter','saturn'];
+    function body(id, T){ return STARS[id] ? precess(STARS[id].ra, STARS[id].dec, T) : planetEq(id, T); }
+    function snapshot(t, lat, lon){
+      const jd = jdOf(t), T = TofJd(jd);
+      return { jd, T, moon: moonEq(T, jd, lat, lon), sun: sunEq(T) };
+    }
+    return { jdOf, TofJd, gmst, altAz, sep, body, snapshot, PLANETS, STARS, moonEcl, planetEq, sunEq, moonEq, sunLon: T => { const e = helio('earth', T); return nrm(Math.atan2(-e[1], -e[0]) * R2D + 1.396971 * T); } };
+  })();
+
+  (function(){
+    const NAMES = { mercury:'عطارد', venus:'الزهرة', mars:'المريخ', jupiter:'المشتري', saturn:'زحل',
+      regulus:'قلب الأسد', spica:'السماك الأعزل', antares:'قلب العقرب', aldebaran:'الدبران', pleiades:'الثريا' };
+    const COLORS = { mercury:'#b9b4ad', venus:'#ffe9a8', mars:'#ff7a55', jupiter:'#f3d9a4', saturn:'#e8cf86',
+      regulus:'#cfe0ff', spica:'#bcd2ff', antares:'#ff8a6a', aldebaran:'#ffb27a', pleiades:'#d6e4ff' };
+    const DIRS = ['الشمال','الشمال الشرقي','الشرق','الجنوب الشرقي','الجنوب','الجنوب الغربي','الغرب','الشمال الغربي'];
+    const dirOf = az => DIRS[Math.round(az / 45) % 8];
+    const fDay = new Intl.DateTimeFormat('ar-u-nu-latn', { weekday:'long', day:'numeric', month:'long' });
+    const fMonth = new Intl.DateTimeFormat('ar-u-nu-latn', { month:'long', year:'numeric' });
+    const fTime = new Intl.DateTimeFormat('ar-u-nu-latn', { hour:'numeric', minute:'2-digit', hour12:true });
+    const HOUR = 3600000, DAYS = 60, MAXSEP = 7;
+    function pos(){
+      const c = selectedCityRef;
+      return (c && typeof c.lat === 'number') ? { lat:c.lat, lon:c.lon, label:c.name } : { lat:23.588, lon:58.383, label:'مسقط' };
+    }
+    // moon phase drawing: frac 0 new … .5 full … 1 new
+    function moonIcon(frac, size){
+      const r = size * .46, c = size / 2, waxing = frac < .5, k = Math.cos(2 * Math.PI * frac), rx = Math.abs(k) * r;
+      const d = `M ${c} ${c - r} A ${r} ${r} 0 0 ${waxing ? 1 : 0} ${c} ${c + r} A ${rx} ${r} 0 0 ${(k > 0) === waxing ? 0 : 1} ${c} ${c - r} Z`;
+      return `<svg viewBox="0 0 ${size} ${size}" aria-hidden="true"><circle cx="${c}" cy="${c}" r="${r}" fill="#2a3047"/><path d="${d}" fill="#e9e6da"/></svg>`;
+    }
+    let cache = null;
+    function findEvents(p){
+      const start = Math.floor(Date.now() / HOUR) * HOUR - 12 * HOUR, ids = Sky.PLANETS.concat(Object.keys(Sky.STARS));
+      const n = DAYS * 24, seps = {}; ids.forEach(id => seps[id] = new Float32Array(n));
+      for(let i = 0; i < n; i++){
+        const s = Sky.snapshot(start + i * HOUR, p.lat, p.lon);
+        ids.forEach(id => seps[id][i] = Sky.sep(s.moon, Sky.body(id, s.T)));
+      }
+      const sepAt = (id, t) => { const s = Sky.snapshot(t, p.lat, p.lon); return Sky.sep(s.moon, Sky.body(id, s.T)); };
+      const events = [];
+      ids.forEach(id => {
+        const a = seps[id];
+        for(let i = 1; i < n - 1; i++){
+          if(!(a[i] <= a[i - 1] && a[i] < a[i + 1] && a[i] < MAXSEP)) continue;
+          let lo = start + (i - 1) * HOUR, hi = start + (i + 1) * HOUR; // golden-section refine
+          for(let j = 0; j < 24; j++){ const m1 = lo + (hi - lo) * .382, m2 = lo + (hi - lo) * .618; if(sepAt(id, m1) < sepAt(id, m2)) hi = m2; else lo = m1; }
+          const tMin = (lo + hi) / 2;
+          // best viewing: dark sky, moon & target above the horizon, as close as possible
+          let best = null;
+          for(let t = tMin - 14 * HOUR; t <= tMin + 14 * HOUR; t += 10 * 60000){
+            const s = Sky.snapshot(t, p.lat, p.lon), b = Sky.body(id, s.T);
+            const sunAlt = Sky.altAz(s.sun.ra, s.sun.dec, s.jd, p.lat, p.lon).alt;
+            if(sunAlt > -7) continue;
+            const mh = Sky.altAz(s.moon.ra, s.moon.dec, s.jd, p.lat, p.lon), bh = Sky.altAz(b.ra, b.dec, s.jd, p.lat, p.lon);
+            if(mh.alt < 6 || bh.alt < 4) continue;
+            const d = Sky.sep(s.moon, b);
+            if(!best || d < best.sep - 1e-4) best = { t, sep:d, alt:mh.alt, az:mh.az };
+          }
+          const sm = Sky.snapshot(tMin, p.lat, p.lon), elong = Sky.sep(sm.moon, sm.sun);
+          const frac = ((Sky.moonEcl(sm.T).lon - Sky.sunLon(sm.T)) % 360 + 360) % 360 / 360;
+          events.push({ id, tMin, sepMin:a[i], best, elong, frac });
+        }
+      });
+      return events.filter(e => e.tMin > Date.now() - 6 * HOUR && e.elong > 12).sort((x, y) => x.tMin - y.tMin);
+    }
+    function renderNow(p){
+      const now = Date.now(), s = Sky.snapshot(now, p.lat, p.lon);
+      document.getElementById('skyNowList').innerHTML = Sky.PLANETS.map(id => {
+        const b = Sky.body(id, s.T), h = Sky.altAz(b.ra, b.dec, s.jd, p.lat, p.lon), up = h.alt > 0;
+        return `<div class="sky-row${up ? '' : ' down'}"><i style="background:${COLORS[id]}"></i>
+          <div class="sn"><b>${NAMES[id]}</b><span>${up ? 'فوق الأفق · جهة ' + dirOf(h.az) : 'تحت الأفق'}</span></div>
+          <div class="sa" dir="ltr">${h.alt.toFixed(1)}°</div></div>`;
+      }).join('');
+    }
+    function renderEvents(p){
+      const key = p.lat.toFixed(2) + ',' + p.lon.toFixed(2) + ',' + Math.floor(Date.now() / (6 * HOUR));
+      if(!cache || cache.key !== key) cache = { key, events: findEvents(p) };
+      let lastMonth = '', html = '';
+      cache.events.forEach(e => {
+        const t = e.best ? e.best.t : e.tMin, m = fMonth.format(t);
+        if(m !== lastMonth){ html += `<div class="conj-month">${m}</div>`; lastMonth = m; }
+        const star = !!Sky.STARS[e.id];
+        html += `<div class="conj-card${e.best ? '' : ' hidden-ev'}">
+          <div class="cg">${moonIcon(e.frac, 46)}<span class="cb${star ? ' star' : ''}" style="background:${COLORS[e.id]};color:${COLORS[e.id]}"></span></div>
+          <div class="ct"><div class="cd">${fDay.format(t)}</div><div class="cn">القمر و${NAMES[e.id]}</div>
+          <div class="cm">${e.best ? `<b>${fTime.format(e.best.t)}</b> · بينهما <bdi dir="ltr">${e.best.sep.toFixed(1)}°</bdi> · جهة ${dirOf(e.best.az)}` : 'يحدث نهارًا أو تحت الأفق — غير مرئي من موقعك'}</div></div></div>`;
+      });
+      document.getElementById('conjList').innerHTML = html || '<div class="alert-note">لا توجد اقترانات قريبة خلال الشهرين القادمين</div>';
+      document.getElementById('conjPlace').textContent = p.label;
+    }
+    function render(){
+      const p = pos();
+      try{ renderNow(p); }catch(e){}
+      setTimeout(() => { try{ renderEvents(p); }catch(e){ document.getElementById('conjList').innerHTML = '<div class="alert-note">تعذر حساب الاقترانات</div>'; } }, 30);
+    }
+    const isOpen = () => { const sec = document.getElementById('page-seasons'); return sec && sec.classList.contains('active') && sec._tabs && sec._tabs.current() === 'conj'; };
+    document.addEventListener('tabchange', e => { if(e.detail.tab === 'conj' || (e.detail.page === 'page-seasons' && isOpen())) render(); });
+    setInterval(() => { if(isOpen()) renderNow(pos()); }, 60000);
   })();
 
   // ---------- tides & sea tab ----------
