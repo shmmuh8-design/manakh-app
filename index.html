@@ -798,6 +798,7 @@
       <div class="alert-row" data-pref="tides"><span style="font-size:1.2rem">🌊</span><span class="name">المد والجزر<small>قبل المد العالي والجزر</small></span><div class="toggle"></div></div>
       <div class="alert-row" data-pref="moon"><span style="font-size:1.2rem">🌓</span><span class="name">أطوار القمر<small>المحاق والتربيعان والبدر</small></span><div class="toggle"></div></div>
       <div class="alert-row" data-pref="anwaa"><span style="font-size:1.2rem">✦</span><span class="name">الطوالع والأنواء<small>دخول نجم جديد ونهايته</small></span><div class="toggle"></div></div>
+      <div class="alert-row" data-pref="conj"><span style="font-size:1.2rem">🪐</span><span class="name">اقترانات القمر<small>قبلها بيوم وقبل وقت المشاهدة بساعة</small></span><div class="toggle"></div></div>
       <div class="notif-status" id="notifStatus"></div>
       <div class="qibla-btns" style="margin-top:10px">
         <button class="muzna-btn primary" id="notifTest" type="button">🔔 إرسال إشعار تجريبي</button>
@@ -3420,6 +3421,8 @@
       try{ renderNow(p); }catch(e){}
       setTimeout(() => { try{ renderEvents(p); }catch(e){ document.getElementById('conjList').innerHTML = '<div class="alert-note">تعذر حساب الاقترانات</div>'; } }, 30);
     }
+    window.manakhConjEvents = () => { const p = pos(), key = p.lat.toFixed(2) + ',' + p.lon.toFixed(2) + ',' + Math.floor(Date.now() / (6 * HOUR));
+      if(!cache || cache.key !== key) cache = { key, events: findEvents(p) }; return { events: cache.events, place: p.label, NAMES, dirOf, fTime }; };
     const isOpen = () => { const sec = document.getElementById('page-seasons'); return sec && sec.classList.contains('active') && sec._tabs && sec._tabs.current() === 'conj'; };
     document.addEventListener('tabchange', e => { if(e.detail.tab === 'conj' || (e.detail.page === 'page-seasons' && isOpen())) render(); });
     setInterval(() => { if(isOpen()) renderNow(pos()); }, 60000);
@@ -3563,7 +3566,7 @@
 
 
   // ---------- per-category alert switches (in-app alerts; GitHub sends the phone push) ----------
-  function manakhAlertPrefs(){ try{ return Object.assign({ thunder:true, rain:true, wind:true, tides:true, moon:true, anwaa:true }, JSON.parse(localStorage.getItem('manakh_alerts') || '{}')); }catch(e){ return { thunder:true, rain:true, wind:true, tides:true, moon:true, anwaa:true }; } }
+  function manakhAlertPrefs(){ try{ return Object.assign({ thunder:true, rain:true, wind:true, tides:true, moon:true, anwaa:true, conj:true }, JSON.parse(localStorage.getItem('manakh_alerts') || '{}')); }catch(e){ return { thunder:true, rain:true, wind:true, tides:true, moon:true, anwaa:true, conj:true }; } }
   function manakhAlertOn(k){ return !!manakhAlertPrefs()[k]; }
   function manakhLocalAlert(title, msg){ if(!notifOn) return; fireLocalAlert(title, msg, 'general'); showToast(title); }
   function manakhOnce(key){ try{ const k = 'manakh_once_' + key; if(localStorage.getItem(k)) return false; localStorage.setItem(k, '1'); return true; }catch(e){ return true; } }
@@ -3591,6 +3594,24 @@
     setTimeout(check, 4000); setInterval(check, 60 * 60 * 1000);
   })();
 
+
+  // conjunctions: alert the day before and an hour before the best viewing time
+  (function(){
+    function check(){
+      if(!manakhAlertOn('conj') || !window.manakhConjEvents) return;
+      let r; try{ r = window.manakhConjEvents(); }catch(e){ return; }
+      const now = Date.now(), tomorrow = new Date(now + 86400000).toDateString();
+      r.events.forEach(e => {
+        if(!e.best) return;
+        const t = e.best.t, name = 'القمر و' + r.NAMES[e.id], when = r.fTime.format(t), where = r.dirOf(e.best.az), d = e.best.sep.toFixed(1) + '°';
+        if(new Date(t).toDateString() === tomorrow && new Date(now).getHours() >= 8 && manakhOnce('conj1_' + e.id + '_' + Math.round(t / 3600000)))
+          manakhLocalAlert('🪐 بكرة اقتران ' + name, 'أفضل وقت للمشاهدة الساعة ' + when + ' جهة ' + where + ' — المسافة بينهما ' + d);
+        if(t - now > 0 && t - now <= 70 * 60000 && manakhOnce('conj0_' + e.id + '_' + Math.round(t / 3600000)))
+          manakhLocalAlert('🌙 بعد قليل: ' + name, 'ارفع نظرك جهة ' + where + ' الساعة ' + when + ' — المسافة بينهما ' + d);
+      });
+    }
+    setTimeout(check, 9000); setInterval(check, 10 * 60 * 1000);
+  })();
 
   // "choose areas" link: jump to the wind list where each area has its own bell
   (function(){
