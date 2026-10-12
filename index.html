@@ -3613,6 +3613,52 @@
     setTimeout(check, 9000); setInterval(check, 10 * 60 * 1000);
   })();
 
+  // ---------- iPhone app (Capacitor): real notifications scheduled ahead, so they arrive even when the app is closed ----------
+  (function(){
+    const Cap = window.Capacitor;
+    if(!Cap || !Cap.isNativePlatform || !Cap.isNativePlatform()) return;
+    const LN = Cap.Plugins && Cap.Plugins.LocalNotifications, HP = Cap.Plugins && Cap.Plugins.Haptics;
+    document.documentElement.classList.add('native-app');
+    if(HP) document.addEventListener('click', e => { if(e.target.closest('.tab, .bottomnav a, .bottomnav button, .toggle')) HP.impact({ style:'LIGHT' }).catch(() => {}); }, true);
+    if(!LN) return;
+    const prevFire = fireLocalAlert;
+    fireLocalAlert = function(title, message, kind){
+      prevFire(title, message, kind);
+      if(document.visibilityState !== 'visible') LN.schedule({ notifications:[{ id: Math.floor(Math.random() * 1e6) + 100000, title, body: message }] }).catch(() => {});
+    };
+    const BASE = 7000;
+    async function reschedule(){
+      try{
+        const perm = await LN.checkPermissions();
+        if(perm.display !== 'granted'){ const r = await LN.requestPermissions(); if(r.display !== 'granted') return; }
+        const pend = await LN.getPending();
+        const old = (pend.notifications || []).filter(n => n.id >= BASE && n.id < BASE + 200).map(n => ({ id:n.id }));
+        if(old.length) await LN.cancel({ notifications: old });
+        const list = [], now = Date.now();
+        if(manakhAlertOn('conj') && window.manakhConjEvents){
+          const r = window.manakhConjEvents();
+          r.events.filter(e => e.best).slice(0, 12).forEach((e, i) => {
+            const t = e.best.t, name = 'القمر و' + r.NAMES[e.id], when = r.fTime.format(t), where = r.dirOf(e.best.az), d = e.best.sep.toFixed(1) + '°';
+            const eve = new Date(t - 86400000); eve.setHours(8, 0, 0, 0);
+            if(eve.getTime() > now) list.push({ id: BASE + i * 2, title: '🪐 بكرة اقتران ' + name, body: 'أفضل وقت للمشاهدة الساعة ' + when + ' جهة ' + where + ' — المسافة بينهما ' + d, schedule:{ at: eve } });
+            if(t - 3600000 > now) list.push({ id: BASE + i * 2 + 1, title: '🌙 بعد ساعة: ' + name, body: 'ارفع نظرك جهة ' + where + ' الساعة ' + when + ' — المسافة بينهما ' + d, schedule:{ at: new Date(t - 3600000) } });
+          });
+        }
+        if(manakhAlertOn('moon') && typeof moonPhasesAround === 'function'){
+          const PH = { 0:'🌑 الليلة محاق', 0.25:'🌓 اليوم التربيع الأول', 0.5:'🌕 الليلة بدر', 0.75:'🌗 اليوم التربيع الأخير' };
+          moonPhasesAround(new Date()).filter(x => x.t > now).slice(0, 6).forEach((x, i) => {
+            const at = new Date(x.t); at.setHours(8, 0, 0, 0);
+            if(at.getTime() > now) list.push({ id: BASE + 100 + i, title: PH[x.p], body: 'الساعة ' + new Intl.DateTimeFormat('ar-u-nu-latn', { hour:'numeric', minute:'2-digit' }).format(x.t), schedule:{ at } });
+          });
+        }
+        if(list.length) await LN.schedule({ notifications: list });
+      }catch(e){ console.warn('notifications', e); }
+    }
+    setTimeout(reschedule, 6000);
+    document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') setTimeout(reschedule, 1500); });
+    document.querySelectorAll('.alert-row[data-pref]').forEach(r => r.addEventListener('click', () => setTimeout(reschedule, 300)));
+  })();
+
   // "choose areas" link: jump to the wind list where each area has its own bell
   (function(){
     const a = document.getElementById('windPickAreas'); if(!a) return;

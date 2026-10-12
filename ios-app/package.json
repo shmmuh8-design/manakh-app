@@ -1,0 +1,20 @@
+{
+  "name": "manakh-ios",
+  "version": "1.0.0",
+  "private": true,
+  "description": "تطبيق مناخ للآيفون — نسخة Capacitor من موقع مناخ",
+  "scripts": {
+    "build": "rm -rf www && mkdir -p www && cp ../index.html www/index.html",
+    "assets": "capacitor-assets generate --ios --iconBackgroundColor '#0e1628' --splashBackgroundColor '#0e1628' --splashBackgroundColorDark '#0e1628'"
+  },
+  "dependencies": {
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/ios": "^7.0.0",
+    "@capacitor/local-notifications": "^7.0.0",
+    "@capacitor/haptics": "^7.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.0.0",
+    "@capacitor/assets": "^3.0.5"
+  }
+}

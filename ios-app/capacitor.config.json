@@ -1,0 +1,15 @@
+{
+  "appId": "com.salemaljabri.manakh",
+  "appName": "مناخ",
+  "webDir": "www",
+  "backgroundColor": "#0e1628",
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#0e1628"
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "iconColor": "#2bb6c9"
+    }
+  }
+}
