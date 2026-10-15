@@ -11,8 +11,6 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.salemaljabri.manakh
-      vars:
-        APP_STORE_APPLE_ID: 0              # رقم التطبيق في App Store Connect (Apple ID) — نحدثه بعد إنشاء التطبيق
       node: 20
       xcode: latest
     triggering:
@@ -42,8 +40,7 @@ workflows:
       - name: رقم البناء
         script: |
           cd ios/App
-          LATEST=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" 2>/dev/null || echo 0)
-          agvtool new-version -all $((LATEST + 1))
+          agvtool new-version -all $((BUILD_NUMBER + 1))
       - name: بناء ملف IPA
         script: |
           xcode-project build-ipa --workspace ios/App/App.xcworkspace --scheme App
