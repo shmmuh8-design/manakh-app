@@ -28,9 +28,10 @@ workflows:
       - name: إعدادات التطبيق (الاسم، الموقع، الاتجاه، اللغة)
         script: |
           PLIST=ios/App/App/Info.plist
-          /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName مناخ" $PLIST
+          /usr/libexec/PlistBuddy -c "Delete :CFBundleDisplayName" $PLIST || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string مناخ" $PLIST
           /usr/libexec/PlistBuddy -c "Add :NSLocationWhenInUseUsageDescription string يستخدم مناخ موقعك لعرض الطقس ومواقيت الصلاة والقبلة والاقترانات لمكانك" $PLIST || true
-          /usr/libexec/PlistBuddy -c "Set :CFBundleDevelopmentRegion ar" $PLIST
+          /usr/libexec/PlistBuddy -c "Set :CFBundleDevelopmentRegion ar" $PLIST || true
           /usr/libexec/PlistBuddy -c "Delete :UISupportedInterfaceOrientations" $PLIST || true
           /usr/libexec/PlistBuddy -c "Add :UISupportedInterfaceOrientations array" $PLIST
           /usr/libexec/PlistBuddy -c "Add :UISupportedInterfaceOrientations:0 string UIInterfaceOrientationPortrait" $PLIST
@@ -50,4 +51,4 @@ workflows:
     publishing:
       app_store_connect:
         auth: integration
-        submit_to_testflight: true
+        submit_to_testflight: false     # النسخة تظهر في TestFlight للمختبرين الداخليين بدون مراجعة
