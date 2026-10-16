@@ -14,7 +14,11 @@ workflows:
       node: 20
       xcode: latest
     triggering:
-      events: []                           # التشغيل يدوي من لوحة Codemagic
+      events:                              # يشتغل يدويًا من اللوحة، أو تلقائيًا عند رفع tag يبدأ بـ ios-
+        - tag
+      tag_patterns:
+        - pattern: 'ios-*'
+          include: true
     scripts:
       - name: تثبيت الحزم وتجهيز ملفات الموقع
         script: |
