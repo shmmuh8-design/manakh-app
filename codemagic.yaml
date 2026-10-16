@@ -6,7 +6,7 @@ workflows:
     instance_type: mac_mini_m2
     working_directory: ios-app
     integrations:
-      app_store_connect: manakh_ase        # اسم مفتاح App Store Connect اللي تضيفه في إعدادات Codemagic
+      app_store_connect: manakh_asc        # اسم مفتاح App Store Connect اللي تضيفه في إعدادات Codemagic
     environment:
       ios_signing:
         distribution_type: app_store
