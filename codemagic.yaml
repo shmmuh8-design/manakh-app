@@ -14,11 +14,12 @@ workflows:
       node: 20
       xcode: latest
     triggering:
-      events:                              # يشتغل يدويًا من اللوحة، أو تلقائيًا عند رفع tag يبدأ بـ ios-
-        - tag
-      tag_patterns:
-        - pattern: 'ios-*'
+      events:                              # يشتغل يدويًا من اللوحة، أو تلقائيًا عند أي تحديث على فرع ios-build
+        - push
+      branch_patterns:
+        - pattern: 'ios-build'
           include: true
+          source: true
     scripts:
       - name: تثبيت الحزم وتجهيز ملفات الموقع
         script: |
