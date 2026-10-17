@@ -30,6 +30,8 @@ workflows:
           [ -d ios ] || npx cap add ios
           # Apple تطلب iOS 15 كحد أدنى (ITMS-90068)
           sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = [0-9.]*;/IPHONEOS_DEPLOYMENT_TARGET = 15.0;/g' ios/App/App.xcodeproj/project.pbxproj
+          # آيفون فقط (بدون آيباد) عشان ما تطلب Apple صور آيباد
+          sed -i '' 's/TARGETED_DEVICE_FAMILY = "[0-9,]*";/TARGETED_DEVICE_FAMILY = 1;/g' ios/App/App.xcodeproj/project.pbxproj
           [ -f ios/App/Podfile ] && sed -i '' "s/platform :ios, .*/platform :ios, '15.0'/" ios/App/Podfile
           npm run assets
           npx cap sync ios
