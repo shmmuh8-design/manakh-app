@@ -666,21 +666,9 @@
       <div class="arrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
     </div>
 
-    <div class="card">
-      <div class="card-head"><h2>آخر التنبيهات</h2><button class="link-btn">عرض الكل</button></div>
-      <div class="alert-row"><div class="icon3d sm amber"><svg viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></div>
-        <div class="txt"><p>تجاوزت الحرارة الخارجية مستوى 30° مئوية</p><time>منذ 12 دقيقة</time></div></div>
-      <div class="alert-row"><div class="icon3d sm teal"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg></div>
-        <div class="txt"><p>تمت مزامنة جميع القراءات بنجاح</p><time>منذ 28 دقيقة</time></div></div>
-    </div>
-
-    <div class="card" style="margin-bottom:0;">
-      <div class="card-head"><h2>المستشعرات</h2><span class="chip good">كل المستشعرات متصلة</span></div>
-      <div class="sensor-grid">
-        <div class="sensor-chip"><div class="icon3d sm green"><svg viewBox="0 0 24 24"><path d="M5 12.5a11 11 0 0114 0M8.5 16a6 6 0 017 0M12 19h.01"/></svg></div><p>المنزل الرئيسي</p><div class="status"><i></i><span>متصل الآن</span></div></div>
-        <div class="sensor-chip"><div class="icon3d sm green"><svg viewBox="0 0 24 24"><path d="M5 12.5a11 11 0 0114 0M8.5 16a6 6 0 017 0M12 19h.01"/></svg></div><p>المكتب</p><div class="status"><i></i><span>متصل الآن</span></div></div>
-        <div class="sensor-chip"><div class="icon3d sm green"><svg viewBox="0 0 24 24"><path d="M5 12.5a11 11 0 0114 0M8.5 16a6 6 0 017 0M12 19h.01"/></svg></div><p>مستشعر السطح</p><div class="status"><i></i><span>متصل الآن</span></div></div>
-      </div>
+    <div class="card" style="margin-bottom:0; cursor:pointer;" id="homeConj" onclick="showPage('page-seasons:conj')">
+      <div class="card-head"><h2>🪐 الاقتران القادم</h2><button class="link-btn" type="button">كل الاقترانات</button></div>
+      <p id="homeConjTxt" style="margin:0; line-height:1.9;">جاري حساب أقرب اقتران للقمر بالكواكب والنجوم…</p>
     </div>
     <p class="footnote" id="lastUpdate">آخر تحديث: الآن · البيانات تتحدث تلقائياً كل 5 ثوانٍ</p>
   </section>
@@ -923,7 +911,6 @@
       <div class="settings-row" id="rowNotif"><div class="icon3d sm amber"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></div><span class="name">التنبيهات والإشعارات</span><div class="toggle on" id="toggleNotif"></div></div>
       <div class="settings-row" id="rowUnit"><div class="icon3d sm violet"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 000 18"/></svg></div><span class="name" id="unitRowLabel">وحدة الحرارة (مئوية)</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
       <div class="settings-row" id="rowFontSize"><div class="icon3d sm gold"><svg viewBox="0 0 24 24"><path d="M6 18L10 6h1l4 12M7.2 14h6.6"/></svg></div><span class="name" id="fontRowLabel">حجم الخط (عادي)</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
-      <div class="settings-row" id="rowSensors"><div class="icon3d sm green"><svg viewBox="0 0 24 24"><path d="M5 12.5a11 11 0 0114 0M8.5 16a6 6 0 017 0M12 19h.01"/></svg></div><span class="name">إدارة المستشعرات</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
       <div class="settings-row" id="rowNtfy"><div class="icon3d sm rose"><svg viewBox="0 0 24 24"><path d="M4 4l16 8-16 8V4z"/></svg></div><span class="name" id="ntfyRowLabel">ربط إشعارات فعلية عبر ntfy</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
       <div class="settings-row" id="rowAbout"><div class="icon3d sm slate"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg></div><span class="name">عن التطبيق</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
     </div>
@@ -1164,7 +1151,7 @@
   });
 
   // ---------- settings interactions ----------
-  document.getElementById('rowSensors').addEventListener('click', ()=> showToast('كل المستشعرات متصلة وتعمل بشكل طبيعي ✅'));
+
   document.getElementById('rowAbout').addEventListener('click', ()=> showToast('مناخ — الإصدار 2.1 · تصميم محدَّث بأيقونات 3D'));
 
   document.getElementById('toggleNotif').addEventListener('click', (e)=>{
@@ -3426,6 +3413,21 @@
     const isOpen = () => { const sec = document.getElementById('page-seasons'); return sec && sec.classList.contains('active') && sec._tabs && sec._tabs.current() === 'conj'; };
     document.addEventListener('tabchange', e => { if(e.detail.tab === 'conj' || (e.detail.page === 'page-seasons' && isOpen())) render(); });
     setInterval(() => { if(isOpen()) renderNow(pos()); }, 60000);
+  })();
+
+  // ---------- home: next moon conjunction (real calculation) ----------
+  (function(){
+    function fillHomeConj(){
+      const el = document.getElementById('homeConjTxt'); if(!el || !window.manakhConjEvents) return;
+      try{
+        const r = window.manakhConjEvents(), now = Date.now();
+        const e = r.events.filter(x => x.best && x.best.t > now).sort((a, b) => a.best.t - b.best.t)[0];
+        if(!e){ el.textContent = 'لا يوجد اقتران ظاهر للقمر خلال الأيام القادمة.'; return; }
+        const d = new Date(e.best.t), day = d.toLocaleDateString('ar', { weekday:'long', day:'numeric', month:'long' });
+        el.innerHTML = '<b>القمر و' + r.NAMES[e.id] + '</b><br>' + day + ' — الساعة <bdi dir="ltr">' + r.fTime.format(e.best.t) + '</bdi> جهة ' + r.dirOf(e.best.az) + '، والمسافة بينهما <bdi dir="ltr">' + e.best.sep.toFixed(1) + '°</bdi>';
+      }catch(_){ }
+    }
+    setTimeout(fillHomeConj, 600); setInterval(fillHomeConj, 30 * 60000);
   })();
 
   // ---------- tides & sea tab ----------
