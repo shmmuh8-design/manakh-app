@@ -542,7 +542,9 @@
   .sp-time{ width:78px; flex-shrink:0; text-align:center; } .sp-time b{ display:block; font-family:"Sora",sans-serif; font-size:.95rem; color:#fff; } .sp-time span{ font-size:.66rem; color:var(--text-2); }
   .sp-body{ flex:1; min-width:0; } .sp-name{ font-size:.86rem; font-weight:800; } .sp-path{ font-size:.78rem; margin:3px 0; } .sp-path b{ color:#fff; }
   .sp-meta{ font-size:.7rem; color:var(--text-2); }
-  .native-app #notifLink, .native-app #rowNtfy{ display:none !important; }
+  .native-app #notifLink, .native-app #rowNtfy, .native-app #notifTest{ display:none !important; }
+  .tabs{ top:env(safe-area-inset-top,0px); }
+  .sbar-cover{ position:fixed; top:0; inset-inline-start:0; inset-inline-end:0; height:env(safe-area-inset-top,0px); background:var(--bg-deep); z-index:70; pointer-events:none; }
   /* ---------- tides ---------- */
   .tide-hero{ padding:16px; background:radial-gradient(100% 80% at 50% 0%, rgba(43,182,201,.16), transparent 70%), linear-gradient(180deg,var(--bg-panel),var(--bg-panel-2)); }
   .tide-place{ font-size:.78rem; color:var(--text-2); text-align:center; }
@@ -941,7 +943,7 @@
       <div class="tone-row"><span class="tone-ic">🌧️</span><div class="tone-meta"><div class="tone-name">المطر</div><div class="tone-sub">أولوية عالية</div></div><select class="tone-sel" data-kind="rain"></select><button class="tone-play" type="button" data-kind="rain" aria-label="جرّب">▶</button></div>
       <div class="tone-row"><span class="tone-ic">🔔</span><div class="tone-meta"><div class="tone-name">باقي التنبيهات</div><div class="tone-sub">الحرارة والرطوبة والأبراج</div></div><select class="tone-sel" data-kind="general"></select><button class="tone-play" type="button" data-kind="general" aria-label="جرّب">▶</button></div>
       <div class="tone-vol"><span>🔈</span><input type="range" id="toneVol" min="10" max="100" step="5" aria-label="مستوى الصوت" /><span>🔊</span><b id="toneVolTxt" dir="ltr">90%</b></div>
-      <div class="alert-note">الصوت يشتغل والتطبيق مفتوح. على الآيفون ارفع صوت الجهاز، والتنبيهات اللي توصل عبر ntfy تاخذ نغمة برنامج ntfy، وتنبيه الرعد يوصل بأعلى أولوية.</div>
+      <div class="alert-note" id="toneNote">الصوت يشتغل والتطبيق مفتوح. على الآيفون ارفع صوت الجهاز، والتنبيهات اللي توصل عبر ntfy تاخذ نغمة برنامج ntfy، وتنبيه الرعد يوصل بأعلى أولوية.</div>
     </div>
   </section>
 
@@ -2687,7 +2689,9 @@
           sendNtfy('🌧️ تنبيه أمطار — ' + p.label, 'أمطار متوقعة ' + when(rIdx) + ' (الاحتمال ' + (prob[rIdx] || 0) + '%). انتبه في الطرق وابتعد عن مجاري الأودية.', ['cloud_with_rain']);
         }
         $('alertNote').textContent = 'آخر فحص ' + hhmm(new Date()) + ' لطقس ' + p.label +
-          '. نفحص كل 15 دقيقة للثلاث ساعات الجاية. التنبيهات تظهر والتطبيق مفتوح، وتوصل جوالك عبر ntfy إذا ربطته من الإعدادات.';
+          (window.manakhNative
+            ? '. الرعد والمطر والرياح والمد تنبّهك وأنت فاتح التطبيق، أما الاقترانات وأطوار القمر والأنواء والشهب ومرور المحطة فتوصلك حتى والتطبيق مقفل.'
+            : '. نفحص كل 15 دقيقة للثلاث ساعات الجاية. التنبيهات تظهر والتطبيق مفتوح، وتوصل جوالك عبر ntfy إذا ربطته من الإعدادات.');
       }catch(e){ /* try again next cycle */ }
     }
     setTimeout(checkAlerts, 6000);
@@ -3967,6 +3971,8 @@
     if(!Cap || !Cap.isNativePlatform || !Cap.isNativePlatform()) return;
     const LN = Cap.Plugins && Cap.Plugins.LocalNotifications, HP = Cap.Plugins && Cap.Plugins.Haptics;
     document.documentElement.classList.add('native-app');
+    { const c = document.createElement('div'); c.className = 'sbar-cover'; document.body.appendChild(c); }
+    { const t = document.getElementById('toneNote'); if(t) t.textContent = 'النغمات تشتغل وأنت فاتح التطبيق — ارفع صوت الجوال. والإشعارات اللي توصلك والتطبيق مقفل تاخذ نغمة الآيفون.'; }
     if(HP) document.addEventListener('click', e => { if(e.target.closest('.tab, .bottomnav a, .bottomnav button, .toggle')) HP.impact({ style:'LIGHT' }).catch(() => {}); }, true);
     if(!LN) return;
     const prevFire = fireLocalAlert;
