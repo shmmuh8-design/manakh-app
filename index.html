@@ -2215,7 +2215,39 @@
       card.classList.remove('talking');
       speakLbl.textContent = 'اسمع النشرة';
     }
+    // iPhone app: the native speech engine sees every installed voice (e.g. «مريم (محسّن)»), unlike the web view
+    const NTTS = (window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform()) ? (Capacitor.Plugins.TextToSpeech || (Capacitor.registerPlugin && Capacitor.registerPlugin('TextToSpeech'))) : null;
+    let nativeVoice = undefined;   // {index, female} once looked up
+    async function pickNativeVoice(){
+      if(nativeVoice !== undefined) return nativeVoice;
+      try{
+        const r = await NTTS.getSupportedVoices(), all = (r.voices || []).map((v, i) => ({ i, name:v.name || '', lang:v.lang || '' }));
+        const ar = all.filter(v => /^ar/i.test(v.lang));
+        const fem = ar.find(v => FEMALE.test(v.name)) || ar.find(v => !MALE.test(v.name));
+        nativeVoice = fem ? { index: fem.i, female: FEMALE.test(fem.name) || !MALE.test(fem.name) } : null;
+      }catch(e){ nativeVoice = null; }
+      return nativeVoice;
+    }
+    let nativeRun = 0;
+    async function speakNative(){
+      const run = ++nativeRun;
+      lines = build();
+      speaking = true; card.classList.add('talking'); speakLbl.textContent = 'إيقاف';
+      const v = await pickNativeVoice();
+      for(let i = 0; i < lines.length; i++){
+        if(run !== nativeRun || !speaking) return;
+        idx = i; textEl.innerHTML = lines[i]; drawDots();
+        try{
+          await NTTS.speak(Object.assign({ text: toSpeech(lines[i]), lang:'ar-SA', rate:0.95, pitch: v && v.female ? 1.0 : 1.5, volume:1, category:'playback' }, v ? { voice: v.index } : {}));
+        }catch(e){ break; }
+      }
+      if(run === nativeRun) stopSpeaking();
+    }
     function speakAll(){
+      if(NTTS){
+        if(speaking){ nativeRun++; NTTS.stop().catch(() => {}); stopSpeaking(); return; }
+        speakNative(); return;
+      }
       if(!('speechSynthesis' in window)){ showToast('المتصفح لا يدعم القراءة الصوتية'); return; }
       if(speaking){ stopSpeaking(); return; }
       lines = build();
