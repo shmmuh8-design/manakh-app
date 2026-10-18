@@ -2192,8 +2192,8 @@
         .replace(/°F/g, ' درجة فهرنهايت').replace(/°/g, ' درجة')
         .replace(/%/g, ' بالمئة').replace(/كم\/س/g, 'كيلومتر في الساعة').replace(/·/g, '،');
     }
-    const FEMALE = /laila|layla|mariam|maryam|amira|hoda|huda|salma|zariyah|fatima|noura|nora|reem|sana|mona|lana|female|woman|أنثى/i;
-    const MALE = /maged|majed|tarik|tariq|naayf|hamed|shakir|omar|male|man\b/i;
+    const FEMALE = /laila|layla|mariam|maryam|amira|hoda|huda|salma|zariyah|fatima|noura|nora|reem|sana|mona|lana|female|woman|أنثى|مريم|ليلى|هدى|سلمى|نورة|ريم|منى/i;
+    const MALE = /maged|majed|tarik|tariq|naayf|hamed|shakir|omar|male|man\b|ماجد|طارق|نايف|حامد|عمر/i;
     let voicesCache = [];
     function loadVoices(){ if(window.speechSynthesis) voicesCache = speechSynthesis.getVoices(); }
     loadVoices();
@@ -2221,10 +2221,13 @@
     async function pickNativeVoice(){
       if(nativeVoice !== undefined) return nativeVoice;
       try{
-        const r = await NTTS.getSupportedVoices(), all = (r.voices || []).map((v, i) => ({ i, name:v.name || '', lang:v.lang || '' }));
+        // the identifier is always English (e.g. com.apple.voice.enhanced.ar-001.Mariam) even when the name shows as «مريم»
+        const r = await NTTS.getSupportedVoices(), all = (r.voices || []).map((v, i) => ({ i, key:(v.name || '') + ' ' + (v.voiceURI || ''), uri:v.voiceURI || '', lang:v.lang || '' }));
         const ar = all.filter(v => /^ar/i.test(v.lang));
-        const fem = ar.find(v => FEMALE.test(v.name)) || ar.find(v => !MALE.test(v.name));
-        nativeVoice = fem ? { index: fem.i, female: FEMALE.test(fem.name) || !MALE.test(fem.name) } : null;
+        const rank = v => (/premium/i.test(v.uri) ? 2 : /enhanced/i.test(v.uri) ? 1 : 0);
+        const fems = ar.filter(v => FEMALE.test(v.key) && !MALE.test(v.key)).sort((a, b) => rank(b) - rank(a));
+        const fem = fems[0] || ar.find(v => !MALE.test(v.key));
+        nativeVoice = fem ? { index: fem.i, female: !!fems[0] } : null;
       }catch(e){ nativeVoice = null; }
       return nativeVoice;
     }
