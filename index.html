@@ -523,6 +523,26 @@
   .conj-card .cn{ font-size:1.02rem; font-weight:800; margin:2px 0 3px; color:#fff; }
   .conj-card .cm{ font-size:.74rem; color:#e6dcc8; } .conj-card .cm b{ color:#ffcf7a; font-family:"Sora",sans-serif; font-weight:600; }
   .conj-card.hidden-ev{ background:var(--bg-panel-2); opacity:.6; } .conj-card.hidden-ev .cn{ color:var(--text-1); }
+  /* ---------- meteors & space ---------- */
+  .met-hero{ text-align:center; padding:18px 16px; background:radial-gradient(120% 90% at 50% 0%, rgba(255,207,122,.18), transparent 65%), linear-gradient(170deg,#2b2f55,#1b2140); }
+  .met-pill{ display:inline-block; font-size:.72rem; font-weight:700; color:#ffcf7a; background:rgba(255,207,122,.12); border:1px solid rgba(255,207,122,.3); padding:4px 12px; border-radius:20px; }
+  .met-name{ font-size:1.45rem; font-weight:800; margin:10px 0 2px; color:#fff; }
+  .met-sub{ font-size:.8rem; color:var(--text-2); }
+  .met-stats{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:14px 0 10px; }
+  .met-stats div{ background:rgba(255,255,255,.05); border-radius:12px; padding:9px 4px; } .met-stats b{ display:block; font-size:.86rem; color:#ffcf7a; } .met-stats span{ font-size:.66rem; color:var(--text-2); }
+  .met-line{ font-size:.78rem; color:#e6dcc8; margin-top:6px; line-height:1.6; } .met-line b{ color:#ffcf7a; font-family:"Sora",sans-serif; }
+  .met-row{ display:flex; align-items:center; gap:10px; padding:11px 0; border-top:1px solid var(--line); } .met-row:first-child{ border-top:none; }
+  .met-row .mt{ flex:1; min-width:0; } .met-row .mt b{ display:block; font-size:.92rem; } .met-row .mt span{ display:block; font-size:.7rem; color:var(--text-2); margin-top:2px; }
+  .met-row.on .mt b{ color:#ffcf7a; } .met-row.on .mt b::after{ content:' · نشطة الآن'; font-size:.68rem; font-weight:600; }
+  .met-row.past{ opacity:.5; }
+  .met-row .mq{ text-align:center; flex-shrink:0; } .met-row .mq small{ display:block; font-size:.64rem; color:var(--text-2); }
+  .met-q{ color:#ffcf7a; letter-spacing:1px; font-size:.85rem; } .met-q i{ font-style:normal; color:rgba(255,255,255,.18); }
+  .sp-card{ display:flex; gap:12px; align-items:center; padding:12px; margin-bottom:8px; border-radius:16px; background:linear-gradient(160deg,#20294a,#2a2f50); border:1px solid rgba(255,255,255,.06); }
+  .sp-card.live{ border-color:#ffcf7a; box-shadow:0 0 0 1px rgba(255,207,122,.4) inset; }
+  .sp-time{ width:78px; flex-shrink:0; text-align:center; } .sp-time b{ display:block; font-family:"Sora",sans-serif; font-size:.95rem; color:#fff; } .sp-time span{ font-size:.66rem; color:var(--text-2); }
+  .sp-body{ flex:1; min-width:0; } .sp-name{ font-size:.86rem; font-weight:800; } .sp-path{ font-size:.78rem; margin:3px 0; } .sp-path b{ color:#fff; }
+  .sp-meta{ font-size:.7rem; color:var(--text-2); }
+  .native-app #notifLink, .native-app #rowNtfy{ display:none !important; }
   /* ---------- tides ---------- */
   .tide-hero{ padding:16px; background:radial-gradient(100% 80% at 50% 0%, rgba(43,182,201,.16), transparent 70%), linear-gradient(180deg,var(--bg-panel),var(--bg-panel-2)); }
   .tide-place{ font-size:.78rem; color:var(--text-2); text-align:center; }
@@ -786,6 +806,8 @@
       <div class="alert-row" data-pref="moon"><span style="font-size:1.2rem">🌓</span><span class="name">أطوار القمر<small>المحاق والتربيعان والبدر</small></span><div class="toggle"></div></div>
       <div class="alert-row" data-pref="anwaa"><span style="font-size:1.2rem">✦</span><span class="name">الطوالع والأنواء<small>دخول نجم جديد ونهايته</small></span><div class="toggle"></div></div>
       <div class="alert-row" data-pref="conj"><span style="font-size:1.2rem">🪐</span><span class="name">اقترانات القمر<small>قبلها بيوم وقبل وقت المشاهدة بساعة</small></span><div class="toggle"></div></div>
+      <div class="alert-row" data-pref="meteors"><span style="font-size:1.2rem">☄️</span><span class="name">زخات الشهب<small>مساء ليلة الذروة مع أفضل وقت وجهة</small></span><div class="toggle"></div></div>
+      <div class="alert-row" data-pref="space"><span style="font-size:1.2rem">🛰️</span><span class="name">مرور محطة الفضاء<small>قبل المرور الظاهر بـ١٠ دقائق</small></span><div class="toggle"></div></div>
       <div class="notif-status" id="notifStatus"></div>
       <div class="qibla-btns" style="margin-top:10px">
         <button class="muzna-btn primary" id="notifTest" type="button">🔔 إرسال إشعار تجريبي</button>
@@ -933,7 +955,7 @@
   <!-- ============ SEASONS SUBPAGE ============ -->
   <section class="page tabbed" id="page-seasons">
     <div class="back-row"><h1>الأنواء والفلك</h1></div>
-    <div class="tabs" role="tablist"><button class="tab on" type="button" data-tab="anwaa">✦ الأنواء</button><button class="tab" type="button" data-tab="seasons">🍂 الفصول</button><button class="tab" type="button" data-tab="zodiac">♈ الأبراج</button><button class="tab" type="button" data-tab="stars">⭐ النجوم</button><button class="tab" type="button" data-tab="moon">🌙 القمر</button><button class="tab" type="button" data-tab="conj">🪐 الاقترانات</button></div>
+    <div class="tabs" role="tablist"><button class="tab on" type="button" data-tab="anwaa">✦ الأنواء</button><button class="tab" type="button" data-tab="seasons">🍂 الفصول</button><button class="tab" type="button" data-tab="zodiac">♈ الأبراج</button><button class="tab" type="button" data-tab="stars">⭐ النجوم</button><button class="tab" type="button" data-tab="moon">🌙 القمر</button><button class="tab" type="button" data-tab="conj">🪐 الاقترانات</button><button class="tab" type="button" data-tab="meteors">☄️ الشهب</button><button class="tab" type="button" data-tab="space">🛰️ الفضاء</button></div>
     <div class="panes">
     <div class="pane" data-pane="anwaa">
     <p style="color:var(--text-2); font-size:.82rem; margin:-8px 0 16px;">التقويم الفلكي الزراعي التقليدي — 28 نوءًا، كل واحد نجمه ووصفه وإرشاداته الزراعية</p>
@@ -1016,6 +1038,27 @@
     </div>
     <div class="alert-note" style="text-align:center">الوقت المعروض هو أفضل لحظة للرؤية: السماء مظلمة والقمر والجرم فوق الأفق، والدرجة هي المسافة الظاهرية بينهما (عرض الإصبع عند مد الذراع ≈ 2°)</div>
     </div>
+    <div class="pane" data-pane="meteors">
+    <p style="color:var(--text-2); font-size:.82rem; margin:0 0 12px;">زخات الشهب السنوية، موعد ذروتها وأفضل وقت لمشاهدتها من <b id="metPlace">موقعك</b></p>
+    <div id="metNext"></div>
+    <div class="card">
+      <div class="card-head"><h2>☄️ زخات الشهب خلال السنة</h2></div>
+      <div id="metList"><div class="alert-note">جارٍ الحساب…</div></div>
+    </div>
+    <div class="alert-note" style="text-align:center">العدد تقديري لسماء مظلمة بعيدًا عن أضواء المدن، وفي المدينة تشوف أقل بكثير. استلقِ وانظر للسماء كلها، واعطِ عينك ٢٠ دقيقة تتعود على الظلام.</div>
+    </div>
+    <div class="pane" data-pane="space">
+    <p style="color:var(--text-2); font-size:.82rem; margin:0 0 12px;">مرور محطات الفضاء المأهولة فوق <b id="spPlace">موقعك</b> — تبان كنجمة لامعة تتحرك بسرعة وبدون وميض</p>
+    <div class="card">
+      <div class="card-head"><h2>🛰️ وين المحطات الحين</h2><span class="chip live"><i class="dot-live"></i>مباشر</span></div>
+      <div id="spNow"><div class="alert-note">جارٍ التحميل…</div></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>👀 المرور الظاهر القادم</h2></div>
+      <div id="spList"><div class="alert-note">جارٍ الحساب…</div></div>
+    </div>
+    <div class="alert-note" style="text-align:center">المحطة تبان بعد الغروب أو قبل الشروق، لما تكون السماء مظلمة والمحطة تعكس ضوء الشمس. المواعيد محسوبة من بيانات المدار الحديثة وتتحدث تلقائيًا.</div>
+    </div>
     </div>
   </section>
 
@@ -1053,6 +1096,8 @@
   </div>
 </div>
 
+<!-- SGP4 orbit propagation: satellite.js (MIT License, © Shashwat Kandadai and contributors) — minimal bundle -->
+<script>(()=>{var ge=Math.PI,E=ge*2,We=ge/180,it=180/ge,Vn=1440;var Ke=6378.135,Ue=60/Math.sqrt(650942.9922085947),hn=6378.135*Ue/60,vn=1/Ue,Ye=0.001082616;var Gn=-0.00000165597,Be=-0.002345069720011528,He=0.6666666666666666,xn=1440/(2*ge);function _n(n,t){let o=[31,n%4===0?29:28,31,30,31,30,31,31,30,31,30,31],i=Math.floor(t),s=1,d=0;while(i>d+o[s-1]&&s<12)d+=o[s-1],s+=1;let f=s,b=i-d,r=(t-i)*24,z=Math.floor(r);r=(r-z)*60;let l=Math.floor(r),p=(r-l)*60;return{mon:f,day:b,hr:z,minute:l,sec:p}}function Un(n,t,o,i,s,d,f=0){return 367*n-Math.floor(7*(n+Math.floor((t+9)/12))*0.25)+Math.floor(275*t/9)+o+1721013.5+((f/60000+d/60+s)/60+i)/24}function Qe(n,t,o,i,s,d,f=0){if(n instanceof Date){let b=n;return Un(b.getUTCFullYear(),b.getUTCMonth()+1,b.getUTCDate(),b.getUTCHours(),b.getUTCMinutes(),b.getUTCSeconds(),b.getUTCMilliseconds())}return Un(n,t,o,i,s,d,f)}function fn(n,t){let{e3:o,ee2:i,peo:s,pgho:d,pho:f,pinco:b,plo:r,se2:z,se3:l,sgh2:p,sgh3:k,sgh4:y,sh2:_,sh3:H,si2:w,si3:R,sl2:K,sl3:I,sl4:V,t:q,xgh2:m,xgh3:g,xgh4:P,xh2:j,xh3:ee,xi2:v,xi3:O,xl2:de,xl3:W,xl4:ne,zmol:h,zmos:me}=n,{init:A,opsmode:Z}=t,{ep:ie,inclp:ye,nodep:M,argpp:te,mp:X}=t,c,a,le,oe,ze,J,Re,re,Q,S,L,se,C,T,N,D,x,F,Y,G,B,xe=0.0000119459,pe=0.01675,be=0.00015835218,ue=0.0549;if(B=me+0.0000119459*q,A==="y")B=me;G=B+0.0335*Math.sin(B),x=Math.sin(G),S=0.5*x*x-0.25,L=-0.5*x*Math.cos(G);let Te=z*S+l*L,De=w*S+R*L,Oe=K*S+I*L+V*x,e=p*S+k*L+y*x,Se=_*S+H*L;if(B=h+0.00015835218*q,A==="y")B=h;G=B+0.1098*Math.sin(B),x=Math.sin(G),S=0.5*x*x-0.25,L=-0.5*x*Math.cos(G);let we=i*S+o*L,je=v*S+O*L,Ze=de*S+W*L+ne*x,Ie=m*S+g*L+P*x,fe=j*S+ee*L;if(se=Te+we,N=De+je,D=Oe+Ze,C=e+Ie,T=Se+fe,A==="n")if(se-=s,N-=b,D-=r,C-=d,T-=f,ye+=N,ie+=se,oe=Math.sin(ye),le=Math.cos(ye),ye>=0.2)T/=oe,C-=le*T,te+=C,M+=T,X+=D;else{if(J=Math.sin(M),ze=Math.cos(M),c=oe*J,a=oe*ze,Re=T*ze+N*le*J,re=-T*J+N*le*ze,c+=Re,a+=re,M%=E,M<0&&Z==="a")M+=E;if(F=X+te+le*M,Q=D+C-N*M*oe,F+=Q,Y=M,M=Math.atan2(c,a),M<0&&Z==="a")M+=E;if(Math.abs(Y-M)>ge)if(M<Y)M+=E;else M-=E;X+=D,te=F-X-le*M}return{ep:ie,inclp:ye,nodep:M,argpp:te,mp:X}}function Kn(n){let{epoch:t,ep:o,argpp:i,tc:s,inclp:d,nodep:f,np:b}=n,r,z,l,p,k,y,_,H,w,R,K,I,V,q,m,g,P,j,ee,v,O,de,W,ne,h,me,A,Z,ie,ye,M,te,X,c,a,le,oe,ze,J,Re,re,Q,S,L,se,C,T,N,D,x,F,Y,G,B,xe,pe,be,ue,Te,De,Oe,e,Se,we=0.01675,je=0.0549,Ze=0.0000029864797,Ie=0.00000047968065,fe=0.39785416,Xe=0.91744867,qe=0.1945905,Ae=-0.98088458,Je=b,ae=o,Me=Math.sin(f),$e=Math.cos(f),Le=Math.sin(i),Ce=Math.cos(i),Ve=Math.sin(d),Ne=Math.cos(d),u=ae*ae,ve=1-u,ke=Math.sqrt(ve),en=0,U=0,mn=0,ln=0,bn=0,Fe=t+18261.5+s/1440,_e=(4.523602-0.00092422029*Fe)%E,he=Math.sin(_e),Ge=Math.cos(_e),nn=0.91375164-0.03568096*Ge,tn=Math.sqrt(1-nn*nn),Ee=0.089683511*he/tn,Pe=Math.sqrt(1-Ee*Ee),ce=5.8351514+0.001944368*Fe,on=0.39785416*he/tn,En=Pe*Ge+0.91744867*Ee*he;on=Math.atan2(on,En),on+=ce-_e;let Pn=Math.cos(on),An=Math.sin(on);v=0.1945905,O=-0.98088458,ne=0.91744867,h=0.39785416,de=$e,W=Me,K=0.0000029864797;let Cn=1/Je,an=0;while(an<2)if(an+=1,r=v*de+O*ne*W,l=-O*de+v*ne*W,_=-v*W+O*ne*de,H=O*h,w=O*W+v*ne*de,R=v*h,z=Ne*_+Ve*H,p=Ne*w+Ve*R,k=-Ve*_+Ne*H,y=-Ve*w+Ne*R,I=r*Ce+z*Le,V=l*Ce+p*Le,q=-r*Le+z*Ce,m=-l*Le+p*Ce,g=k*Le,P=y*Le,j=k*Ce,ee=y*Ce,Oe=12*I*I-3*q*q,e=24*I*V-6*q*m,Se=12*V*V-3*m*m,Y=3*(r*r+z*z)+Oe*u,G=6*(r*l+z*p)+e*u,B=3*(l*l+p*p)+Se*u,xe=-6*r*k+u*(-24*I*j-6*q*g),pe=-6*(r*y+l*k)+u*(-24*(V*j+I*ee)+-6*(q*P+m*g)),be=-6*l*y+u*(-24*V*ee-6*m*P),ue=6*z*k+u*(24*I*g-6*q*j),Te=6*(p*k+z*y)+u*(24*(V*g+I*P)-6*(m*j+q*ee)),De=6*p*y+u*(24*V*P-6*m*ee),Y=Y+Y+ve*Oe,G=G+G+ve*e,B=B+B+ve*Se,T=K*Cn,C=-0.5*T/ke,N=T*ke,se=-15*ae*N,D=I*q+V*m,x=V*q+I*m,F=V*m-I*q,an===1)me=se,A=C,Z=T,ie=N,ye=D,M=x,te=F,X=Y,c=G,a=B,le=xe,oe=pe,ze=be,J=ue,Re=Te,re=De,Q=Oe,S=e,L=Se,v=Pn,O=An,ne=nn,h=tn,de=Pe*$e+Ee*Me,W=Me*Pe-$e*Ee,K=0.00000047968065;let wn=(4.7199672+(0.2299715*Fe-ce))%E,jn=(6.2565837+0.017201977*Fe)%E,In=2*me*M,Ln=2*me*te,kn=2*A*oe,gn=2*A*(ze-le),zn=-2*Z*c,Mn=-2*Z*(a-X),yn=-2*Z*(-21-9*u)*0.01675,sn=2*ie*S,Rn=2*ie*(L-Q),Tn=-18*ie*0.01675,rn=-2*A*Re,pn=-2*A*(re-J),cn=2*se*x,Dn=2*se*F,On=2*C*pe,Qn=2*C*(be-xe),et=-2*T*G,nt=-2*T*(B-Y),tt=-2*T*(-21-9*u)*0.0549,ot=2*N*e,st=2*N*(Se-Oe),mt=-18*N*0.0549,rt=-2*C*Te,ct=-2*C*(De-ue);return{snodm:Me,cnodm:$e,sinim:Ve,cosim:Ne,sinomm:Le,cosomm:Ce,day:Fe,e3:Dn,ee2:cn,em:ae,emsq:u,gam:ce,peo:0,pgho:0,pho:0,pinco:0,plo:0,rtemsq:ke,se2:In,se3:Ln,sgh2:sn,sgh3:Rn,sgh4:Tn,sh2:rn,sh3:pn,si2:kn,si3:gn,sl2:zn,sl3:Mn,sl4:yn,s1:se,s2:C,s3:T,s4:N,s5:D,s6:x,s7:F,ss1:me,ss2:A,ss3:Z,ss4:ie,ss5:ye,ss6:M,ss7:te,sz1:X,sz2:c,sz3:a,sz11:le,sz12:oe,sz13:ze,sz21:J,sz22:Re,sz23:re,sz31:Q,sz32:S,sz33:L,xgh2:ot,xgh3:st,xgh4:mt,xh2:rt,xh3:ct,xi2:On,xi3:Qn,xl2:et,xl3:nt,xl4:tt,nm:Je,z1:Y,z2:G,z3:B,z11:xe,z12:pe,z13:be,z21:ue,z22:Te,z23:De,z31:Oe,z32:e,z33:Se,zmol:wn,zmos:jn}}function Zn(n){let{cosim:t,argpo:o,s1:i,s2:s,s3:d,s4:f,s5:b,sinim:r,ss1:z,ss2:l,ss3:p,ss4:k,ss5:y,sz1:_,sz3:H,sz11:w,sz13:R,sz21:K,sz23:I,sz31:V,sz33:q,t:m,tc:g,gsto:P,mo:j,mdot:ee,no:v,nodeo:O,nodedot:de,xpidot:W,z1:ne,z3:h,z11:me,z13:A,z21:Z,z23:ie,z31:ye,z33:M,ecco:te,eccsq:X}=n,{emsq:c,em:a,argpm:le,inclm:oe,mm:ze,nm:J,nodem:Re,irez:re,atime:Q,d2201:S,d2211:L,d3210:se,d3222:C,d4410:T,d4422:N,d5220:D,d5232:x,d5421:F,d5433:Y,dedt:G,didt:B,dmdt:xe,dnodt:pe,domdt:be,del1:ue,del2:Te,del3:De,xfact:Oe,xlamo:e,xli:Se,xni:we}=n,je,Ze,Ie,fe,Xe,qe,Ae,Je,ae,Me,$e,Le,Ce,Ve,Ne,u,ve,ke,en,U,mn,ln,bn,Fe,_e,he,Ge,nn,tn,Ee,Pe,ce,on=0.0000017891679,En=0.0000021460748,Pn=0.00000022123015,An=0.0000017891679,Cn=0.0000000073636953,an=0.0000000021765803,wn=0.0043752690880113,jn=0.00000037393792,In=0.00000011428639,Ln=0.00015835218,kn=0.0000119459;if(re=0,J<0.0052359877&&J>0.0034906585)re=1;if(J>=0.00826&&J<=0.00924&&a>=0.5)re=2;let gn=z*0.0000119459*y,zn=l*0.0000119459*(w+R),Mn=-0.0000119459*p*(_+H-14-6*c),yn=k*0.0000119459*(V+q-6),sn=-0.0000119459*l*(K+I);if(oe<0.052359877||oe>ge-0.052359877)sn=0;if(r!==0)sn/=r;let Rn=yn-t*sn;G=gn+i*0.00015835218*b,B=zn+s*0.00015835218*(me+A),xe=Mn-0.00015835218*d*(ne+h-14-6*c);let Tn=f*0.00015835218*(ye+M-6),rn=-0.00015835218*s*(Z+ie);if(oe<0.052359877||oe>ge-0.052359877)rn=0;if(be=Rn+Tn,pe=sn,r!==0)be-=t/r*rn,pe+=rn/r;let pn=0,cn=(P+g*0.0043752690880113)%E;if(a+=G*m,oe+=B*m,le+=be*m,Re+=pe*m,ze+=xe*m,re!==0){if(Ee=(J/Ue)**He,re===2){Pe=t*t;let Dn=a;a=te;let On=c;if(c=X,ce=a*c,Ve=-0.306-(a-0.64)*0.44,a<=0.65)Ne=3.616-13.247*a+16.29*c,ve=-19.302+117.39*a-228.419*c+156.591*ce,ke=-18.9068+109.7927*a-214.6334*c+146.5816*ce,en=-41.122+242.694*a-471.094*c+313.953*ce,U=-146.407+841.88*a-1629.014*c+1083.435*ce,mn=-532.114+3017.977*a-5740.032*c+3708.276*ce;else if(Ne=-72.099+331.819*a-508.738*c+266.724*ce,ve=-346.844+1582.851*a-2415.925*c+1246.113*ce,ke=-342.585+1554.908*a-2366.899*c+1215.972*ce,en=-1052.797+4758.686*a-7193.992*c+3651.957*ce,U=-3581.69+16178.11*a-24462.77*c+12422.52*ce,a>0.715)mn=-5149.66+29936.92*a-54087.36*c+31324.56*ce;else mn=1464.74-4664.75*a+3763.64*c;if(a<0.7)Fe=-919.2277+4988.61*a-9064.77*c+5542.21*ce,ln=-822.71072+4568.6173*a-8491.4146*c+5337.524*ce,bn=-853.666+4690.25*a-8624.77*c+5341.4*ce;else Fe=-37995.78+161616.52*a-229838.2*c+109377.94*ce,ln=-51752.104+218913.95*a-309468.16*c+146349.42*ce,bn=-40023.88+170470.89*a-242699.48*c+115605.82*ce;_e=r*r,je=0.75*(1+2*t+Pe),Ze=1.5*_e,fe=1.875*r*(1-2*t-3*Pe),Xe=-1.875*r*(1+2*t-3*Pe),Ae=35*_e*je,Je=39.375*_e*_e,ae=9.84375*r*(_e*(1-2*t-5*Pe)+0.33333333*(-2+4*t+6*Pe)),Me=r*(4.92187512*_e*(-2-4*t+10*Pe)+6.56250012*(1+2*t-3*Pe)),$e=29.53125*r*(2-8*t+Pe*(-12+8*t+10*Pe)),Le=29.53125*r*(-2-8*t+Pe*(12+8*t-10*Pe)),nn=J*J,tn=Ee*Ee,Ge=3*nn*tn,he=Ge*0.0000017891679,S=he*je*Ve,L=he*Ze*Ne,Ge*=Ee,he=Ge*0.00000037393792,se=he*fe*ve,C=he*Xe*ke,Ge*=Ee,he=2*Ge*0.0000000073636953,T=he*Ae*en,N=he*Je*U,Ge*=Ee,he=Ge*0.00000011428639,D=he*ae*mn,x=he*Me*bn,he=2*Ge*0.0000000021765803,F=he*$e*ln,Y=he*Le*Fe,e=(j+O+O-(cn+cn))%E,Oe=ee+xe+2*(de+pe-0.0043752690880113)-v,a=Dn,c=On}if(re===1)Ce=1+c*(-2.5+0.8125*c),ve=1+2*c,u=1+c*(-6+6.60937*c),je=0.75*(1+t)*(1+t),Ie=0.9375*r*r*(1+3*t)-0.75*(1+t),qe=1+t,qe=1.875*qe*qe*qe,ue=3*J*J*Ee*Ee,Te=2*ue*je*Ce*0.0000017891679,De=3*ue*qe*u*0.00000022123015*Ee,ue=ue*Ie*ve*0.0000021460748*Ee,e=(j+O+o-cn)%E,Oe=ee+W+xe+be+pe-(v+0.0043752690880113);Se=e,we=v,Q=0,J=v+pn}return{em:a,argpm:le,inclm:oe,mm:ze,nm:J,nodem:Re,irez:re,atime:Q,d2201:S,d2211:L,d3210:se,d3222:C,d4410:T,d4422:N,d5220:D,d5232:x,d5421:F,d5433:Y,dedt:G,didt:B,dmdt:xe,dndt:pn,dnodt:pe,domdt:be,del1:ue,del2:Te,del3:De,xfact:Oe,xlamo:e,xli:Se,xni:we}}function Sn(n){let t=(n-2451545)/36525,o=-0.0000062*t*t*t+0.093104*t*t+3164400184.812866*t+67310.54841;if(o=o*We/240%E,o<0)o+=E;return o}function un(n,t,o,i,s,d,f){if(n instanceof Date)return Sn(Qe(n));if(t!==void 0)return Sn(Qe(n,t,o,i,s,d,f));return Sn(n)}function $n(n){let{ecco:t,epoch:o,inclo:i,opsmode:s}=n,{no:d}=n,f=t*t,b=1-f,r=Math.sqrt(b),z=Math.cos(i),l=z*z,p=(Ue/d)**He,k=0.75*Ye*(3*l-1)/(r*b),y=k/(p*p),_=p*(1-y*y-y*(0.3333333333333333+134*y*y/81));y=k/(_*_),d/=1+y;let H=(Ue/d)**He,w=Math.sin(i),R=H*b,K=1-5*l,I=-K-l-l,V=1/H,q=R*R,m=H*(1-t),g="n",P;if(s==="a"){let j=o-7305,ee=Math.floor(j+0.00000001),v=j-ee,O=0.017202791694070362,de=1.7321343856509375,W=0.000000000000005075514194322695,ne=0.017202791694070362+E;if(P=(1.7321343856509375+0.017202791694070362*ee+ne*v+j*j*0.000000000000005075514194322695)%E,P<0)P+=E}else P=un(o+2433281.5);return{no:d,method:g,ainv:V,ao:H,con41:I,con42:K,cosio:z,cosio2:l,eccsq:f,omeosq:b,posq:q,rp:m,rteosq:r,sinio:w,gsto:P}}function Jn(n){let{irez:t,d2201:o,d2211:i,d3210:s,d3222:d,d4410:f,d4422:b,d5220:r,d5232:z,d5421:l,d5433:p,dedt:k,del1:y,del2:_,del3:H,didt:w,dmdt:R,dnodt:K,domdt:I,argpo:V,argpdot:q,t:m,tc:g,gsto:P,xfact:j,xlamo:ee,no:v}=n,{atime:O,em:de,argpm:W,inclm:ne,xli:h,mm:me,xni:A,nodem:Z,nm:ie}=n,ye=0.13130908,M=2.8843198,te=0.37448087,X=5.7686396,c=0.95240898,a=1.8014998,le=1.050833,oe=4.4108898,ze=0.0043752690880113,J=720,Re=-720,re=259200,Q,S,L,se,C,T,N,D,x=0,F=0,Y=(P+g*0.0043752690880113)%E;if(de+=k*m,ne+=w*m,W+=I*m,Z+=K*m,me+=R*m,t!==0){if(O===0||m*O<=0||Math.abs(m)<Math.abs(O))O=0,A=v,h=ee;if(m>0)Q=720;else Q=-720;let G=381;while(G===381){if(t!==2)N=y*Math.sin(h-0.13130908)+_*Math.sin(2*(h-2.8843198))+H*Math.sin(3*(h-0.37448087)),C=A+j,T=y*Math.cos(h-0.13130908)+2*_*Math.cos(2*(h-2.8843198))+3*H*Math.cos(3*(h-0.37448087)),T*=C;else D=V+q*O,L=D+D,S=h+h,N=o*Math.sin(L+h-5.7686396)+i*Math.sin(h-5.7686396)+s*Math.sin(D+h-0.95240898)+d*Math.sin(-D+h-0.95240898)+f*Math.sin(L+S-1.8014998)+b*Math.sin(S-1.8014998)+r*Math.sin(D+h-1.050833)+z*Math.sin(-D+h-1.050833)+l*Math.sin(D+S-4.4108898)+p*Math.sin(-D+S-4.4108898),C=A+j,T=o*Math.cos(L+h-5.7686396)+i*Math.cos(h-5.7686396)+s*Math.cos(D+h-0.95240898)+d*Math.cos(-D+h-0.95240898)+r*Math.cos(D+h-1.050833)+z*Math.cos(-D+h-1.050833)+2*(f*Math.cos(L+S-1.8014998)+b*Math.cos(S-1.8014998)+l*Math.cos(D+S-4.4108898)+p*Math.cos(-D+S-4.4108898)),T*=C;if(Math.abs(m-O)>=720)G=381;else F=m-O,G=0;if(G===381)h+=C*Q+N*259200,A+=N*Q+T*259200,O+=Q}if(ie=A+N*F+T*F*F*0.5,se=h+C*F+N*F*F*0.5,t!==1)me=se-2*Z+2*Y,x=ie-v;else me=se-Z-W+Y,x=ie-v;ie=v+x}return{atime:O,em:de,argpm:W,inclm:ne,xli:h,mm:me,xni:A,nodem:Z,dndt:x,nm:ie}}function dn(n,t){let o,i,s,d,f,b,r,z,l,p,k,y,_,H,w,R,K,I,V,q,m,g,P,j,ee,v,O,de=0.0000000000015;n.t=t,n.error=0;let W=n.mo+n.mdot*n.t,ne=n.argpo+n.argpdot*n.t,h=n.nodeo+n.nodedot*n.t;l=ne,m=W;let me=n.t*n.t;if(P=h+n.nodecf*me,K=1-n.cc1*n.t,I=n.bstar*n.cc4*n.t,V=n.t2cof*me,n.isimp!==1){r=n.omgcof*n.t;let ae=1+n.eta*Math.cos(W);b=n.xmcof*(ae*ae*ae-n.delmo),R=r+b,m=W+R,l=ne-R,y=me*n.t,_=y*n.t,K=K-n.d2*me-n.d3*y-n.d4*_,I+=n.bstar*n.cc5*(Math.sin(m)-n.sinmao),V=V+n.t3cof*y+_*(n.t4cof+n.t*n.t5cof)}n.tempa=K,g=n.no;let A=n.ecco;if(q=n.inclo,n.method==="d"){H=n.t;let ae={irez:n.irez,d2201:n.d2201,d2211:n.d2211,d3210:n.d3210,d3222:n.d3222,d4410:n.d4410,d4422:n.d4422,d5220:n.d5220,d5232:n.d5232,d5421:n.d5421,d5433:n.d5433,dedt:n.dedt,del1:n.del1,del2:n.del2,del3:n.del3,didt:n.didt,dmdt:n.dmdt,dnodt:n.dnodt,domdt:n.domdt,argpo:n.argpo,argpdot:n.argpdot,t:n.t,tc:H,gsto:n.gsto,xfact:n.xfact,xlamo:n.xlamo,no:n.no,atime:n.atime,em:A,argpm:l,inclm:q,xli:n.xli,mm:m,xni:n.xni,nodem:P,nm:g},Me=Jn(ae);({em:A,argpm:l,inclm:q,mm:m,nodem:P,nm:g}=Me),n.atime=Me.atime,n.xli=Me.xli,n.xni=Me.xni}if(g<=0)return n.error=2,null;let Z=(Ue/g)**He*K*K;if(g=Ue/Z**1.5,A-=I,A>=1||A<-0.001)return n.error=1,null;if(A<0.000001)A=0.000001;m+=n.no*V,ee=m+l+P,P%=E,l%=E,ee%=E,m=(ee-l-P)%E;let ie={am:Z,em:A,im:q,Om:P,om:l,mm:m,nm:g},ye=Math.sin(q),M=Math.cos(q),te=A;if(j=q,p=l,O=P,v=m,d=ye,s=M,n.method==="d"){let ae={inclo:n.inclo,init:"n",ep:te,inclp:j,nodep:O,argpp:p,mp:v,opsmode:n.operationmode},Me=fn(n,ae);if({ep:te,nodep:O,argpp:p,mp:v}=Me,j=Me.inclp,j<0)j=-j,O+=ge,p-=ge;if(te<0||te>1)return n.error=3,null}if(n.method==="d")if(d=Math.sin(j),s=Math.cos(j),n.aycof=-0.5*Be*d,Math.abs(s+1)>0.0000000000015)n.xlcof=-0.25*Be*d*(3+5*s)/(1+s);else n.xlcof=-0.25*Be*d*(3+5*s)/0.0000000000015;let X=te*Math.cos(p);R=1/(Z*(1-te*te));let c=te*Math.sin(p)+R*n.aycof,le=(v+p+O+R*n.xlcof*X-O)%E;z=le,w=9999.9;let oe=1;while(Math.abs(w)>=0.000000000001&&oe<=10){if(i=Math.sin(z),o=Math.cos(z),w=1-o*X-i*c,w=(le-c*o+X*i-z)/w,Math.abs(w)>=0.95)if(w>0)w=0.95;else w=-0.95;z+=w,oe+=1}let ze=X*o+c*i,J=X*i-c*o,Re=X*X+c*c,re=Z*(1-Re);if(re<0)return n.error=4,null;let Q=Z*(1-ze),S=Math.sqrt(Z)*J/Q,L=Math.sqrt(re)/Q,se=Math.sqrt(1-Re);R=J/(1+se);let C=Z/Q*(i-c-X*R),T=Z/Q*(o-X+c*R);k=Math.atan2(C,T);let N=(T+T)*C,D=1-2*C*C;R=1/re;let x=0.5*Ye*R,F=x*R;if(n.method==="d")f=s*s,n.con41=3*f-1,n.x1mth2=1-f,n.x7thm1=7*f-1;let Y=Q*(1-1.5*F*se*n.con41)+0.5*x*n.x1mth2*D;if(Y<1)return n.error=6,null;k-=0.25*F*n.x7thm1*N;let G=O+1.5*F*s*N,B=j+1.5*F*s*d*D,xe=S-g*x*n.x1mth2*N/Ue,pe=L+g*x*(n.x1mth2*D+1.5*n.con41)/Ue,be=Math.sin(k),ue=Math.cos(k),Te=Math.sin(G),De=Math.cos(G),Oe=Math.sin(B),e=Math.cos(B),Se=-Te*e,we=De*e,je=Se*be+De*ue,Ze=we*be+Te*ue,Ie=Oe*be,fe=Se*ue-De*be,Xe=we*ue-Te*be,qe=Oe*ue,Ae={x:Y*je*Ke,y:Y*Ze*Ke,z:Y*Ie*Ke},Je={x:(xe*je+pe*fe)*hn,y:(xe*Ze+pe*Xe)*hn,z:(xe*Ie+pe*qe)*hn};return{position:Ae,velocity:Je,meanElements:ie}}function Fn(n,t){let{opsmode:o,satn:i,epoch:s,xbstar:d,xecco:f,xargpo:b,xinclo:r,xmo:z,xno:l,xnodeo:p}=t,k,y,_,H,w,R,K,I,V,q,m,g,P,j,ee,v,O,de,W,ne,h,me,A,Z,ie,ye,M,te,X,c,a,le,oe,ze,J,Re,re,Q,S,L,se,C,T,N,D,x,F,Y,G,B,xe,pe,be,ue,Te,De,Oe=0.0000000000015,e=n;e.isimp=0,e.method="n",e.aycof=0,e.con41=0,e.cc1=0,e.cc4=0,e.cc5=0,e.d2=0,e.d3=0,e.d4=0,e.delmo=0,e.eta=0,e.argpdot=0,e.omgcof=0,e.sinmao=0,e.t=0,e.t2cof=0,e.t3cof=0,e.t4cof=0,e.t5cof=0,e.x1mth2=0,e.x7thm1=0,e.mdot=0,e.nodedot=0,e.xlcof=0,e.xmcof=0,e.nodecf=0,e.irez=0,e.d2201=0,e.d2211=0,e.d3210=0,e.d3222=0,e.d4410=0,e.d4422=0,e.d5220=0,e.d5232=0,e.d5421=0,e.d5433=0,e.dedt=0,e.del1=0,e.del2=0,e.del3=0,e.didt=0,e.dmdt=0,e.dnodt=0,e.domdt=0,e.e3=0,e.ee2=0,e.peo=0,e.pgho=0,e.pho=0,e.pinco=0,e.plo=0,e.se2=0,e.se3=0,e.sgh2=0,e.sgh3=0,e.sgh4=0,e.sh2=0,e.sh3=0,e.si2=0,e.si3=0,e.sl2=0,e.sl3=0,e.sl4=0,e.gsto=0,e.xfact=0,e.xgh2=0,e.xgh3=0,e.xgh4=0,e.xh2=0,e.xh3=0,e.xi2=0,e.xi3=0,e.xl2=0,e.xl3=0,e.xl4=0,e.xlamo=0,e.zmol=0,e.zmos=0,e.atime=0,e.xli=0,e.xni=0,e.bstar=d,e.ecco=f,e.argpo=b,e.inclo=r,e.mo=z,e.no=l,e.nokozai=l,e.nodeo=p,e.operationmode=o;let Se=78/Ke+1,we=42/Ke,je=we*we*we*we;e.init="y",e.t=0;let Ze={satn:i,ecco:e.ecco,epoch:s,inclo:e.inclo,no:e.no,method:e.method,opsmode:e.operationmode},Ie=$n(Ze),{ao:fe,con42:Xe,cosio:qe,cosio2:Ae,eccsq:Je,omeosq:ae,posq:Me,rp:$e,rteosq:Le,sinio:Ce}=Ie;if(e.no=Ie.no,e.con41=Ie.con41,e.gsto=Ie.gsto,e.a=(e.no*vn)**-0.6666666666666666,e.alta=e.a*(1+e.ecco)-1,e.altp=e.a*(1-e.ecco)-1,e.error=0,ae>=0||e.no>=0){if(e.isimp=0,$e<220/Ke+1)e.isimp=1;if(M=Se,h=je,de=($e-1)*Ke,de<156){if(M=de-78,de<98)M=20;let Ne=(120-M)/Ke;h=Ne*Ne*Ne*Ne,M=M/Ke+1}if(W=1/Me,x=1/(fe-M),e.eta=fe*e.ecco*x,g=e.eta*e.eta,m=e.ecco*e.eta,ne=Math.abs(1-g),R=h*x**4,K=R/ne**3.5,H=K*e.no*(fe*(1+1.5*g+m*(4+g))+0.375*Ye*x/ne*e.con41*(8+3*g*(8+g))),e.cc1=e.bstar*H,w=0,e.ecco>0.0001)w=-2*R*x*Be*e.no*Ce/e.ecco;if(e.x1mth2=1-Ae,e.cc4=2*e.no*K*fe*ae*(e.eta*(2+0.5*g)+e.ecco*(0.5+2*g)-Ye*x/(fe*ne)*(-3*e.con41*(1-2*m+g*(1.5-0.5*m))+0.75*e.x1mth2*(2*g-m*(1+g))*Math.cos(2*e.argpo))),e.cc5=2*K*fe*ae*(1+2.75*(g+m)+m*g),I=Ae*Ae,T=1.5*Ye*W*e.no,N=0.5*T*Ye*W,D=-0.46875*Gn*W*W*e.no,e.mdot=e.no+0.5*T*Le*e.con41+0.0625*N*Le*(13-78*Ae+137*I),e.argpdot=-0.5*T*Xe+0.0625*N*(7-114*Ae+395*I)+D*(3-36*Ae+49*I),Y=-T*qe,e.nodedot=Y+(0.5*N*(4-19*Ae)+2*D*(3-7*Ae))*qe,F=e.argpdot+e.nodedot,e.omgcof=e.bstar*w*Math.cos(e.argpo),e.xmcof=0,e.ecco>0.0001)e.xmcof=-He*R*e.bstar/m;if(e.nodecf=3.5*ae*Y*e.cc1,e.t2cof=1.5*e.cc1,Math.abs(qe+1)>0.0000000000015)e.xlcof=-0.25*Be*Ce*(3+5*qe)/(1+qe);else e.xlcof=-0.25*Be*Ce*(3+5*qe)/0.0000000000015;e.aycof=-0.5*Be*Ce;let Ve=1+e.eta*Math.cos(e.mo);if(e.delmo=Ve*Ve*Ve,e.sinmao=Math.sin(e.mo),e.x7thm1=7*Ae-1,2*ge/e.no>=225){e.method="d",e.isimp=1,se=0,ee=e.inclo;let Ne={epoch:s,ep:e.ecco,argpp:e.argpo,tc:se,inclp:e.inclo,nodep:e.nodeo,np:e.no,e3:e.e3,ee2:e.ee2,peo:e.peo,pgho:e.pgho,pho:e.pho,pinco:e.pinco,plo:e.plo,se2:e.se2,se3:e.se3,sgh2:e.sgh2,sgh3:e.sgh3,sgh4:e.sgh4,sh2:e.sh2,sh3:e.sh3,si2:e.si2,si3:e.si3,sl2:e.sl2,sl3:e.sl3,sl4:e.sl4,xgh2:e.xgh2,xgh3:e.xgh3,xgh4:e.xgh4,xh2:e.xh2,xh3:e.xh3,xi2:e.xi2,xi3:e.xi3,xl2:e.xl2,xl3:e.xl3,xl4:e.xl4,zmol:e.zmol,zmos:e.zmos},u=Kn(Ne);e.e3=u.e3,e.ee2=u.ee2,e.peo=u.peo,e.pgho=u.pgho,e.pho=u.pho,e.pinco=u.pinco,e.plo=u.plo,e.se2=u.se2,e.se3=u.se3,e.sgh2=u.sgh2,e.sgh3=u.sgh3,e.sgh4=u.sgh4,e.sh2=u.sh2,e.sh3=u.sh3,e.si2=u.si2,e.si3=u.si3,e.sl2=u.sl2,e.sl3=u.sl3,e.sl4=u.sl4,{sinim:y,cosim:k,em:V,emsq:q,s1:me,s2:A,s3:Z,s4:ie,s5:ye,ss1:te,ss2:X,ss3:c,ss4:a,ss5:le,sz1:oe,sz3:ze,sz11:J,sz13:Re,sz21:re,sz23:Q,sz31:S,sz33:L}=u,e.xgh2=u.xgh2,e.xgh3=u.xgh3,e.xgh4=u.xgh4,e.xh2=u.xh2,e.xh3=u.xh3,e.xi2=u.xi2,e.xi3=u.xi3,e.xl2=u.xl2,e.xl3=u.xl3,e.xl4=u.xl4,e.zmol=u.zmol,e.zmos=u.zmos,{nm:O,z1:G,z3:B,z11:xe,z13:pe,z21:be,z23:ue,z31:Te,z33:De}=u;let ve={inclo:ee,init:e.init,ep:e.ecco,inclp:e.inclo,nodep:e.nodeo,argpp:e.argpo,mp:e.mo,opsmode:e.operationmode},ke=fn(e,ve);e.ecco=ke.ep,e.inclo=ke.inclp,e.nodeo=ke.nodep,e.argpo=ke.argpp,e.mo=ke.mp,P=0,j=0,v=0;let en={cosim:k,emsq:q,argpo:e.argpo,s1:me,s2:A,s3:Z,s4:ie,s5:ye,sinim:y,ss1:te,ss2:X,ss3:c,ss4:a,ss5:le,sz1:oe,sz3:ze,sz11:J,sz13:Re,sz21:re,sz23:Q,sz31:S,sz33:L,t:e.t,tc:se,gsto:e.gsto,mo:e.mo,mdot:e.mdot,no:e.no,nodeo:e.nodeo,nodedot:e.nodedot,xpidot:F,z1:G,z3:B,z11:xe,z13:pe,z21:be,z23:ue,z31:Te,z33:De,ecco:e.ecco,eccsq:Je,em:V,argpm:P,inclm:ee,mm:v,nm:O,nodem:j,irez:e.irez,atime:e.atime,d2201:e.d2201,d2211:e.d2211,d3210:e.d3210,d3222:e.d3222,d4410:e.d4410,d4422:e.d4422,d5220:e.d5220,d5232:e.d5232,d5421:e.d5421,d5433:e.d5433,dedt:e.dedt,didt:e.didt,dmdt:e.dmdt,dnodt:e.dnodt,domdt:e.domdt,del1:e.del1,del2:e.del2,del3:e.del3,xfact:e.xfact,xlamo:e.xlamo,xli:e.xli,xni:e.xni},U=Zn(en);e.irez=U.irez,e.atime=U.atime,e.d2201=U.d2201,e.d2211=U.d2211,e.d3210=U.d3210,e.d3222=U.d3222,e.d4410=U.d4410,e.d4422=U.d4422,e.d5220=U.d5220,e.d5232=U.d5232,e.d5421=U.d5421,e.d5433=U.d5433,e.dedt=U.dedt,e.didt=U.didt,e.dmdt=U.dmdt,e.dnodt=U.dnodt,e.domdt=U.domdt,e.del1=U.del1,e.del2=U.del2,e.del3=U.del3,e.xfact=U.xfact,e.xlamo=U.xlamo,e.xli=U.xli,e.xni=U.xni}if(e.isimp!==1)_=e.cc1*e.cc1,e.d2=4*fe*x*_,C=e.d2*x*e.cc1/3,e.d3=(17*fe+M)*C,e.d4=0.5*C*fe*x*(221*fe+31*M)*e.cc1,e.t3cof=e.d2+2*_,e.t4cof=0.25*(3*e.d3+e.cc1*(12*e.d2+10*_)),e.t5cof=0.2*(3*e.d4+12*e.cc1*e.d3+6*e.d2*e.d2+15*_*(2*e.d2+_))}dn(e,0),e.init="n"}function dt(n,t){Fn(n,{opsmode:t,satn:n.satnum,epoch:n.jdsatepoch-2433281.5,xbstar:n.bstar,xecco:n.ecco,xargpo:n.argpo,xinclo:n.inclo,xmo:n.mo,xno:n.no,xnodeo:n.nodeo})}function Yn(n,t){let s=n.substring(2,7),d=Number(n.substring(18,20)),f=Number(n.substring(20,32)),b=Number(n.substring(33,43)),r=Number(`${n.substring(44,45)}.${n.substring(45,50)}E${n.substring(50,52)}`),z=Number(`${n.substring(53,54)}.${n.substring(54,59)}E${n.substring(59,61)}`),l=Number(t.substring(8,16))*We,p=Number(t.substring(17,25))*We,k=Number(`.${t.substring(26,33).replace(/\s/g,"0")}`),y=Number(t.substring(34,42))*We,_=Number(t.substring(43,51))*We,H=Number(t.substring(52,63))/xn;b/=xn*1440,r/=xn*1440*1440;let w=d<57?d+2000:d+1900,R=_n(w,f),{mon:K,day:I,hr:V,minute:q,sec:m}=R,g=Qe(w,K,I,V,q,m),P={error:0,satnum:s,epochyr:d,epochdays:f,ndot:b,nddot:r,bstar:z,inclo:l,nodeo:p,ecco:k,argpo:y,mo:_,no:H,jdsatepoch:g};return dt(P,"i"),P}var Bn=(n)=>n.tempa<=0;function qn(n,...t){let o=t.at(-1),i=typeof o==="object"&&!(o instanceof Date)?o:void 0,s=i?t.slice(0,-1):t,f=(Qe(...s)-n.jdsatepoch)*Vn,b=dn(n,f);if(i?.communityDecayCheckEnabled&&b&&Bn(n))return n.error=6,null;return b}function Nn({longitude:n,latitude:t,height:o}){let b=6378.137/Math.sqrt(1-0.006694380004260718*(Math.sin(t)*Math.sin(t))),r=(b+o)*Math.cos(t)*Math.cos(n),z=(b+o)*Math.cos(t)*Math.sin(n),l=(b*0.9933056199957393+o)*Math.sin(t);return{x:r,y:z,z:l}}function Hn(n,t){let s=Math.sqrt(n.x*n.x+n.y*n.y),d=0.0033528106718309306,f=0.006694380004260718,b=((Math.atan2(n.y,n.x)-t+ge)%E+E)%E-ge,r=20,z=0.000000000001,l=0,p=Math.atan2(n.z,s),k;do{k=p;let R=Math.sin(p),K=1/Math.sqrt(1-0.006694380004260718*(R*R));p=Math.atan2(n.z+6378.137*K*0.006694380004260718*R,s)}while(Math.abs(p-k)>0.000000000001&&++l<20);let y=Math.sin(p),_=Math.cos(p),H=1/Math.sqrt(1-0.006694380004260718*(y*y)),w=s*_+n.z*y-6378.137/H;return{longitude:b,latitude:p,height:w}}function Wn(n,t){let o=n.x*Math.cos(t)+n.y*Math.sin(t),i=n.x*-Math.sin(t)+n.y*Math.cos(t),{z:s}=n;return{x:o,y:i,z:s}}function lt(n,t){let{longitude:o,latitude:i}=n,s=Nn(n),d=t.x-s.x,f=t.y-s.y,b=t.z-s.z,r=Math.sin(i)*Math.cos(o)*d+Math.sin(i)*Math.sin(o)*f-Math.cos(i)*b,z=-Math.sin(o)*d+Math.cos(o)*f,l=Math.cos(i)*Math.cos(o)*d+Math.cos(i)*Math.sin(o)*f+Math.sin(i)*b;return{topS:r,topE:z,topZ:l}}function bt(n){let{topS:t,topE:o,topZ:i}=n,s=Math.sqrt(t*t+o*o+i*i),d=Math.asin(i/s);return{azimuth:Math.atan2(-o,t)+ge,elevation:d,rangeSat:s}}function Xn(n,t){let o=lt(n,t);return bt(o)}globalThis.satellite={twoline2satrec:Yn,propagate:qn,gstime:un,eciToGeodetic:Hn,eciToEcf:Wn,geodeticToEcf:Nn,ecfToLookAngles:Xn};})();</script>
 <script>
 (function(){
   const R = 52, C = 2*Math.PI*R;
@@ -2813,6 +2858,11 @@
     function paint(){
       const lines = [];
       lines.push(notifOn ? '✅ الإشعارات مفعّلة داخل التطبيق' : '<span class="warn">⛔ الإشعارات موقوفة من الإعدادات</span>');
+      if(window.manakhNative){
+        lines.push(window.manakhNative.perm === 'granted' ? '✅ مسموح لمناخ يرسل إشعارات للآيفون'
+          : '<span class="warn">⚠️ الإشعارات غير مسموحة — افتح الإعدادات ← مناخ ← الإشعارات وفعّل «السماح بالإشعارات»</span>');
+        st.innerHTML = lines.join('<br>'); return;
+      }
       lines.push(ntfyTopic ? ('✅ مربوط بقناة ntfy: <b dir="ltr">' + ntfyTopic + '</b>')
                            : '<span class="warn">⚠️ ntfy غير مربوط — الإشعارات ما بتوصل جوالك</span>');
       st.innerHTML = lines.join('<br>');
@@ -2820,11 +2870,13 @@
     }
     paint();
     document.addEventListener('tabchange', e => { if(e.detail.tab === 'alerts') paint(); });
+    document.addEventListener('manakh-native-perm', paint);
     document.getElementById('rowNtfy').addEventListener('click', () => setTimeout(paint, 300));
     document.getElementById('rowNotif').addEventListener('click', () => setTimeout(paint, 50));
     document.getElementById('notifLink').addEventListener('click', () => document.getElementById('rowNtfy').click());
     document.getElementById('notifTest').addEventListener('click', () => {
       if(!notifOn){ showToast('فعّل الإشعارات من الإعدادات أولًا'); return; }
+      if(window.manakhNative){ window.manakhNative.test().then(paint); return; }
       sendNtfy('✅ إشعار تجريبي من مناخ', 'إذا وصلك هذا الإشعار على جوالك، فالتنبيهات شغالة تمام.', ['white_check_mark']);
       if(!ntfyTopic) setTimeout(() => showToast('ظهر التنبيه هنا فقط — اربط ntfy عشان يوصل جوالك'), 2400);
     });
@@ -3407,6 +3459,273 @@
     setInterval(() => { if(isOpen()) renderNow(pos()); }, 60000);
   })();
 
+
+  // ---------- meteor showers: annual peaks from the Sun's position, best viewing time and Moon interference ----------
+  (function(){
+    const HOUR = 3600000, DAY = 86400000;
+    // IMO working list: peak solar longitude (J2000), ZHR, radiant (RA/Dec), speed km/s, activity window (days from peak)
+    const SHOWERS = [
+      { id:'QUA', name:'الرباعيات', con:'العوّاء', lam:283.15, zhr:80,  ra:230, dec:49,  v:41, from:-6,  to:9,  sharp:true, note:'ذروتها قصيرة جدًا (ساعات قليلة)' },
+      { id:'LYR', name:'الشلياقيات', con:'القيثارة', lam:32.32,  zhr:18,  ra:271, dec:34,  v:49, from:-8,  to:8,  note:'من أقدم الزخات المسجلة' },
+      { id:'ETA', name:'إيتا الدلويات', con:'الدلو', lam:45.5,   zhr:50,  ra:338, dec:-1,  v:66, from:-17, to:22, note:'من بقايا مذنب هالي — تُرى جيدًا من عُمان قبل الفجر' },
+      { id:'SDA', name:'دلتا الدلويات', con:'الدلو', lam:127,    zhr:25,  ra:340, dec:-16, v:41, from:-18, to:24, note:'مناسبة لمناطقنا الجنوبية' },
+      { id:'PER', name:'البرشاويات', con:'برشاوس', lam:140.0,   zhr:100, ra:48,  dec:58,  v:59, from:-26, to:12, note:'أشهر زخة في السنة، شهبها سريعة ولامعة' },
+      { id:'DRA', name:'التنّينيات', con:'التنين', lam:195.4,   zhr:10,  ra:262, dec:54,  v:20, from:-2,  to:2,  note:'شهبها بطيئة، وأفضلها أول الليل' },
+      { id:'ORI', name:'الجباريات', con:'الجبار', lam:208,      zhr:20,  ra:95,  dec:16,  v:66, from:-19, to:17, note:'من بقايا مذنب هالي، شهبها سريعة' },
+      { id:'LEO', name:'الأسديات', con:'الأسد', lam:235.27,     zhr:15,  ra:152, dec:22,  v:71, from:-11, to:13, note:'أسرع الشهب، وتظهر بعد منتصف الليل' },
+      { id:'GEM', name:'التوأميات', con:'التوأمان (الجوزاء)', lam:262.2, zhr:150, ra:112, dec:33, v:35, from:-10, to:6, note:'أقوى زخة في السنة، وتبدأ من أول الليل' },
+      { id:'URS', name:'الدُّبيّات', con:'الدب الأصغر', lam:270.7, zhr:10, ra:217, dec:76, v:33, from:-5, to:4, note:'نقطة إشعاعها منخفضة في سمائنا' }
+    ];
+    const DIRS = ['الشمال','الشمال الشرقي','الشرق','الجنوب الشرقي','الجنوب','الجنوب الغربي','الغرب','الشمال الغربي'];
+    const dirOf = az => DIRS[Math.round(az / 45) % 8];
+    const fDay = new Intl.DateTimeFormat('ar-u-nu-latn', { weekday:'long', day:'numeric', month:'long' });
+    const fDate = new Intl.DateTimeFormat('ar-u-nu-latn', { day:'numeric', month:'long' });
+    const fTime = new Intl.DateTimeFormat('ar-u-nu-latn', { hour:'numeric', minute:'2-digit', hour12:true });
+    const nrm = d => ((d % 360) + 360) % 360;
+    function pos(){
+      const c = (typeof selectedCityRef !== 'undefined') ? selectedCityRef : null;
+      return (c && typeof c.lat === 'number') ? { lat:c.lat, lon:c.lon, label:c.name } : { lat:23.588, lon:58.383, label:'مسقط' };
+    }
+    function lamAt(t){ const T = Sky.TofJd(Sky.jdOf(t)); return nrm(Sky.sunLon(T) - 1.396971 * T); }
+    function peakAfter(sh, from){ // time when the Sun reaches the shower's longitude
+      let t = from + nrm(sh.lam - lamAt(from)) / 0.98565 * DAY;
+      for(let i = 0; i < 3; i++){ let d = sh.lam - lamAt(t); if(d > 180) d -= 360; if(d < -180) d += 360; t += d / 0.98565 * DAY; }
+      return t;
+    }
+    function moonInfo(s, p){
+      const elong = Sky.sep(s.moon, s.sun), illum = (1 - Math.cos(elong * Math.PI / 180)) / 2;
+      const alt = Sky.altAz(s.moon.ra, s.moon.dec, s.jd, p.lat, p.lon).alt;
+      return { illum, alt };
+    }
+    function analyse(sh, peak, p){
+      const T = Sky.TofJd(Sky.jdOf(peak)), rad = (function(){ // radiant precessed to date (approx.)
+        const k = Sky.body('regulus', T), k0 = Sky.STARS.regulus; return { ra: sh.ra + (k.ra - k0.ra), dec: sh.dec + (k.dec - k0.dec) }; })();
+      const width = sh.sharp ? 8 * HOUR : 30 * HOUR;
+      let best = null;
+      for(let t = peak - 20 * HOUR; t <= peak + 20 * HOUR; t += 10 * 60000){
+        const s = Sky.snapshot(t, p.lat, p.lon);
+        if(Sky.altAz(s.sun.ra, s.sun.dec, s.jd, p.lat, p.lon).alt > -12) continue;
+        const h = Sky.altAz(rad.ra, rad.dec, s.jd, p.lat, p.lon);
+        if(h.alt < 8) continue;
+        const prox = Math.exp(-Math.pow((t - peak) / width, 2));
+        const m = moonInfo(s, p), moonHit = m.alt > 0 ? m.illum : 0;
+        const rate = sh.zhr * Math.sin(h.alt * Math.PI / 180) * prox;
+        const score = rate * (1 - 0.6 * moonHit);
+        if(!best || score > best.score) best = { t, alt:h.alt, az:h.az, rate, score, moonIllum:m.illum, moonUp:m.alt > 0 };
+      }
+      return best;
+    }
+    function moonText(b){
+      if(!b) return '';
+      const pct = Math.round(b.moonIllum * 100);
+      if(!b.moonUp || b.moonIllum < 0.25) return '🌑 القمر ما يزعج — سماء مظلمة 👌';
+      if(b.moonIllum < 0.6) return '🌓 القمر مضاء ' + pct + '% ويخفي بعض الشهب الخافتة';
+      return '🌕 القمر ساطع (' + pct + '%) ويخفي أغلب الشهب الخافتة';
+    }
+    function quality(b){
+      if(!b) return { stars:0, label:'صعب الرصد من موقعك' };
+      const v = b.score;
+      if(v >= 45) return { stars:3, label:'ممتازة' };
+      if(v >= 15) return { stars:2, label:'جيدة' };
+      return { stars:1, label:'ضعيفة' };
+    }
+    let cache = null;
+    function events(){
+      const p = pos(), key = p.lat.toFixed(1) + ',' + p.lon.toFixed(1) + ',' + Math.floor(Date.now() / (6 * HOUR));
+      if(cache && cache.key === key) return cache;
+      const now = Date.now(), list = SHOWERS.map(sh => {
+        let peak = peakAfter(sh, now - (sh.to + 1) * DAY);
+        const start = peak + sh.from * DAY, end = peak + sh.to * DAY;
+        const best = analyse(sh, peak, p);
+        return { sh, peak, start, end, best, active: now >= start && now <= end, q: quality(best) };
+      }).sort((a, b) => a.peak - b.peak);
+      cache = { key, list, place:p.label };
+      return cache;
+    }
+    function rateText(b){ return b ? 'حتى <b dir="ltr">' + Math.max(1, Math.round(b.rate)) + '</b> شهاب/ساعة في سماء مظلمة' : 'نقطة الإشعاع منخفضة جدًا من موقعك'; }
+    function starsHtml(n){ return '<span class="met-q">' + '★'.repeat(n) + '<i>' + '★'.repeat(3 - n) + '</i></span>'; }
+    function render(){
+      const r = events(), now = Date.now();
+      document.getElementById('metPlace').textContent = r.place;
+      const next = r.list.find(e => e.peak > now - DAY) || r.list[0];
+      const days = Math.ceil((next.peak - now) / DAY);
+      const when = days <= 0 ? 'الذروة الحين' : days === 1 ? 'الذروة بكرة' : days === 2 ? 'الذروة بعد يومين' : 'الذروة بعد ' + days + (days <= 10 ? ' أيام' : ' يوم');
+      document.getElementById('metNext').innerHTML = `<div class="card met-hero">
+        <div class="met-pill">☄️ ${next.active ? 'نشطة الآن' : 'الزخة القادمة'}</div>
+        <div class="met-name">شهب ${next.sh.name}</div>
+        <div class="met-sub">من كوكبة ${next.sh.con} · ${when}</div>
+        <div class="met-stats">
+          <div><b>${fDate.format(next.best ? next.best.t : next.peak)}</b><span>ليلة الذروة</span></div>
+          <div><b dir="ltr">${next.best ? fTime.format(next.best.t) : '—'}</b><span>أفضل وقت</span></div>
+          <div><b>${next.best ? dirOf(next.best.az) : '—'}</b><span>جهة الإشعاع</span></div>
+        </div>
+        <div class="met-line">${rateText(next.best)}</div>
+        <div class="met-line">${moonText(next.best)}</div>
+        <div class="met-line">${next.sh.note}</div>
+      </div>`;
+      let html = '';
+      r.list.forEach(e => {
+        const t = e.best ? e.best.t : e.peak;
+        html += `<div class="met-row${e.active ? ' on' : ''}${e.peak < now - DAY ? ' past' : ''}">
+          <div class="mt"><b>${e.sh.name}</b><span>${fDate.format(e.start)} – ${fDate.format(e.end)} · سرعتها <bdi dir="ltr">${e.sh.v}</bdi> كم/ث</span>
+          <span>الذروة: ${fDay.format(t)}${e.best ? ' · <bdi dir="ltr">' + fTime.format(e.best.t) + '</bdi>' : ''}</span></div>
+          <div class="mq">${starsHtml(e.q.stars)}<small>${e.q.label}</small></div></div>`;
+      });
+      document.getElementById('metList').innerHTML = html;
+    }
+    window.manakhMeteorEvents = () => { const r = events(); return { list: r.list, dirOf, fTime, rateText: b => b ? Math.max(1, Math.round(b.rate)) : 0 }; };
+    const isOpen = () => { const sec = document.getElementById('page-seasons'); return sec && sec.classList.contains('active') && sec._tabs && sec._tabs.current() === 'meteors'; };
+    document.addEventListener('tabchange', e => { if(e.detail.tab === 'meteors' || (e.detail.page === 'page-seasons' && isOpen())) setTimeout(() => { try{ render(); }catch(err){ document.getElementById('metList').innerHTML = '<div class="alert-note">تعذر حساب الشهب</div>'; } }, 30); });
+    // in-app reminder on the evening of a peak (the iPhone app also schedules it ahead)
+    function check(){
+      if(typeof manakhAlertOn !== 'function' || !manakhAlertOn('meteors')) return;
+      let r; try{ r = events(); }catch(e){ return; }
+      const now = Date.now();
+      r.list.forEach(e => {
+        if(!e.best || e.q.stars < 1) return;
+        const eve = new Date(e.best.t - 12 * HOUR); eve.setHours(19, 0, 0, 0);
+        if(now >= eve.getTime() && now < e.best.t && manakhOnce('met_' + e.sh.id + '_' + new Date(e.peak).getFullYear()))
+          manakhLocalAlert('☄️ الليلة ذروة شهب ' + e.sh.name, 'أفضل وقت الساعة ' + fTime.format(e.best.t) + ' جهة ' + dirOf(e.best.az) + ' — ' + Math.max(1, Math.round(e.best.rate)) + ' شهاب/ساعة تقريبًا في سماء مظلمة');
+      });
+    }
+    setTimeout(check, 11000); setInterval(check, 15 * 60 * 1000);
+  })();
+
+  // ---------- crewed space stations passing over you (SGP4 from live orbital elements) ----------
+  (function(){
+    const SATS = [
+      { id:25544, name:'محطة الفضاء الدولية', short:'المحطة الدولية', color:'#ffd27a' },
+      { id:48274, name:'محطة تيانغونغ الصينية', short:'تيانغونغ', color:'#9fd8ff' }
+    ];
+    const HOUR = 3600000, DAY = 86400000, D2R = Math.PI / 180, R2D = 180 / Math.PI;
+    const DIRS = ['الشمال','الشمال الشرقي','الشرق','الجنوب الشرقي','الجنوب','الجنوب الغربي','الغرب','الشمال الغربي'];
+    const dirOf = az => DIRS[Math.round(((az % 360) + 360) % 360 / 45) % 8];
+    const fDay = new Intl.DateTimeFormat('ar-u-nu-latn', { weekday:'long', day:'numeric', month:'long' });
+    const fTime = new Intl.DateTimeFormat('ar-u-nu-latn', { hour:'numeric', minute:'2-digit', hour12:true });
+    function pos(){
+      const c = (typeof selectedCityRef !== 'undefined') ? selectedCityRef : null;
+      return (c && typeof c.lat === 'number') ? { lat:c.lat, lon:c.lon, label:c.name } : { lat:23.588, lon:58.383, label:'مسقط' };
+    }
+    const tleKey = id => 'manakh_tle_' + id;
+    function cachedTle(id){ try{ return JSON.parse(localStorage.getItem(tleKey(id)) || 'null'); }catch(e){ return null; } }
+    function parseText(txt){ const L = String(txt).split(/\r?\n/).map(s => s.trim()).filter(Boolean); const i = L.findIndex(s => s.startsWith('1 ')); return (i >= 0 && L[i + 1] && L[i + 1].startsWith('2 ')) ? { l1:L[i], l2:L[i + 1] } : null; }
+    async function fetchTle(id){
+      const tries = [
+        async () => parseText(await (await fetch('https://celestrak.org/NORAD/elements/gp.php?CATNR=' + id + '&FORMAT=TLE', { cache:'no-store' })).text()),
+        async () => { const j = await (await fetch('https://tle.ivanstanojevic.me/api/tle/' + id)).json(); return j && j.line1 ? { l1:j.line1, l2:j.line2 } : null; },
+        async () => { if(id !== 25544) return null; const j = await (await fetch('https://api.wheretheiss.at/v1/satellites/25544/tles?format=json')).json(); return j && j.line1 ? { l1:j.line1, l2:j.line2 } : null; }
+      ];
+      for(const f of tries){
+        try{ const r = await f(); if(r){ r.ts = Date.now(); try{ localStorage.setItem(tleKey(id), JSON.stringify(r)); }catch(e){} return r; } }catch(e){}
+      }
+      return null;
+    }
+    async function getTle(id){
+      const c = cachedTle(id);
+      if(c && Date.now() - c.ts < 12 * HOUR) return c;
+      return (await fetchTle(id)) || c;
+    }
+    function sunVec(t){ // unit vector to the Sun (equatorial of date ≈ TEME)
+      const T = Sky.TofJd(Sky.jdOf(t)), s = Sky.sunEq(T);
+      return [Math.cos(s.dec * D2R) * Math.cos(s.ra * D2R), Math.cos(s.dec * D2R) * Math.sin(s.ra * D2R), Math.sin(s.dec * D2R)];
+    }
+    function sunlit(r, s){ const d = r.x * s[0] + r.y * s[1] + r.z * s[2]; if(d > 0) return true; const px = r.x - d * s[0], py = r.y - d * s[1], pz = r.z - d * s[2]; return Math.hypot(px, py, pz) > 6371; }
+    function look(rec, t, obs){
+      const d = new Date(t), pv = satellite.propagate(rec, d);
+      if(!pv || !pv.position || typeof pv.position === 'boolean') return null;
+      const g = satellite.gstime(d), la = satellite.ecfToLookAngles(obs, satellite.eciToEcf(pv.position, g));
+      return { alt: la.elevation * R2D, az: la.azimuth * R2D, r: pv.position, v: pv.velocity, g };
+    }
+    function passes(rec, p, from, days){
+      const obs = { latitude: p.lat * D2R, longitude: p.lon * D2R, height: 0.05 }, out = [];
+      let t = from; const end = from + days * DAY;
+      while(t < end){
+        const a = look(rec, t, obs); if(!a){ t += 60000; continue; }
+        if(a.alt < 0){ t += 60000; continue; }
+        // inside a pass: walk in 5s steps and collect the visible part
+        let vis = null, peak = -90, peakAz = 0, t0 = t;
+        while(t < end){
+          const b = look(rec, t, obs); if(!b || b.alt < 0) break;
+          if(b.alt > peak){ peak = b.alt; peakAz = b.az; }
+          const s = Sky.snapshot(t, p.lat, p.lon), dark = Sky.altAz(s.sun.ra, s.sun.dec, s.jd, p.lat, p.lon).alt < -6;
+          if(b.alt >= 10 && dark && sunlit(b.r, sunVec(t))){
+            if(!vis) vis = { start:t, startAz:b.az, max:b.alt, maxAz:b.az, maxT:t, end:t, endAz:b.az };
+            else { vis.end = t; vis.endAz = b.az; if(b.alt > vis.max){ vis.max = b.alt; vis.maxAz = b.az; vis.maxT = t; } }
+          }
+          t += 5000;
+        }
+        if(vis && vis.end - vis.start >= 60000) out.push(vis);
+        t += 60000;
+      }
+      return out;
+    }
+    let state = { key:'', list:[], err:'' };
+    async function compute(force){
+      const p = pos(), key = p.lat.toFixed(2) + ',' + p.lon.toFixed(2) + ',' + Math.floor(Date.now() / HOUR);
+      if(!force && state.key === key) return state;
+      if(typeof satellite === 'undefined') return (state = { key, list:[], err:'تعذر تحميل حاسبة المدارات' });
+      const list = []; let got = 0;
+      for(const s of SATS){
+        const tle = await getTle(s.id); if(!tle) continue;
+        if(Date.now() - tle.ts > 14 * DAY) continue; // too old to trust
+        got++;
+        let rec; try{ rec = satellite.twoline2satrec(tle.l1, tle.l2); }catch(e){ continue; }
+        s.rec = rec;
+        passes(rec, p, Date.now() - 5 * 60000, 6).forEach(v => list.push(Object.assign({ sat:s }, v)));
+      }
+      list.sort((a, b) => a.start - b.start);
+      state = { key, list, place:p.label, err: got ? '' : 'نحتاج اتصال بالإنترنت أول مرة عشان نجيب بيانات المدار' };
+      return state;
+    }
+    function brightness(max){ return max >= 60 ? 'ساطعة جدًا' : max >= 35 ? 'ساطعة' : 'متوسطة'; }
+    function renderNow(){
+      const p = pos(), obs = { latitude: p.lat * D2R, longitude: p.lon * D2R, height: 0.05 }, now = Date.now();
+      document.getElementById('spNow').innerHTML = SATS.map(s => {
+        if(!s.rec) return `<div class="sky-row down"><i style="background:${s.color}"></i><div class="sn"><b>${s.name}</b><span>${state.key ? 'تعذر جلب بيانات المدار — تأكد من اتصال الإنترنت' : 'بانتظار بيانات المدار…'}</span></div></div>`;
+        const a = look(s.rec, now, obs); if(!a) return '';
+        const geo = satellite.eciToGeodetic(a.r, a.g), sp = Math.hypot(a.v.x, a.v.y, a.v.z) * 3600;
+        const up = a.alt > 0;
+        return `<div class="sky-row${up ? '' : ' down'}"><i style="background:${s.color};color:${s.color}"></i>
+          <div class="sn"><b>${s.name}</b><span>${up ? 'فوق أفقك الحين · جهة ' + dirOf(a.az) : 'تحت أفقك'} · ارتفاعها عن الأرض <bdi dir="ltr">${Math.round(geo.height)}</bdi> كم · سرعتها <bdi dir="ltr">${Math.round(sp).toLocaleString('en')}</bdi> كم/س</span></div>
+          <div class="sa" dir="ltr">${a.alt.toFixed(0)}°</div></div>`;
+      }).join('');
+    }
+    async function render(force){
+      const st = await compute(force);
+      document.getElementById('spPlace').textContent = st.place || pos().label;
+      try{ renderNow(); }catch(e){}
+      const now = Date.now(), list = st.list.filter(v => v.end > now);
+      if(!list.length){ document.getElementById('spList').innerHTML = '<div class="alert-note">' + (st.err || 'ما فيه مرور ظاهر خلال الأيام الجاية من موقعك — نحدّث المواعيد تلقائيًا كل ساعة.') + '</div>'; return; }
+      let lastDay = '', html = '';
+      list.slice(0, 14).forEach(v => {
+        const d = fDay.format(v.start); if(d !== lastDay){ html += `<div class="conj-month">${d}</div>`; lastDay = d; }
+        const mins = Math.max(1, Math.round((v.end - v.start) / 60000)), live = now >= v.start && now <= v.end;
+        html += `<div class="sp-card${live ? ' live' : ''}">
+          <div class="sp-time"><b dir="ltr">${fTime.format(v.start)}</b><span>${live ? 'تمر الحين!' : mins === 1 ? 'دقيقة' : mins === 2 ? 'دقيقتين' : mins + (mins <= 10 ? ' دقائق' : ' دقيقة')}</span></div>
+          <div class="sp-body"><div class="sp-name" style="color:${v.sat.color}">${v.sat.name}</div>
+          <div class="sp-path">من <b>${dirOf(v.startAz)}</b> ← إلى <b>${dirOf(v.endAz)}</b></div>
+          <div class="sp-meta">أعلى ارتفاع <bdi dir="ltr">${Math.round(v.max)}°</bdi> الساعة <bdi dir="ltr">${fTime.format(v.maxT)}</bdi> · ${brightness(v.max)}</div></div></div>`;
+      });
+      document.getElementById('spList').innerHTML = html;
+    }
+    window.manakhSpacePasses = async () => { const st = await compute(false); return { list: st.list, dirOf, fTime }; };
+    const isOpen = () => { const sec = document.getElementById('page-seasons'); return sec && sec.classList.contains('active') && sec._tabs && sec._tabs.current() === 'space'; };
+    document.addEventListener('tabchange', e => { if(e.detail.tab === 'space' || (e.detail.page === 'page-seasons' && isOpen())) render(false); });
+    setInterval(() => { if(isOpen()) { try{ renderNow(); }catch(e){} } }, 5000);
+    // in-app heads-up a few minutes before a bright pass
+    async function check(){
+      if(typeof manakhAlertOn !== 'function' || !manakhAlertOn('space')) return;
+      let st; try{ st = await compute(false); }catch(e){ return; }
+      const now = Date.now();
+      st.list.forEach(v => {
+        if(v.max < 25) return;
+        if(v.start - now > 0 && v.start - now <= 12 * 60000 && manakhOnce('sp_' + v.sat.id + '_' + Math.round(v.start / 60000)))
+          manakhLocalAlert('🛰️ ' + v.sat.name + ' بعد دقائق', 'تطلع من جهة ' + dirOf(v.startAz) + ' الساعة ' + fTime.format(v.start) + ' وترتفع ' + Math.round(v.max) + '° — تبان كنجمة لامعة تتحرك بسرعة');
+      });
+    }
+    setTimeout(check, 13000); setInterval(check, 5 * 60 * 1000);
+  })();
+
   // ---------- home: next moon conjunction (real calculation) ----------
   (function(){
     function fillHomeConj(){
@@ -3560,7 +3879,7 @@
 
 
   // ---------- per-category alert switches (in-app alerts; GitHub sends the phone push) ----------
-  function manakhAlertPrefs(){ try{ return Object.assign({ thunder:true, rain:true, wind:true, tides:true, moon:true, anwaa:true, conj:true }, JSON.parse(localStorage.getItem('manakh_alerts') || '{}')); }catch(e){ return { thunder:true, rain:true, wind:true, tides:true, moon:true, anwaa:true, conj:true }; } }
+  function manakhAlertPrefs(){ try{ return Object.assign({ thunder:true, rain:true, wind:true, tides:true, moon:true, anwaa:true, conj:true, meteors:true, space:true }, JSON.parse(localStorage.getItem('manakh_alerts') || '{}')); }catch(e){ return { thunder:true, rain:true, wind:true, tides:true, moon:true, anwaa:true, conj:true, meteors:true, space:true }; } }
   function manakhAlertOn(k){ return !!manakhAlertPrefs()[k]; }
   function manakhLocalAlert(title, msg){ if(!notifOn) return; fireLocalAlert(title, msg, 'general'); showToast(title); }
   function manakhOnce(key){ try{ const k = 'manakh_once_' + key; if(localStorage.getItem(k)) return false; localStorage.setItem(k, '1'); return true; }catch(e){ return true; } }
@@ -3621,17 +3940,33 @@
       if(document.visibilityState !== 'visible') LN.schedule({ notifications:[{ id: Math.floor(Math.random() * 1e6) + 100000, title, body: message }] }).catch(() => {});
     };
     const BASE = 7000;
+    const fT = new Intl.DateTimeFormat('ar-u-nu-latn', { hour:'numeric', minute:'2-digit', hour12:true });
+    const fD = new Intl.DateTimeFormat('ar-u-nu-latn', { day:'numeric', month:'long' });
+    window.manakhNative = { perm:'unknown', test: async () => {
+      try{
+        let perm = await LN.checkPermissions();
+        if(perm.display !== 'granted') perm = await LN.requestPermissions();
+        window.manakhNative.perm = perm.display;
+        if(perm.display !== 'granted'){ showToast('الإشعارات غير مسموحة — فعّلها من إعدادات الآيفون ← مناخ'); return; }
+        await LN.schedule({ notifications:[{ id: BASE + 199, title:'✅ إشعار تجريبي من مناخ', body:'وصلك؟ يعني الإشعارات شغالة تمام على جوالك 👌', schedule:{ at: new Date(Date.now() + 5000) } }] });
+        showToast('بيوصلك إشعار بعد ٥ ثواني — تقدر تقفل التطبيق وتشوفه');
+      }catch(e){ showToast('تعذر إرسال الإشعار التجريبي'); }
+    } };
+    function nextDate(md, from){ const d = new Date(from.getFullYear(), md[0] - 1, md[1], 8, 0, 0, 0); if(d.getTime() <= from.getTime()) d.setFullYear(d.getFullYear() + 1); return d; }
     async function reschedule(){
       try{
         const perm = await LN.checkPermissions();
-        if(perm.display !== 'granted'){ const r = await LN.requestPermissions(); if(r.display !== 'granted') return; }
+        window.manakhNative.perm = perm.display;
+        if(perm.display !== 'granted'){ const r = await LN.requestPermissions(); window.manakhNative.perm = r.display; document.dispatchEvent(new Event('manakh-native-perm')); if(r.display !== 'granted') return; }
+        document.dispatchEvent(new Event('manakh-native-perm'));
+        if(!notifOn) return;
         const pend = await LN.getPending();
-        const old = (pend.notifications || []).filter(n => n.id >= BASE && n.id < BASE + 200).map(n => ({ id:n.id }));
+        const old = (pend.notifications || []).filter(n => n.id >= BASE && n.id < BASE + 199).map(n => ({ id:n.id }));
         if(old.length) await LN.cancel({ notifications: old });
         const list = [], now = Date.now();
         if(manakhAlertOn('conj') && window.manakhConjEvents){
           const r = window.manakhConjEvents();
-          r.events.filter(e => e.best).slice(0, 12).forEach((e, i) => {
+          r.events.filter(e => e.best).slice(0, 8).forEach((e, i) => {
             const t = e.best.t, name = 'القمر و' + r.NAMES[e.id], when = r.fTime.format(t), where = r.dirOf(e.best.az), d = e.best.sep.toFixed(1) + '°';
             const eve = new Date(t - 86400000); eve.setHours(8, 0, 0, 0);
             if(eve.getTime() > now) list.push({ id: BASE + i * 2, title: '🪐 بكرة اقتران ' + name, body: 'أفضل وقت للمشاهدة الساعة ' + when + ' جهة ' + where + ' — المسافة بينهما ' + d, schedule:{ at: eve } });
@@ -3642,13 +3977,36 @@
           const PH = { 0:'🌑 الليلة محاق', 0.25:'🌓 اليوم التربيع الأول', 0.5:'🌕 الليلة بدر', 0.75:'🌗 اليوم التربيع الأخير' };
           moonPhasesAround(new Date()).filter(x => x.t > now).slice(0, 6).forEach((x, i) => {
             const at = new Date(x.t); at.setHours(8, 0, 0, 0);
-            if(at.getTime() > now) list.push({ id: BASE + 100 + i, title: PH[x.p], body: 'الساعة ' + new Intl.DateTimeFormat('ar-u-nu-latn', { hour:'numeric', minute:'2-digit' }).format(x.t), schedule:{ at } });
+            if(at.getTime() > now) list.push({ id: BASE + 100 + i, title: PH[x.p], body: 'الساعة ' + fT.format(x.t), schedule:{ at } });
           });
+        }
+        if(manakhAlertOn('anwaa') && typeof anwaaData !== 'undefined'){
+          const from = new Date();
+          anwaaData.map(a => ({ a, at: nextDate(a.start, from) })).sort((x, y) => x.at - y.at).slice(0, 6).forEach((x, i) => {
+            const endD = new Date(x.at.getFullYear(), x.a.end[0] - 1, x.a.end[1]); if(endD < x.at) endD.setFullYear(endD.getFullYear() + 1);
+            list.push({ id: BASE + 120 + i, title: '✦ دخل طالع ' + x.a.name, body: 'بدأ اليوم نوء ' + x.a.name + '، نجمه ' + x.a.star + '، وينتهي ' + fD.format(endD), schedule:{ at: x.at } });
+          });
+        }
+        if(manakhAlertOn('meteors') && window.manakhMeteorEvents){
+          const r = window.manakhMeteorEvents();
+          r.list.filter(e => e.best && e.q.stars >= 1).slice(0, 6).forEach((e, i) => {
+            const eve = new Date(e.best.t - 12 * 3600000); eve.setHours(19, 0, 0, 0);
+            if(eve.getTime() > now) list.push({ id: BASE + 140 + i, title: '☄️ الليلة ذروة شهب ' + e.sh.name, body: 'أفضل وقت الساعة ' + r.fTime.format(e.best.t) + ' جهة ' + r.dirOf(e.best.az) + ' — حوالي ' + r.rateText(e.best) + ' شهاب/ساعة في سماء مظلمة بعيدًا عن الأضواء', schedule:{ at: eve } });
+          });
+        }
+        if(manakhAlertOn('space') && window.manakhSpacePasses){
+          try{
+            const r = await window.manakhSpacePasses();
+            r.list.filter(v => v.max >= 25 && v.start - 10 * 60000 > now).slice(0, 10).forEach((v, i) => {
+              list.push({ id: BASE + 160 + i, title: '🛰️ ' + v.sat.name + ' بعد ١٠ دقائق', body: 'تطلع من جهة ' + r.dirOf(v.startAz) + ' الساعة ' + r.fTime.format(v.start) + ' وترتفع ' + Math.round(v.max) + '° — تبان كنجمة لامعة تتحرك بسرعة', schedule:{ at: new Date(v.start - 10 * 60000) } });
+            });
+          }catch(e){}
         }
         if(list.length) await LN.schedule({ notifications: list });
       }catch(e){ console.warn('notifications', e); }
     }
     setTimeout(reschedule, 6000);
+    setTimeout(() => { const n = document.getElementById('alertNote'); if(n) n.textContent = 'التنبيهات المفعّلة هنا توصلك على الآيفون حتى والتطبيق مقفل: الاقترانات وأطوار القمر والأنواء والشهب ومرور المحطة. أما الرعد والمطر والرياح والمد فتنبّهك وأنت فاتح التطبيق.'; }, 0);
     document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') setTimeout(reschedule, 1500); });
     document.querySelectorAll('.alert-row[data-pref]').forEach(r => r.addEventListener('click', () => setTimeout(reschedule, 300)));
   })();
