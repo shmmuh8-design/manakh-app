@@ -469,6 +469,19 @@
   .occ-card .tick{ font-family:"Sora",sans-serif; font-size:.74rem; color:var(--cool-1); font-variant-numeric:tabular-nums; margin-top:2px; }
   .occ-card .hdate{ font-size:.7rem; color:var(--text-2); margin-top:4px; }
   .occ-card.is-today{ border-color:rgba(62,224,143,.5); } .occ-card.is-today .num{ color:#3ee08f; }
+  /* share: a pill on every section + a bottom sheet with the text and the apps */
+  .share-pill{ display:inline-flex; align-items:center; gap:6px; margin:0 0 10px; border:1px solid var(--line); background:rgba(58,190,190,.12); color:var(--cool-1); border-radius:999px; padding:7px 14px; font:700 .8rem "IBM Plex Sans Arabic",sans-serif; cursor:pointer; }
+  .share-sheet{ position:fixed; inset:0; z-index:80; background:rgba(3,8,20,.6); display:none; align-items:flex-end; justify-content:center; }
+  .share-sheet.show{ display:flex; }
+  .share-sheet .in{ width:100%; max-width:520px; background:linear-gradient(180deg,#121c33,#0b1326); border:1px solid rgba(140,165,230,.2); border-radius:24px 24px 0 0; padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 18px); color:#eef3ff; }
+  .share-sheet h3{ margin:0 0 10px; font-size:1.05rem; display:flex; justify-content:space-between; align-items:center; }
+  .share-sheet h3 button{ border:0; background:rgba(255,255,255,.08); color:#fff; width:34px; height:34px; border-radius:50%; font-size:1rem; cursor:pointer; }
+  .share-sheet pre{ white-space:pre-wrap; margin:0 0 12px; max-height:38vh; overflow:auto; background:rgba(255,255,255,.05); border:1px solid rgba(140,165,230,.15); border-radius:14px; padding:12px; font:.86rem/1.8 "IBM Plex Sans Arabic",sans-serif; direction:rtl; text-align:right; }
+  .share-sheet .apps{ display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:6px; }
+  .share-sheet .apps button{ border:0; border-radius:14px; padding:10px 2px; color:#fff; font:700 .72rem "IBM Plex Sans Arabic",sans-serif; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .share-sheet .apps span{ font-size:1.15rem; line-height:1; }
+  .share-sheet .wa{ background:linear-gradient(180deg,#5fd27a,#3ea95a); } .share-sheet .tg{ background:linear-gradient(180deg,#5fb4ec,#3b8fd0); }
+  .share-sheet .x{ background:#2b3445; border:1px solid #475066 !important; } .share-sheet .cp{ background:#33415f; } .share-sheet .more{ background:linear-gradient(180deg,#8d6bff,#6a46e0); }
   /* world clock card (under the prayer times) */
   .wclock{ position:relative; overflow:hidden; margin-top:14px; padding:18px 16px 16px; border-radius:24px; border:1px solid rgba(120,150,255,.18);
     background:radial-gradient(120% 70% at 30% 120%, rgba(60,120,255,.35), transparent 60%), radial-gradient(90% 60% at 100% 0%, rgba(140,90,255,.18), transparent 60%), linear-gradient(180deg,#0b1430,#070d1f); color:#eef3ff; }
@@ -594,6 +607,19 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" defer></script>
 </head>
 <body>
+<div class="share-sheet" id="shareSheet" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+  <div class="in">
+    <h3><span id="shareTitle">📤 مشاركة</span><button type="button" id="shareClose" aria-label="إغلاق">✕</button></h3>
+    <pre id="shareText"></pre>
+    <div class="apps">
+      <button type="button" class="wa" data-s="wa"><span>💬</span>واتساب</button>
+      <button type="button" class="tg" data-s="tg"><span>✈️</span>تلغرام</button>
+      <button type="button" class="x" data-s="x"><span>𝕏</span>X</button>
+      <button type="button" class="cp" data-s="cp"><span>📋</span>نسخ</button>
+      <button type="button" class="more" data-s="more"><span>⬆️</span>المزيد</button>
+    </div>
+  </div>
+</div>
 <div class="app">
 
   <!-- ============ HOME PAGE ============ -->
@@ -4037,6 +4063,80 @@
     setTimeout(check, 9000); setInterval(check, 10 * 60 * 1000);
   })();
 
+  // ---------- share any section: a pill on each pane builds a short text, the sheet sends it to WhatsApp/Telegram/X ----------
+  (function(){
+    const APP_LINK = 'https://apps.apple.com/app/id6823329197';
+    const sheet = document.getElementById('shareSheet'); if(!sheet) return;
+    const T = id => { const e = document.getElementById(id); return e ? e.textContent.replace(/\s+/g, ' ').trim() : ''; };
+    const lines = arr => arr.filter(x => x && !/^[—\-\s:]*$/.test(x)).join('\n');
+    const clean = (el, max) => {
+      if(!el) return '';
+      const skip = new Set([...el.querySelectorAll('button, select, input')].map(b => (b.innerText || '').trim()).filter(Boolean));
+      let t = (el.innerText || el.textContent || '').split('\n').map(x => x.replace(/\s+/g, ' ').trim())
+        .filter(x => x && !skip.has(x) && !/^[\d\s.,:٪%-]+$/.test(x) && !/^[A-Za-z][A-Za-z\s'-]*$/.test(x) && !/\d{1,2}:\d{2}:\d{2}|\d+\s*يوم\s*\d+\s*ساعة/.test(x));
+      t = t.filter((x, i) => t.indexOf(x) === i && !/^(يوم|ساعة|دقيقة|ثانية)$/.test(x) && !/\sبعد$/.test(x));
+      const out = [];
+      for(let i = 0; i < t.length; i++){
+        const x = t[i], nx = t[i + 1];
+        if(nx && !/[\p{L}\d]/u.test(x)){ out.push(x + ' ' + nx); i++; continue; }
+        if(nx && /[\p{L}\d]/u.test(nx) && x.length <= 16 && !/\d/.test(x) && !/[.:،؟!✦]$/.test(x) && !/^[✦☄️🌙🕌]/u.test(x)){ out.push(x + ': ' + nx); i++; continue; }
+        out.push(x);
+      }
+      t = out.join('\n');
+      return t.length > max ? t.slice(0, max).replace(/\n[^\n]*$/, '') + '\n…' : t;
+    };
+    const city = () => T('cityName') || 'مسقط';
+    const B = {
+      'page-home': () => lines(['📍 ' + city() + ' — ' + T('greetDay') + ' ' + T('greetDate'), T('outdoorTempW') ? '🌡️ الحرارة ' + T('outdoorTempW') + '° · ' + T('feelCaption') : '', T('humidityValW') ? '💧 الرطوبة ' + T('humidityValW') + '%' : '', T('nextPrayerName') ? '🕌 الصلاة القادمة: ' + T('nextPrayerName') + ' ' + T('nextPrayerEta') : '']),
+      'page-weather:now': () => lines(['🌤️ الطقس الآن في ' + city(), '🌡️ الحرارة ' + T('outdoorTempW') + '° · ' + T('feelCaption'), '💧 الرطوبة ' + T('humidityValW') + '% · ' + T('humCaption'), '☀️ الأشعة فوق البنفسجية: ' + T('uvLevel'), (document.querySelector('#windTicker span') || {}).textContent ? '💨 ' + document.querySelector('#windTicker span').textContent.trim() : '']),
+      'page-weather:sea': () => lines(['🌊 المد والجزر — ' + T('tidePlace'), 'المستوى الآن: ' + T('tideLevel') + ' ' + T('tideTrend'), T('tideNext'), T('tideWave') ? '🌬️ ارتفاع الموج: ' + T('tideWave') : '']),
+      'page-prayer:times': () => { const row = [...document.querySelectorAll('#prayerTimesRow > div')].map(d => '• ' + d.querySelector('.pn').textContent + ': ' + d.querySelector('.pt').textContent);
+        return lines(['🕌 مواقيت الصلاة — ' + ((prayerCityInfo && (prayerCityInfo.place || prayerCityInfo.name)) || city()), T('wcDate') ? '📅 ' + T('wcDate') + ' — ' + T('wcHijri') : '', ...row, '⏳ الصلاة القادمة: ' + T('nextPrayerName') + ' ' + T('nextPrayerEta')]); },
+      'page-seasons:moon': () => lines(['🌙 القمر الليلة: ' + T('moonName'), T('moonSub'), '💡 الإضاءة ' + T('moonIllum') + ' · عمره ' + T('moonAge') + ' يوم · ' + T('moonHijri'), clean(document.getElementById('moonPhaseList'), 260)]),
+      'page-seasons:anwaa': () => '✦ الطالع والنوء الحالي\n' + clean(document.getElementById('anwaaHero'), 420),
+      'page-seasons:conj': () => '🪐 اقترانات القمر القادمة من ' + city() + '\n' + clean(document.getElementById('conjList'), 420),
+      'page-seasons:meteors': () => '☄️ زخات الشهب القادمة\n' + clean(document.getElementById('metNext'), 420),
+      'page-seasons:space': () => '🛰️ مرور محطات الفضاء فوق ' + city() + '\n' + clean(document.getElementById('spNow'), 420)
+    };
+    function keyOf(el){
+      const sec = el.closest('section.page'), pane = el.closest('.pane');
+      return sec ? sec.id + (pane ? ':' + pane.dataset.pane : '') : '';
+    }
+    function titleOf(el){
+      const sec = el.closest('section.page'), pane = el.closest('.pane');
+      if(pane && sec){ const tb = sec.querySelector('.tab[data-tab="' + pane.dataset.pane + '"]'); if(tb) return tb.textContent.trim(); }
+      if(sec && sec.id === 'page-home') return 'طقس اليوم';
+      const h = sec && sec.querySelector('h1'); return h ? h.textContent.trim() : 'مناخ';
+    }
+    function build(el){
+      const k = keyOf(el), pane = el.closest('.pane') || el.closest('section.page');
+      let body = ''; try{ body = B[k] ? B[k]() : ''; }catch(e){}
+      if(!body) body = clean(pane, 480);
+      return body + '\n\n— من تطبيق مناخ 🌙 للطقس والفلك والطوالع\n📲 ' + APP_LINK;
+    }
+    let cur = '';
+    function open(el){ cur = build(el); document.getElementById('shareText').textContent = cur; document.getElementById('shareTitle').textContent = '📤 مشاركة: ' + titleOf(el); sheet.classList.add('show'); }
+    const close = () => sheet.classList.remove('show');
+    document.getElementById('shareClose').onclick = close;
+    sheet.addEventListener('click', e => { if(e.target === sheet) close(); });
+    sheet.querySelector('.apps').addEventListener('click', e => {
+      const b = e.target.closest('button[data-s]'); if(!b) return;
+      const u = encodeURIComponent(cur);
+      if(b.dataset.s === 'cp'){ (navigator.clipboard ? navigator.clipboard.writeText(cur) : Promise.reject()).then(() => showToast('انسخ النص ✅'), () => showToast('ما قدرت أنسخ')); return; }
+      if(b.dataset.s === 'more'){ if(navigator.share) navigator.share({ text:cur }).catch(() => {}); else showToast('المشاركة غير مدعومة هنا — استخدم نسخ'); return; }
+      window.open({ wa:'https://wa.me/?text=' + u, tg:'https://t.me/share/url?url=' + encodeURIComponent(APP_LINK) + '&text=' + u, x:'https://twitter.com/intent/tweet?text=' + u }[b.dataset.s], '_blank');
+    });
+    window.manakhShare = open;
+    const SKIP = { alerts:1, map:1 };
+    document.querySelectorAll('section.page .pane[data-pane]').forEach(pane => {
+      if(SKIP[pane.dataset.pane]) return;
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'share-pill'; b.innerHTML = '📤 شارك';
+      b.onclick = () => open(b); pane.prepend(b);
+    });
+    const home = document.querySelector('#page-home .city-pill');
+    if(home){ const b = document.createElement('button'); b.type = 'button'; b.className = 'share-pill'; b.style.margin = '10px auto 0'; b.innerHTML = '📤 شارك طقس اليوم'; b.onclick = () => open(b); home.after(b); }
+  })();
+
   // ---------- world clock card: digital + words + analog, in the selected city's time zone ----------
   (function(){
     const root = document.getElementById('wclock'); if(!root) return;
@@ -4090,7 +4190,7 @@
     root.querySelector('.wc-share').addEventListener('click', e => {
       const btn = e.target.closest('button[data-s]'); if(!btn) return;
       const txt = shareText(), u = encodeURIComponent(txt);
-      if(btn.dataset.s === 'more'){ if(navigator.share) navigator.share({ text:txt }).catch(() => {}); else (navigator.clipboard && navigator.clipboard.writeText(txt).then(() => showToast('انسخ النص — الصقه وين ما تبغى'))); return; }
+      if(btn.dataset.s === 'more'){ if(navigator.share) navigator.share({ text:txt + '\n📲 https://apps.apple.com/app/id6823329197' }).catch(() => {}); else (navigator.clipboard && navigator.clipboard.writeText(txt).then(() => showToast('انسخ النص — الصقه وين ما تبغى'))); return; }
       const url = { wa:'https://wa.me/?text=' + u, tg:'https://t.me/share/url?url=' + encodeURIComponent(' ') + '&text=' + u, x:'https://twitter.com/intent/tweet?text=' + u }[btn.dataset.s];
       window.open(url, '_blank');
     });
