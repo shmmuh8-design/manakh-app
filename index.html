@@ -469,6 +469,32 @@
   .occ-card .tick{ font-family:"Sora",sans-serif; font-size:.74rem; color:var(--cool-1); font-variant-numeric:tabular-nums; margin-top:2px; }
   .occ-card .hdate{ font-size:.7rem; color:var(--text-2); margin-top:4px; }
   .occ-card.is-today{ border-color:rgba(62,224,143,.5); } .occ-card.is-today .num{ color:#3ee08f; }
+  /* world clock card (under the prayer times) */
+  .wclock{ position:relative; overflow:hidden; margin-top:14px; padding:18px 16px 16px; border-radius:24px; border:1px solid rgba(120,150,255,.18);
+    background:radial-gradient(120% 70% at 30% 120%, rgba(60,120,255,.35), transparent 60%), radial-gradient(90% 60% at 100% 0%, rgba(140,90,255,.18), transparent 60%), linear-gradient(180deg,#0b1430,#070d1f); color:#eef3ff; }
+  .wclock::after{ content:""; position:absolute; inset-inline:-30%; bottom:-58%; height:90%; border-radius:50%; border-top:2px solid rgba(110,170,255,.55); box-shadow:0 -18px 60px rgba(70,140,255,.35); pointer-events:none; }
+  .wclock > *{ position:relative; z-index:1; }
+  .wc-lbl{ font-size:.82rem; color:#b9c6e6; }
+  .wc-digits{ font-family:"Sora",sans-serif; font-weight:800; font-size:clamp(2.6rem, 13vw, 3.6rem); line-height:1.05; letter-spacing:.01em; direction:ltr; text-align:right; font-variant-numeric:tabular-nums; margin:2px 0 10px; }
+  .wc-digits .sec{ color:#4c9dff; } .wc-digits .ap{ font-size:.9rem; color:#b9c6e6; margin-inline-start:4px; font-weight:600; }
+  .wc-words{ display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:16px; background:rgba(40,70,140,.35); border:1px solid rgba(110,150,255,.3); }
+  .wc-words .ic{ width:38px; height:38px; flex-shrink:0; border-radius:12px; display:grid; place-items:center; background:rgba(20,40,90,.7); border:1px solid rgba(110,150,255,.35); font-size:1.1rem; }
+  .wc-words small{ display:block; font-size:.72rem; color:#6fb1ff; } .wc-words b{ font-size:.92rem; font-weight:700; line-height:1.5; } .wc-words b i{ font-style:normal; color:#6fb1ff; }
+  .wc-mid{ display:grid; grid-template-columns:minmax(0,1fr) 128px; gap:12px; align-items:center; margin-top:14px; }
+  .wc-date{ font-size:1rem; font-weight:600; } .wc-hijri{ font-size:.9rem; color:#c9d4f0; margin-top:4px; }
+  .wc-place{ display:flex; align-items:center; gap:6px; margin-top:10px; font-weight:700; font-size:.95rem; }
+  .wc-tz{ font-size:.74rem; color:#9fb0d6; margin-top:6px; line-height:1.7; } .wc-tz b{ font-family:"Sora",monospace; color:#fff; direction:ltr; display:inline-block; }
+  .wc-analog{ width:128px; height:128px; border-radius:50%; padding:5px; background:conic-gradient(from 200deg,#7b5cff,#4c9dff,#7b5cff); box-shadow:0 0 26px rgba(90,120,255,.55); }
+  .wc-analog svg{ width:100%; height:100%; display:block; border-radius:50%; background:#0a1126; }
+  .wc-acts{ display:flex; gap:8px; margin-top:14px; }
+  .wc-acts button{ flex:1; min-width:0; border:1px solid rgba(140,165,230,.25); background:rgba(15,25,55,.6); color:#dfe7ff; border-radius:14px; padding:10px 6px; font:600 .8rem "IBM Plex Sans Arabic",sans-serif; cursor:pointer; }
+  .wc-share{ margin-top:12px; padding:10px; border-radius:18px; background:rgba(15,25,55,.55); border:1px solid rgba(140,165,230,.18); }
+  .wc-share .t{ text-align:center; font-size:.8rem; color:#b9c6e6; margin-bottom:8px; }
+  .wc-share .row{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; }
+  .wc-share button{ border:0; border-radius:14px; padding:10px 2px; color:#fff; font:700 .74rem "IBM Plex Sans Arabic",sans-serif; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .wc-share button span{ font-size:1.1rem; line-height:1; }
+  .wc-share .wa{ background:linear-gradient(180deg,#5fd27a,#3ea95a); } .wc-share .tg{ background:linear-gradient(180deg,#5fb4ec,#3b8fd0); }
+  .wc-share .x{ background:#2b3445; border:1px solid #475066; } .wc-share .more{ background:linear-gradient(180deg,#8d6bff,#6a46e0); }
   .prayer-info{ text-align:center; font-size:.78rem; color:var(--text-1); margin-top:12px; line-height:1.8; }
   .prayer-info span{ font-size:.7rem; color:var(--text-3); }
   #nextPrayerEta{ font-family:"Sora","IBM Plex Sans Arabic",sans-serif; font-variant-numeric:tabular-nums; direction:rtl; }
@@ -805,6 +831,7 @@
       <div class="alert-row" id="alertRainRow"><span style="font-size:1.2rem">🌧️</span><span class="name">تنبيه الأمطار</span><div class="toggle" id="alertRainTg"></div></div>
       <div class="alert-row" data-pref="wind"><span style="font-size:1.2rem">💨</span><span class="name">الرياح واتجاهها<small>تغيّر الاتجاه والرياح القوية · <a href="#" id="windPickAreas" style="color:var(--cool-1)">اختر المناطق</a></small></span><div class="toggle"></div></div>
       <div class="alert-row" data-pref="tides"><span style="font-size:1.2rem">🌊</span><span class="name">المد والجزر<small>قبل المد العالي والجزر</small></span><div class="toggle"></div></div>
+      <div class="alert-row" data-pref="prayer"><span style="font-size:1.2rem">🕌</span><span class="name">أوقات الصلاة<small>إشعار عند دخول وقت كل صلاة</small></span><div class="toggle"></div></div>
       <div class="alert-row" data-pref="moon"><span style="font-size:1.2rem">🌓</span><span class="name">أطوار القمر<small>المحاق والتربيعان والبدر</small></span><div class="toggle"></div></div>
       <div class="alert-row" data-pref="anwaa"><span style="font-size:1.2rem">✦</span><span class="name">الطوالع والأنواء<small>دخول نجم جديد ونهايته</small></span><div class="toggle"></div></div>
       <div class="alert-row" data-pref="conj"><span style="font-size:1.2rem">🪐</span><span class="name">اقترانات القمر<small>قبلها بيوم وقبل وقت المشاهدة بساعة</small></span><div class="toggle"></div></div>
@@ -867,6 +894,38 @@
         <div data-name="العشاء"><div class="pn">العشاء</div><div class="pt">19:35</div></div>
       </div>
       <div class="prayer-info" id="prayerInfo"></div>
+    </div>
+
+    <div class="wclock" id="wclock">
+      <div class="wc-lbl">الساعة الآن</div>
+      <div class="wc-digits" id="wcDigits">--:--:--</div>
+      <div class="wc-words"><div class="ic">⏱️</div><div><small>الوقت بالكلمات</small><b id="wcWords"></b></div></div>
+      <div class="wc-mid">
+        <div>
+          <div class="wc-date" id="wcDate"></div>
+          <div class="wc-hijri" id="wcHijri"></div>
+          <div class="wc-place">📍 <span id="wcPlace"></span></div>
+          <div class="wc-tz">المنطقة الزمنية: <b id="wcTz"></b><br>التوقيت: <b id="wcOff"></b></div>
+        </div>
+        <div class="wc-analog"><svg viewBox="0 0 200 200" id="wcSvg" aria-hidden="true"><g id="wcTicks"></g>
+          <line id="wcH" x1="100" y1="100" x2="100" y2="52" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+          <line id="wcM" x1="100" y1="100" x2="100" y2="30" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+          <line id="wcS" x1="100" y1="114" x2="100" y2="24" stroke="#4c9dff" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="100" cy="100" r="7" fill="#4c9dff" stroke="#0a1126" stroke-width="2"/></svg></div>
+      </div>
+      <div class="wc-acts">
+        <button type="button" id="wc12">12 ساعة</button>
+        <button type="button" id="wcCopy">📋 نسخ الوقت</button>
+      </div>
+      <div class="wc-share">
+        <div class="t">⬆️ شارك الوقت</div>
+        <div class="row">
+          <button type="button" class="wa" data-s="wa"><span>💬</span>واتساب</button>
+          <button type="button" class="tg" data-s="tg"><span>✈️</span>تلغرام</button>
+          <button type="button" class="x" data-s="x"><span>𝕏</span>X</button>
+          <button type="button" class="more" data-s="more"><span>⬆️</span>مشاركة</button>
+        </div>
+      </div>
     </div>
 
 
@@ -1372,7 +1431,20 @@
     prayerTomorrowFajr = pCompute(tmr.getUTCFullYear(), tmr.getUTCMonth() + 1, tmr.getUTCDate(), lat, lng, pTzOffset(tz, tmr), method, pIsRamadan(tmr)).fajr;
     [r.fajr, r.dhuhr, r.asr, r.maghrib, r.isha].forEach((m, i) => { prayerTimes[i].h = Math.floor(m / 60); prayerTimes[i].m = m % 60; });
     prayerSunriseMin = r.sunrise;
-    prayerCityInfo = { name:cityName, tz, method:method.name, sunrise:r.sunrise };
+    prayerCityInfo = { name:cityName, tz, method:method.name, sunrise:r.sunrise, place:placeLabel };
+    window.manakhPrayerUpcoming = function(days){
+      const out = [], nowMs = Date.now();
+      for(let k = 0; k < days; k++){
+        const dt = new Date(Date.UTC(now.y, now.mo - 1, now.d + k, 12));
+        const Y = dt.getUTCFullYear(), M = dt.getUTCMonth() + 1, D = dt.getUTCDate(), o = pTzOffset(tz, dt);
+        const q = pCompute(Y, M, D, lat, lng, o, method, pIsRamadan(dt));
+        [q.fajr, q.dhuhr, q.asr, q.maghrib, q.isha].forEach((mm, i) => {
+          const t = Date.UTC(Y, M - 1, D) + Math.round(mm) * 60000 - o * 3600000;
+          if(t > nowMs) out.push({ name:PRAYER_NAMES[i], t, hm:pHM(mm), place:placeLabel });
+        });
+      }
+      return out;
+    };
     prayerDayKey = cityName + '|' + now.y + '-' + now.mo + '-' + now.d;
     document.querySelectorAll('#prayerTimesRow > div').forEach((el, i) => { const pt = el.querySelector('.pt'); if(pt) pt.textContent = pHM(prayerTimes[i].h * 60 + prayerTimes[i].m); });
     const info = document.getElementById('prayerInfo');
@@ -2690,7 +2762,7 @@
         }
         $('alertNote').textContent = 'آخر فحص ' + hhmm(new Date()) + ' لطقس ' + p.label +
           (window.manakhNative
-            ? '. الرعد والمطر والرياح والمد تنبّهك وأنت فاتح التطبيق، أما الاقترانات وأطوار القمر والأنواء والشهب ومرور المحطة فتوصلك حتى والتطبيق مقفل.'
+            ? '. الرعد والمطر والرياح والمد تنبّهك وأنت فاتح التطبيق، أما أوقات الصلاة والاقترانات وأطوار القمر والأنواء والشهب ومرور المحطة فتوصلك حتى والتطبيق مقفل.'
             : '. نفحص كل 15 دقيقة للثلاث ساعات الجاية. التنبيهات تظهر والتطبيق مفتوح، وتوصل جوالك عبر ntfy إذا ربطته من الإعدادات.');
       }catch(e){ /* try again next cycle */ }
     }
@@ -3918,7 +3990,7 @@
 
 
   // ---------- per-category alert switches (in-app alerts; GitHub sends the phone push) ----------
-  function manakhAlertPrefs(){ try{ return Object.assign({ thunder:true, rain:true, wind:true, tides:true, moon:true, anwaa:true, conj:true, meteors:true, space:true }, JSON.parse(localStorage.getItem('manakh_alerts') || '{}')); }catch(e){ return { thunder:true, rain:true, wind:true, tides:true, moon:true, anwaa:true, conj:true, meteors:true, space:true }; } }
+  function manakhAlertPrefs(){ try{ return Object.assign({ thunder:true, rain:true, wind:true, tides:true, prayer:true, moon:true, anwaa:true, conj:true, meteors:true, space:true }, JSON.parse(localStorage.getItem('manakh_alerts') || '{}')); }catch(e){ return { thunder:true, rain:true, wind:true, tides:true, prayer:true, moon:true, anwaa:true, conj:true, meteors:true, space:true }; } }
   function manakhAlertOn(k){ return !!manakhAlertPrefs()[k]; }
   function manakhLocalAlert(title, msg){ if(!notifOn) return; fireLocalAlert(title, msg, 'general'); showToast(title); }
   function manakhOnce(key){ try{ const k = 'manakh_once_' + key; if(localStorage.getItem(k)) return false; localStorage.setItem(k, '1'); return true; }catch(e){ return true; } }
@@ -3963,6 +4035,66 @@
       });
     }
     setTimeout(check, 9000); setInterval(check, 10 * 60 * 1000);
+  })();
+
+  // ---------- world clock card: digital + words + analog, in the selected city's time zone ----------
+  (function(){
+    const root = document.getElementById('wclock'); if(!root) return;
+    const $c = id => document.getElementById(id);
+    const FLAG = { 'Asia/Muscat':'🇴🇲','Asia/Riyadh':'🇸🇦','Asia/Dubai':'🇦🇪','Asia/Qatar':'🇶🇦','Asia/Bahrain':'🇧🇭','Asia/Kuwait':'🇰🇼','Africa/Cairo':'🇪🇬','Asia/Amman':'🇯🇴','Asia/Beirut':'🇱🇧','Asia/Baghdad':'🇮🇶','Africa/Casablanca':'🇲🇦','Africa/Tunis':'🇹🇳','Africa/Algiers':'🇩🇿','Asia/Damascus':'🇸🇾','Europe/London':'🇬🇧','America/New_York':'🇺🇸','Asia/Tokyo':'🇯🇵','Europe/Paris':'🇫🇷','Europe/Istanbul':'🇹🇷','Europe/Berlin':'🇩🇪','Europe/Moscow':'🇷🇺','Asia/Kolkata':'🇮🇳' };
+    const HOURS = ['الثانية عشرة','الواحدة','الثانية','الثالثة','الرابعة','الخامسة','السادسة','السابعة','الثامنة','التاسعة','العاشرة','الحادية عشرة'];
+    const ONES = ['','واحدة','اثنتان','ثلاث','أربع','خمس','ست','سبع','ثمان','تسع'];
+    const TEENS = ['عشر','إحدى عشرة','اثنتا عشرة','ثلاث عشرة','أربع عشرة','خمس عشرة','ست عشرة','سبع عشرة','ثماني عشرة','تسع عشرة'];
+    const TENS = ['','','عشرون','ثلاثون','أربعون','خمسون'];
+    function minWords(m){
+      if(m === 1) return 'دقيقة واحدة'; if(m === 2) return 'دقيقتان';
+      let w = m < 10 ? ONES[m] : m < 20 ? TEENS[m - 10] : (m % 10 ? ONES[m % 10] + ' و' : '') + TENS[Math.floor(m / 10)];
+      if(m === 8) w = 'ثماني';
+      return w + (m <= 10 ? ' دقائق' : ' دقيقة');
+    }
+    const period = h => h < 4 ? 'ليلًا' : h < 12 ? 'صباحًا' : h < 15 ? 'ظهرًا' : h < 18 ? 'عصرًا' : 'مساءً';
+    let h12 = true; try{ h12 = localStorage.getItem('manakh_wc24') !== '1'; }catch(e){}
+    const tk = $c('wcTicks');
+    for(let i = 0; i < 60; i++){ const big = i % 5 === 0, a = i * 6 * Math.PI / 180, r1 = big ? 78 : 84, r2 = 90;
+      const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      l.setAttribute('x1', 100 + r1 * Math.sin(a)); l.setAttribute('y1', 100 - r1 * Math.cos(a)); l.setAttribute('x2', 100 + r2 * Math.sin(a)); l.setAttribute('y2', 100 - r2 * Math.cos(a));
+      l.setAttribute('stroke', big ? '#e8eeff' : '#5d6b90'); l.setAttribute('stroke-width', big ? 3 : 1.4); l.setAttribute('stroke-linecap', 'round'); tk.append(l); }
+    const tzNow = () => (window.prayerCityInfo || prayerCityInfo || {}).tz || 'Asia/Muscat';
+    function parts(tz){ const p = {}; new Intl.DateTimeFormat('en-US', { timeZone:tz, hourCycle:'h23', hour:'numeric', minute:'numeric', second:'numeric' }).formatToParts(new Date()).forEach(x => p[x.type] = x.value); return { h:+p.hour % 24, m:+p.minute, s:+p.second }; }
+    const pad = n => String(n).padStart(2, '0');
+    function timeText(t){ const hh = h12 ? (t.h % 12 || 12) : t.h; return pad(hh) + ':' + pad(t.m) + (h12 ? (t.h < 12 ? ' ص' : ' م') : ''); }
+    function shareText(){ const info = prayerCityInfo || {}; const t = parts(tzNow());
+      return '🕐 الساعة الآن ' + timeText(t) + ' — ' + $c('wcDate').textContent + ' (' + (info.place || info.name || 'مسقط') + ')\n' + $c('wcWords').textContent + '\nعبر تطبيق مناخ 🌙'; }
+    let lastDay = '';
+    function tick(){
+      const tz = tzNow(), t = parts(tz), info = prayerCityInfo || {};
+      const hh = h12 ? (t.h % 12 || 12) : t.h;
+      $c('wcDigits').innerHTML = pad(hh) + ':' + pad(t.m) + ':<span class="sec">' + pad(t.s) + '</span>' + (h12 ? '<span class="ap">' + (t.h < 12 ? 'ص' : 'م') + '</span>' : '');
+      const w = HOURS[t.h % 12] + (t.m === 0 ? ' تمامًا' : ' و' + minWords(t.m));
+      const b = $c('wcWords'); b.textContent = w + ' '; const i = document.createElement('i'); i.textContent = period(t.h); b.append(i);
+      const ang = { h:(t.h % 12) * 30 + t.m * .5, m:t.m * 6 + t.s * .1, s:t.s * 6 };
+      ['H','M','S'].forEach(k => $c('wc' + k).setAttribute('transform', 'rotate(' + ang[k.toLowerCase()] + ' 100 100)'));
+      const day = tz + (info.place || '') + new Date().toDateString();
+      if(day !== lastDay){ lastDay = day;
+        try{ $c('wcDate').textContent = new Intl.DateTimeFormat('ar-u-nu-latn', { timeZone:tz, weekday:'long', day:'numeric', month:'long', year:'numeric' }).format(new Date()); }catch(e){}
+        try{ $c('wcHijri').textContent = new Intl.DateTimeFormat('ar-u-ca-islamic-umalqura-nu-latn', { timeZone:tz, day:'numeric', month:'long', year:'numeric' }).format(new Date()); }catch(e){ $c('wcHijri').textContent = ''; }
+        $c('wcPlace').textContent = 'وقتك المحلي، ' + (info.place || info.name || 'مسقط') + ' ' + (FLAG[tz] || '');
+        $c('wcTz').textContent = tz;
+        const off = pTzOffset(tz, new Date()), sg = off < 0 ? '-' : '+', a = Math.abs(off);
+        $c('wcOff').textContent = 'UTC' + sg + pad(Math.floor(a)) + ':' + pad(Math.round((a % 1) * 60));
+      }
+      $c('wc12').textContent = h12 ? '24 ساعة' : '12 ساعة';
+    }
+    $c('wc12').onclick = () => { h12 = !h12; try{ localStorage.setItem('manakh_wc24', h12 ? '0' : '1'); }catch(e){} tick(); };
+    $c('wcCopy').onclick = () => { const t = timeText(parts(tzNow())); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => showToast('انسخ الوقت: ' + t), () => showToast(t)); };
+    root.querySelector('.wc-share').addEventListener('click', e => {
+      const btn = e.target.closest('button[data-s]'); if(!btn) return;
+      const txt = shareText(), u = encodeURIComponent(txt);
+      if(btn.dataset.s === 'more'){ if(navigator.share) navigator.share({ text:txt }).catch(() => {}); else (navigator.clipboard && navigator.clipboard.writeText(txt).then(() => showToast('انسخ النص — الصقه وين ما تبغى'))); return; }
+      const url = { wa:'https://wa.me/?text=' + u, tg:'https://t.me/share/url?url=' + encodeURIComponent(' ') + '&text=' + u, x:'https://twitter.com/intent/tweet?text=' + u }[btn.dataset.s];
+      window.open(url, '_blank');
+    });
+    tick(); setInterval(() => { const sec = document.getElementById('page-prayer'); if(!sec || sec.classList.contains('active') || document.visibilityState === 'visible') tick(); }, 1000);
   })();
 
   // ---------- iPhone app (Capacitor): real notifications scheduled ahead, so they arrive even when the app is closed ----------
@@ -4014,6 +4146,11 @@
             if(t - 3600000 > now) list.push({ id: BASE + i * 2 + 1, title: '🌙 بعد ساعة: ' + name, body: 'ارفع نظرك جهة ' + where + ' الساعة ' + when + ' — المسافة بينهما ' + d, schedule:{ at: new Date(t - 3600000) } });
           });
         }
+        if(manakhAlertOn('prayer') && window.manakhPrayerUpcoming){
+          window.manakhPrayerUpcoming(4).slice(0, 15).forEach((p, i) => {
+            list.push({ id: BASE + 180 + i, title: '🕌 حان الآن وقت صلاة ' + p.name, body: 'الساعة ' + p.hm + ' حسب توقيت ' + p.place, schedule:{ at: new Date(p.t) } });
+          });
+        }
         if(manakhAlertOn('moon') && typeof moonPhasesAround === 'function'){
           const PH = { 0:'🌑 الليلة محاق', 0.25:'🌓 اليوم التربيع الأول', 0.5:'🌕 الليلة بدر', 0.75:'🌗 اليوم التربيع الأخير' };
           moonPhasesAround(new Date()).filter(x => x.t > now).slice(0, 6).forEach((x, i) => {
@@ -4047,7 +4184,7 @@
       }catch(e){ console.warn('notifications', e); }
     }
     setTimeout(reschedule, 6000);
-    setTimeout(() => { const n = document.getElementById('alertNote'); if(n) n.textContent = 'التنبيهات المفعّلة هنا توصلك على الآيفون حتى والتطبيق مقفل: الاقترانات وأطوار القمر والأنواء والشهب ومرور المحطة. أما الرعد والمطر والرياح والمد فتنبّهك وأنت فاتح التطبيق.'; }, 0);
+    setTimeout(() => { const n = document.getElementById('alertNote'); if(n) n.textContent = 'التنبيهات المفعّلة هنا توصلك على الآيفون حتى والتطبيق مقفل: أوقات الصلاة والاقترانات وأطوار القمر والأنواء والشهب ومرور المحطة. أما الرعد والمطر والرياح والمد فتنبّهك وأنت فاتح التطبيق.'; }, 0);
     document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') setTimeout(reschedule, 1500); });
     document.querySelectorAll('.alert-row[data-pref]').forEach(r => r.addEventListener('click', () => setTimeout(reschedule, 300)));
   })();
