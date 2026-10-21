@@ -470,6 +470,40 @@
   .occ-card .hdate{ font-size:.7rem; color:var(--text-2); margin-top:4px; }
   .occ-card.is-today{ border-color:rgba(62,224,143,.5); } .occ-card.is-today .num{ color:#3ee08f; }
   /* share: a pill on every section + a bottom sheet with the text and the apps */
+  .obs-intro{ color:var(--text-2); font-size:.82rem; margin:-6px 0 12px; line-height:1.8; }
+  .obs-add{ width:100%; justify-content:center; padding:12px; font-size:.9rem; margin-bottom:12px; }
+  .obs-chips{ display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; margin-bottom:8px; scrollbar-width:none; }
+  .obs-chips::-webkit-scrollbar{ display:none; }
+  .obs-chip{ flex:0 0 auto; border:1px solid var(--line); background:rgba(255,255,255,.03); color:var(--text-2); border-radius:999px; padding:6px 12px; font:600 .78rem "IBM Plex Sans Arabic",sans-serif; cursor:pointer; }
+  .obs-chip.on{ background:rgba(58,190,190,.16); color:var(--cool-1); border-color:rgba(122,240,218,.4); }
+  .obs-post{ background:linear-gradient(180deg,var(--bg-panel),var(--bg-panel-2)); border:1px solid var(--line); border-radius:18px; padding:12px; margin-bottom:10px; }
+  .obs-head{ display:flex; align-items:center; gap:8px; font-size:.78rem; color:var(--text-2); }
+  .obs-head b{ color:var(--text-1); font-size:.85rem; }
+  .obs-head .tp{ margin-inline-start:auto; background:rgba(255,176,102,.12); color:var(--heat-1); border-radius:999px; padding:2px 9px; font-weight:700; white-space:nowrap; }
+  .obs-body{ margin:8px 0 0; font-size:.9rem; line-height:1.8; white-space:pre-wrap; word-break:break-word; }
+  .obs-media{ margin-top:10px; border-radius:14px; overflow:hidden; background:#000; }
+  .obs-media img, .obs-media video{ display:block; width:100%; max-height:420px; object-fit:contain; }
+  .obs-foot{ display:flex; gap:14px; margin-top:8px; }
+  .obs-foot button{ border:0; background:none; color:var(--text-3); font:600 .74rem "IBM Plex Sans Arabic",sans-serif; cursor:pointer; padding:4px 0; }
+  .obs-empty{ text-align:center; color:var(--text-2); font-size:.85rem; padding:26px 10px; border:1px dashed var(--line); border-radius:18px; }
+  .obs-more{ width:100%; justify-content:center; margin-top:4px; }
+  .obs-credits{ text-align:center; font-size:.8rem; color:var(--text-2); line-height:2; margin-top:18px; }
+  .obs-credits .who{ color:var(--text-1); font-weight:800; font-size:1rem; }
+  .obs-credits a{ color:var(--cool-1); }
+  .obs-sheet{ position:fixed; inset:0; z-index:200; background:rgba(4,8,16,.72); display:flex; align-items:flex-end; justify-content:center; }
+  .obs-box{ background:var(--bg-panel); border:1px solid var(--line); border-radius:22px 22px 0 0; width:min(560px,100%); max-height:90vh; overflow:auto; padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px)); display:flex; flex-direction:column; gap:10px; }
+  .obs-box h3{ margin:0; font-size:1.05rem; }
+  .obs-box textarea, .obs-box input[type=text]{ width:100%; box-sizing:border-box; background:var(--bg-panel-2); border:1px solid var(--line); border-radius:12px; color:var(--text-1); padding:10px 12px; font:inherit; font-size:.9rem; }
+  .obs-box textarea{ min-height:90px; resize:vertical; }
+  .obs-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .obs-row .muzna-btn{ flex:1; justify-content:center; padding:11px 8px; }
+  .obs-prev{ border-radius:12px; overflow:hidden; background:#000; }
+  .obs-prev img, .obs-prev video{ display:block; width:100%; max-height:240px; object-fit:contain; }
+  .obs-note{ font-size:.74rem; color:var(--text-2); line-height:1.8; }
+  .obs-bar{ height:6px; border-radius:6px; background:var(--line); overflow:hidden; }
+  .obs-bar i{ display:block; height:100%; width:0; background:linear-gradient(90deg,#7af0da,#2bb6c9); transition:width .2s; }
+  .obs-full{ position:fixed; inset:0; z-index:210; background:#000; display:flex; align-items:center; justify-content:center; }
+  .obs-full img{ max-width:100%; max-height:100%; }
   .share-pill{ display:inline-flex; align-items:center; gap:6px; margin:0 0 10px; border:1px solid var(--line); background:rgba(58,190,190,.12); color:var(--cool-1); border-radius:999px; padding:7px 14px; font:700 .8rem "IBM Plex Sans Arabic",sans-serif; cursor:pointer; }
   .share-sheet{ position:fixed; inset:0; z-index:80; background:rgba(3,8,20,.6); display:none; align-items:flex-end; justify-content:center; }
   .share-sheet.show{ display:flex; }
@@ -1156,6 +1190,32 @@
   <!-- ============ ANWAA SUBPAGE ============ -->
   
 
+  <!-- ============ OBSERVERS PAGE (رصد المشاهدين) ============ -->
+  <section class="page tabbed" id="page-observe">
+    <div class="back-row"><h1>رصد المشاهدين</h1></div>
+    <div class="tabs" role="tablist"><button class="tab on" type="button" data-tab="obsWeather">☁️ الطقس</button><button class="tab" type="button" data-tab="obsSky">✨ السماء</button></div>
+    <div class="panes">
+      <div class="pane" data-pane="obsWeather">
+        <p class="obs-intro">أمطار، سحب، غيوم، ضباب، أودية… شاركنا اللي تشوفه عندك الحين بالكتابة أو الصور أو الفيديو 📸</p>
+        <button class="muzna-btn primary obs-add" type="button" data-kind="weather">＋ شارك رصدك للطقس</button>
+        <div class="obs-chips" data-kind="weather"></div>
+        <div class="obs-feed" data-kind="weather"></div>
+      </div>
+      <div class="pane" data-pane="obsSky">
+        <p class="obs-intro">طوالع النجوم والكواكب، القمر والشمس، الشهب والنيازك… صوّر السماء وشاركها مع الناس 🔭</p>
+        <button class="muzna-btn primary obs-add" type="button" data-kind="sky">＋ شارك رصدك للسماء</button>
+        <div class="obs-chips" data-kind="sky"></div>
+        <div class="obs-feed" data-kind="sky"></div>
+      </div>
+    </div>
+    <div class="card obs-credits">
+      <div>الحقوق محفوظة © <span id="obsYear">2026</span></div>
+      <div class="who">سالم الجابري</div>
+      <div>سلطنة عُمان / مسقط</div>
+      <div>الإيميل: <a href="mailto:design.omani1@gmail.com" dir="ltr">design.omani1@gmail.com</a></div>
+    </div>
+  </section>
+
 </div>
 
 <svg width="0" height="0" style="position:absolute">
@@ -1181,6 +1241,7 @@
     <button class="nav-btn" data-page="page-prayer"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.5 7-11a7 7 0 10-14 0c0 4.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg><span>الصلاة</span></button>
     <button class="nav-btn" data-page="page-seasons"><svg viewBox="0 0 24 24"><path d="M12 22s7-4.6 7-11.5A7 7 0 005 10.5C5 17.4 12 22 12 22z"/></svg><span>الأنواء</span></button>
     <button class="nav-btn" data-page="page-settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.6V21a2 2 0 01-4 0v-.2a1.7 1.7 0 00-1-1.5 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.6-1H3a2 2 0 010-4h.2a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3H9a1.7 1.7 0 001-1.6V3a2 2 0 014 0v.2a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9V9a1.7 1.7 0 001.6 1H21a2 2 0 010 4h-.2a1.7 1.7 0 00-1.5 1z"/></svg><span>الإعدادات</span></button>
+    <button class="nav-btn" data-page="page-observe"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span>الرصد</span></button>
   </div>
 </div>
 
@@ -4128,7 +4189,7 @@
       window.open({ wa:'https://wa.me/?text=' + u, tg:'https://t.me/share/url?url=' + encodeURIComponent(APP_LINK) + '&text=' + u, x:'https://twitter.com/intent/tweet?text=' + u }[b.dataset.s], '_blank');
     });
     window.manakhShare = open;
-    const SKIP = { alerts:1, map:1 };
+    const SKIP = { alerts:1, map:1, obsWeather:1, obsSky:1 };
     document.querySelectorAll('section.page .pane[data-pane]').forEach(pane => {
       if(SKIP[pane.dataset.pane]) return;
       const b = document.createElement('button'); b.type = 'button'; b.className = 'share-pill'; b.innerHTML = '📤 شارك';
@@ -4306,6 +4367,139 @@
       showPage('page-weather:now');
       setTimeout(() => { const w = document.getElementById('windList'); if(w) w.scrollIntoView({ behavior:'smooth', block:'start' }); showToast('اضغط 🔔 جنب المنطقة اللي تبغى تنبيهها'); }, 350);
     });
+  })();
+
+  // ---------- رصد المشاهدين (Supabase: دالة manakh-obs + مخزن manakh-obs) ----------
+  (function(){
+    const OBS = 'https://sjnpljsnmbdhykfudebk.supabase.co/functions/v1/manakh-obs';
+    const T = {
+      weather:[['','الكل'],['rain','🌧️ أمطار'],['clouds','☁️ سحب وغيوم'],['fog','🌫️ ضباب'],['dust','🌪️ غبار'],['hail','🧊 برَد'],['rainbow','🌈 قوس قزح'],['wadi','🏞️ أودية'],['other','✳️ أخرى']],
+      sky:[['','الكل'],['moon','🌙 القمر'],['sun','☀️ الشمس'],['planets','🪐 الكواكب'],['stars','✨ النجوم والطوالع'],['meteors','☄️ شهب ونيازك'],['eclipse','🌘 كسوف وخسوف'],['other','✳️ أخرى']]
+    };
+    const ls = { get(k, d){ try{ const v = JSON.parse(localStorage.getItem(k) || 'null'); return v == null ? d : v; }catch(e){ return d; } }, set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} } };
+    let dev = ls.get('manakh-dev', ''); if(!dev){ dev = Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, '0')).join(''); ls.set('manakh-dev', dev); }
+    const toast = m => (window.showToast ? window.showToast(m) : alert(m));
+    const mk = (t, a = {}, ...k) => { const e = document.createElement(t); for(const [x, v] of Object.entries(a)){ if(x === 'class') e.className = v; else if(x === 'text') e.textContent = v; else if(x.startsWith('on')) e[x] = v; else if(v != null && v !== false) e.setAttribute(x, v === true ? '' : v); } k.flat().forEach(c => c != null && e.append(c)); return e; };
+    const api = async (body) => { const r = await fetch(OBS, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ ...body, device:dev }) }); const j = await r.json().catch(() => ({})); if(!r.ok) throw new Error(j.error || ('خطأ ' + r.status)); return j; };
+    const label = (kind, t) => ((T[kind].find(x => x[0] === t) || [, t])[1]);
+    const ago = iso => { const s = (Date.now() - new Date(iso)) / 1000; if(s < 60) return 'الحين'; if(s < 3600) return 'قبل ' + Math.floor(s / 60) + ' د'; if(s < 86400) return 'قبل ' + Math.floor(s / 3600) + ' س'; const d = Math.floor(s / 86400); return d === 1 ? 'أمس' : 'قبل ' + d + ' أيام'; };
+    const state = { weather:{ topic:'', items:[], loaded:false, end:false }, sky:{ topic:'', items:[], loaded:false, end:false } };
+    const yr = document.getElementById('obsYear'); if(yr) yr.textContent = new Date().getFullYear();
+
+    function chips(kind){
+      const box = document.querySelector('.obs-chips[data-kind="' + kind + '"]');
+      box.replaceChildren(...T[kind].map(([id, n]) => mk('button', { class:'obs-chip' + (state[kind].topic === id ? ' on' : ''), type:'button', text:n, onclick:() => { state[kind].topic = id; chips(kind); load(kind, true); } })));
+    }
+    async function load(kind, reset){
+      const st = state[kind], feed = document.querySelector('.obs-feed[data-kind="' + kind + '"]');
+      if(reset){ st.items = []; st.end = false; feed.replaceChildren(mk('div', { class:'obs-empty', text:'جاري التحميل…' })); }
+      try{
+        const j = await api({ action:'list', kind, topic:st.topic || undefined, before:reset ? undefined : (st.items.at(-1) || {}).id });
+        st.items = st.items.concat(j.items || []); st.end = (j.items || []).length < 30; st.loaded = true; render(kind);
+      }catch(e){ feed.replaceChildren(mk('div', { class:'obs-empty', text:'ما قدرنا نجيب الرصد الحين (' + e.message + '). تأكد من النت وجرّب مرة ثانية.' })); }
+    }
+    function render(kind){
+      const st = state[kind], feed = document.querySelector('.obs-feed[data-kind="' + kind + '"]'), blocked = new Set(ls.get('manakh-blocked', []));
+      const list = st.items.filter(p => !blocked.has(p.device));
+      feed.replaceChildren();
+      if(!list.length) feed.append(mk('div', { class:'obs-empty', text: kind === 'weather' ? 'ما فيه رصد للحين. كن أول واحد يشارك الطقس عنده 🌦️' : 'ما فيه رصد للحين. صوّر السماء الليلة وكن أول المشاركين 🌙' }));
+      list.forEach(p => {
+        const media = p.media_url ? mk('div', { class:'obs-media' }, p.media_type === 'video' ? mk('video', { src:p.media_url, controls:true, playsinline:true, preload:'metadata' }) : mk('img', { src:p.media_url, alt:label(kind, p.topic), loading:'lazy', onclick:() => full(p.media_url) })) : null;
+        feed.append(mk('article', { class:'obs-post' },
+          mk('div', { class:'obs-head' }, mk('b', { text:p.author || 'مشاهد' }), p.place ? mk('span', { text:'· ' + p.place }) : null, mk('span', { text:'· ' + ago(p.created_at) }), mk('span', { class:'tp', text:label(kind, p.topic) })),
+          p.body ? mk('p', { class:'obs-body', text:p.body }) : null, media,
+          mk('div', { class:'obs-foot' },
+            p.mine ? mk('button', { type:'button', text:'🗑️ حذف رصدي', onclick:() => del(kind, p) }) : [
+              mk('button', { type:'button', text:'🚩 إبلاغ', onclick:() => report(kind, p) }),
+              mk('button', { type:'button', text:'🚫 حظر هذا المشارك', onclick:() => block(kind, p) })])));
+      });
+      if(!st.end && list.length) feed.append(mk('button', { class:'muzna-btn obs-more', type:'button', text:'عرض المزيد', onclick:() => load(kind, false) }));
+      if(blocked.size) feed.append(mk('button', { class:'muzna-btn obs-more', type:'button', text:'إلغاء الحظر عن الكل (' + blocked.size + ')', onclick:() => { ls.set('manakh-blocked', []); render('weather'); render('sky'); } }));
+    }
+    function sheet(build){ const s = mk('div', { class:'obs-sheet' }), b = mk('div', { class:'obs-box', role:'dialog', 'aria-modal':'true' }); const close = () => s.remove(); s.onclick = e => { if(e.target === s) close(); }; build(b, close); s.append(b); document.body.append(s); }
+    function full(src){ const f = mk('div', { class:'obs-full', onclick:() => f.remove() }, mk('img', { src, alt:'' })); document.body.append(f); }
+    function report(kind, p){
+      sheet((b, close) => {
+        const why = mk('textarea', { placeholder:'شو المشكلة؟ (محتوى غير لائق، مزعج، مب رصد…)' });
+        b.append(mk('h3', { text:'🚩 إبلاغ عن رصد' }), why, mk('div', { class:'obs-note', text:'البلاغات تراجعها إدارة مناخ، والرصد اللي ينبلغ عنه أكثر من مرة يختفي تلقائيًا.' }),
+          mk('div', { class:'obs-row' }, mk('button', { class:'muzna-btn', type:'button', text:'إلغاء', onclick:close }), mk('button', { class:'muzna-btn primary', type:'button', text:'أرسل البلاغ', onclick:async () => {
+            try{ await api({ action:'report', id:p.id, reason:why.value }); close(); state[kind].items = state[kind].items.filter(x => x.id !== p.id); render(kind); toast('وصل البلاغ، شكرًا لك 🙏'); }catch(e){ toast(e.message); } } })));
+      });
+    }
+    function block(kind, p){
+      sheet((b, close) => {
+        b.append(mk('h3', { text:'🚫 حظر ' + (p.author || 'هذا المشارك') + '؟' }), mk('div', { class:'obs-note', text:'ما بيطلع لك أي رصد منه بعد كذا. تقدر تلغي الحظر من آخر الصفحة.' }),
+          mk('div', { class:'obs-row' }, mk('button', { class:'muzna-btn', type:'button', text:'إلغاء', onclick:close }), mk('button', { class:'muzna-btn primary', type:'button', text:'حظر', onclick:() => { const bl = ls.get('manakh-blocked', []); bl.push(p.device); ls.set('manakh-blocked', bl); close(); render('weather'); render('sky'); toast('تم الحظر'); } })));
+      });
+    }
+    function del(kind, p){
+      sheet((b, close) => {
+        b.append(mk('h3', { text:'حذف رصدك؟' }), mk('div', { class:'obs-note', text:'بينحذف الرصد والصورة أو الفيديو نهائيًا.' }),
+          mk('div', { class:'obs-row' }, mk('button', { class:'muzna-btn', type:'button', text:'إلغاء', onclick:close }), mk('button', { class:'muzna-btn primary', type:'button', text:'احذف', onclick:async () => {
+            try{ await api({ action:'delete', id:p.id }); close(); state[kind].items = state[kind].items.filter(x => x.id !== p.id); render(kind); toast('انحذف ✅'); }catch(e){ toast(e.message); } } })));
+      });
+    }
+    function terms(next){
+      if(ls.get('manakh-obs-terms', false)) return next();
+      sheet((b, close) => {
+        const ok = mk('input', { type:'checkbox', id:'obsAgree' });
+        b.append(mk('h3', { text:'قبل ما تشارك 🤝' }),
+          mk('div', { class:'obs-note', text:'رصد المشاهدين مساحة للطقس والسماء بس. ممنوع أي محتوى مسيء أو غير لائق أو صور لأشخاص بدون إذنهم أو إعلانات وروابط. أي مخالفة تنحذف، والمشارك المخالف ينمنع. اللي تشاركه يكون ظاهر لكل مستخدمي مناخ.' }),
+          mk('label', { class:'obs-note', style:'display:flex;gap:8px;align-items:center;color:var(--text-1)' }, ok, 'أوافق على الشروط وألتزم فيها'),
+          mk('div', { class:'obs-row' }, mk('button', { class:'muzna-btn', type:'button', text:'إلغاء', onclick:close }), mk('button', { class:'muzna-btn primary', type:'button', text:'متابعة', onclick:() => { if(!ok.checked) return toast('لازم توافق على الشروط'); ls.set('manakh-obs-terms', true); close(); next(); } })));
+      });
+    }
+    async function shrink(file){
+      const url = URL.createObjectURL(file);
+      try{
+        const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
+        const s = Math.min(1, 1600 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+        c.width = Math.round(img.width * s); c.height = Math.round(img.height * s); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        return await new Promise(res => c.toBlob(b => res(b), 'image/jpeg', .82));
+      } finally { URL.revokeObjectURL(url); }
+    }
+    const vidLen = file => new Promise(res => { const v = document.createElement('video'); v.preload = 'metadata'; v.onloadedmetadata = () => { res(v.duration); URL.revokeObjectURL(v.src); }; v.onerror = () => res(0); v.src = URL.createObjectURL(file); });
+    function upload(url, blob, onp){
+      return new Promise((res, rej) => { const fd = new FormData(); fd.append('cacheControl', '31536000'); fd.append('', blob);
+        const x = new XMLHttpRequest(); x.open('PUT', url); x.setRequestHeader('x-upsert', 'false');
+        x.upload.onprogress = e => e.lengthComputable && onp(e.loaded / e.total); x.onload = () => x.status < 300 ? res() : rej(new Error('فشل رفع الملف (' + x.status + ')')); x.onerror = () => rej(new Error('انقطع النت أثناء الرفع')); x.send(fd); });
+    }
+    function compose(kind){
+      terms(() => sheet((b, close) => {
+        let topic = '', media = null, mtype = null;
+        const tchips = mk('div', { class:'obs-chips' }); const drawT = () => tchips.replaceChildren(...T[kind].filter(x => x[0]).map(([id, n]) => mk('button', { class:'obs-chip' + (topic === id ? ' on' : ''), type:'button', text:n, onclick:() => { topic = id; drawT(); } }))); drawT();
+        const body = mk('textarea', { maxlength:'500', placeholder: kind === 'weather' ? 'مثال: أمطار غزيرة الحين في الخوض مع رعد، والوادي بدأ يجري' : 'مثال: هلال رمضان واضح جهة الغرب بعد المغرب بربع ساعة' });
+        const place = mk('input', { type:'text', maxlength:'60', placeholder:'المكان (مثال: نزوى، الجبل الأخضر)', value:ls.get('manakh-obs-place', '') });
+        const author = mk('input', { type:'text', maxlength:'40', placeholder:'اسمك (اختياري، يطلع مع الرصد)', value:ls.get('manakh-obs-name', '') });
+        const prev = mk('div', { class:'obs-prev', hidden:true });
+        const pick = (accept, type) => { const f = mk('input', { type:'file', accept }); f.onchange = async () => { const file = f.files[0]; if(!file) return;
+            if(type === 'video'){ if(file.size > 25 * 1048576) return toast('الفيديو أكبر من 25 ميجا، صوّر مقطع أقصر'); const d = await vidLen(file); if(d > 61) return toast('الفيديو لازم دقيقة أو أقل'); media = file; }
+            else media = await shrink(file);
+            mtype = type; prev.hidden = false; prev.replaceChildren(type === 'video' ? mk('video', { src:URL.createObjectURL(media), controls:true, playsinline:true }) : mk('img', { src:URL.createObjectURL(media), alt:'' })); }; f.click(); };
+        const bar = mk('div', { class:'obs-bar', hidden:true }, mk('i'));
+        const send = mk('button', { class:'muzna-btn primary', type:'button', text:'نشر الرصد', onclick:async () => {
+          if(!topic) return toast('اختار نوع الرصد');
+          if(!body.value.trim() && !media) return toast('اكتب شي أو أرفق صورة أو فيديو');
+          send.disabled = true; send.textContent = 'جاري النشر…';
+          try{
+            let path = null;
+            if(media){ const s = await api({ action:'sign', kind, mime:mtype === 'video' ? (media.type || 'video/mp4') : 'image/jpeg' }); bar.hidden = false; await upload(s.url, media, p => bar.firstChild.style.width = Math.round(p * 100) + '%'); path = s.path; }
+            ls.set('manakh-obs-place', place.value.trim()); ls.set('manakh-obs-name', author.value.trim());
+            await api({ action:'post', kind, topic, body:body.value, place:place.value, author:author.value, media_path:path, media_type:mtype });
+            close(); state[kind].topic = ''; chips(kind); load(kind, true); toast('انتشر رصدك ✅ شكرًا لمشاركتك');
+          }catch(e){ toast(e.message); send.disabled = false; send.textContent = 'نشر الرصد'; }
+        } });
+        b.append(mk('h3', { text: kind === 'weather' ? '☁️ رصد الطقس' : '✨ رصد السماء' }), tchips, body,
+          mk('div', { class:'obs-row' }, mk('button', { class:'muzna-btn', type:'button', text:'📷 صورة', onclick:() => pick('image/*', 'image') }), mk('button', { class:'muzna-btn', type:'button', text:'🎥 فيديو', onclick:() => pick('video/*', 'video') })),
+          prev, place, author, mk('div', { class:'obs-note', text:'الفيديو حتى دقيقة و25 ميجا. لا تصوّر وجوه الناس بدون إذنهم.' }), bar,
+          mk('div', { class:'obs-row' }, mk('button', { class:'muzna-btn', type:'button', text:'إلغاء', onclick:close }), send));
+      }));
+    }
+    document.querySelectorAll('.obs-add').forEach(bt => bt.addEventListener('click', () => compose(bt.dataset.kind)));
+    chips('weather'); chips('sky');
+    // نحمّل لما يفتح الصفحة أول مرة
+    const page = document.getElementById('page-observe');
+    new MutationObserver(() => { if(page.classList.contains('active')){ if(!state.weather.loaded) load('weather', true); if(!state.sky.loaded) load('sky', true); } }).observe(page, { attributes:true, attributeFilter:['class'] });
   })();
 
 })();
