@@ -869,6 +869,7 @@
         <button class="muzna-btn" id="notifLink" type="button">📲 ربط ntfy</button>
       </div>
       <div class="alert-note" id="alertNote">هذي المفاتيح للتنبيهات داخل التطبيق. أما التنبيهات على جوالك والتطبيق مقفول فتجيك من GitHub (ملف alerts.yml).</div>
+      <div class="qibla-btns" id="rateRow" hidden style="margin-top:12px"><a class="muzna-btn primary" id="rateBtn" href="https://apps.apple.com/app/id6823329197?action=write-review" target="_blank" rel="noopener">⭐ عجبك مناخ؟ قيّمه في App Store</a></div>
     </div>
   
     </div>
@@ -4203,6 +4204,14 @@
     if(!Cap || !Cap.isNativePlatform || !Cap.isNativePlatform()) return;
     const LN = Cap.Plugins && Cap.Plugins.LocalNotifications, HP = Cap.Plugins && Cap.Plugins.Haptics;
     document.documentElement.classList.add('native-app');
+    // ⭐ التقييم: زر ثابت في التنبيهات + طلب تقييم أبل الرسمي بعد 4 أيام استخدام (أبل تقرر تظهره ولا لا، وبحد أقصى 3 مرات بالسنة)
+    { const rr = document.getElementById('rateRow'); if(rr) rr.hidden = false; }
+    try{
+      const day = new Date().toDateString(), days = JSON.parse(localStorage.getItem('manakh-days') || '[]');
+      if(!days.includes(day)){ days.push(day); localStorage.setItem('manakh-days', JSON.stringify(days.slice(-30))); }
+      const last = +localStorage.getItem('manakh-rv') || 0, RV = Cap.Plugins.InAppReview || (Cap.registerPlugin && Cap.registerPlugin('InAppReview'));
+      if(RV && days.length >= 4 && Date.now() - last > 120 * 864e5) setTimeout(() => { localStorage.setItem('manakh-rv', String(Date.now())); RV.requestReview().catch(() => {}); }, 6000);
+    }catch(e){}
     { const c = document.createElement('div'); c.className = 'sbar-cover'; document.body.appendChild(c); }
     { const t = document.getElementById('toneNote'); if(t) t.textContent = 'النغمات تشتغل وأنت فاتح التطبيق — ارفع صوت الجوال. والإشعارات اللي توصلك والتطبيق مقفل تاخذ نغمة الآيفون.'; }
     if(HP) document.addEventListener('click', e => { if(e.target.closest('.tab, .bottomnav a, .bottomnav button, .toggle')) HP.impact({ style:'LIGHT' }).catch(() => {}); }, true);
