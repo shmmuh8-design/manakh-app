@@ -271,6 +271,26 @@
   .nav-btn svg{ width:19px;height:19px; stroke:currentColor; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round; }
   .nav-btn span{ font-size:.58rem; font-weight:600; white-space:nowrap; } .nav-btn.active{ color:var(--cool-1); }
 
+
+  /* ✨ تلميع: إحساس تطبيق آيفون */
+  html{ -webkit-tap-highlight-color:transparent; }
+  body{ overscroll-behavior-y:none; }
+  .bottomnav-inner{ padding:6px 6px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.35); }
+  .nav-btn{ position:relative; gap:2px; padding:7px 2px 6px; border-radius:16px; transition:color .2s, transform .15s; -webkit-user-select:none; user-select:none; }
+  .nav-btn svg{ width:23px; height:23px; transition:transform .25s cubic-bezier(.3,1.6,.5,1); }
+  .nav-btn span{ font-size:.66rem; font-weight:700; }
+  .nav-btn::before{ content:""; position:absolute; inset:2px 4px; border-radius:14px; background:var(--cool-1); opacity:0; transform:scale(.7); transition:opacity .2s, transform .25s; z-index:-1; }
+  .nav-btn.active::before{ opacity:.16; transform:scale(1); }
+  .nav-btn.active svg{ transform:translateY(-1px) scale(1.08); stroke-width:2.4; }
+  .nav-btn:active{ transform:scale(.92); }
+  .page.active.from-start{ animation:pgInS .32s cubic-bezier(.2,.8,.2,1); }
+  .page.active.from-end{ animation:pgInE .32s cubic-bezier(.2,.8,.2,1); }
+  @keyframes pgInS{ from{ opacity:0; transform:translateX(28px); } to{ opacity:1; transform:none; } }
+  @keyframes pgInE{ from{ opacity:0; transform:translateX(-28px); } to{ opacity:1; transform:none; } }
+  button:not(.nav-btn):active, .card:active, .tile:active, [role="button"]:active{ transform:scale(.97); transition:transform .08s; }
+  .native-app *{ -webkit-touch-callout:none; }
+  .native-app input, .native-app textarea{ -webkit-touch-callout:default; }
+  @media (prefers-reduced-motion:reduce){ .page.active.from-start, .page.active.from-end{ animation:none; } .nav-btn svg{ transition:none; } }
   @media (max-width:360px){ .hero{ grid-template-columns:1fr; } }
 
   /* ---------- مزنة: مذيعة الطقس ---------- */
@@ -1403,15 +1423,25 @@
   });
 
   // ---------- page nav ----------
+  // ✨ تلميع: كل صفحة تتذكر مكانها، والانتقال ينزلق بحسب اتجاه التبويب، واهتزاز خفيف مع الضغط
+  const navOrder = [...document.querySelectorAll('.nav-btn')].map(b=>b.dataset.page);
+  const scrollMem = {};
+  let curPage = (document.querySelector('.page.active')||{}).id;
+  function tick(){ try{ const H = window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.Haptics; if(H && Capacitor.isNativePlatform()) H.selectionChanged ? (H.selectionStart && H.selectionStart(), H.selectionChanged()) : H.impact({ style:'LIGHT' }); }catch(e){} }
   function showPage(id){
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.page===id));
-    window.scrollTo({top:0, behavior:'instant'});
+    if(id === curPage){ window.scrollTo({top:0, behavior:'smooth'}); return; }
+    if(curPage) scrollMem[curPage] = window.scrollY;
+    const a = navOrder.indexOf(curPage), b = navOrder.indexOf(id);
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active','from-start','from-end'));
+    const el = document.getElementById(id);
+    el.classList.add('active', (a > -1 && b > -1 && b < a) ? 'from-end' : 'from-start');
+    document.querySelectorAll('.nav-btn').forEach(x=>x.classList.toggle('active', x.dataset.page===id));
+    curPage = id;
+    window.scrollTo({top: scrollMem[id] || 0, behavior:'instant'});
   }
   window.showPage = showPage;
   document.querySelectorAll('.nav-btn').forEach(btn=>{
-    btn.addEventListener('click', ()=> showPage(btn.dataset.page));
+    btn.addEventListener('click', ()=>{ tick(); showPage(btn.dataset.page); });
   });
 
   // ---------- live prayer times: calculated daily for the selected city ----------
