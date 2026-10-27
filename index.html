@@ -908,6 +908,17 @@
       </div>
       <div class="alert-note" id="alertNote">هذي المفاتيح للتنبيهات داخل التطبيق. أما التنبيهات على جوالك والتطبيق مقفول فتجيك من GitHub (ملف alerts.yml).</div>
       <div class="qibla-btns" id="rateRow" hidden style="margin-top:12px"><a class="muzna-btn primary" id="rateBtn" href="https://apps.apple.com/app/id6823329197?action=write-review" target="_blank" rel="noopener">⭐ عجبك مناخ؟ قيّمه في App Store</a></div>
+      <!-- 🧪 النسخة التجريبية: حط رابط TestFlight العام هنا (من App Store Connect ← TestFlight ← External Testing ← Public Link). الزر يختفي لو الرابط فاضي -->
+      <div class="qibla-btns" id="betaRow" hidden style="margin-top:10px"><a class="muzna-btn" id="betaBtn" href="#" target="_blank" rel="noopener">🧪 جرّب النسخة التجريبية قبل الكل</a></div>
+      <div class="alert-note" id="betaNote" hidden>تنزل لك المزايا الجديدة قبل الناس عن طريق تطبيق TestFlight من أبل. ممكن يكون فيها أخطاء بسيطة، وملاحظاتك تساعدنا نحسّن مناخ 🙏</div>
+      <script>
+        (function(){
+          var BETA_LINK = ''; // مثال: 'https://testflight.apple.com/join/XXXXXXXX'
+          if(!BETA_LINK) return;
+          document.getElementById('betaBtn').href = BETA_LINK;
+          document.getElementById('betaRow').hidden = false; document.getElementById('betaNote').hidden = false;
+        })();
+      </script>
     </div>
   
     </div>
