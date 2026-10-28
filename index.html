@@ -1654,8 +1654,12 @@
   }
   setInterval(jitter, 5000);
 
+  // 🔔 الجرس يفتح صفحة التنبيهات (الطقس ← التنبيهات) عشان تشوف وتفعّل الإشعارات
   document.getElementById('bellBtn').addEventListener('click', ()=>{
     document.getElementById('alertBadge').hidden = true;
+    showPage('page-weather');
+    const sec = document.getElementById('page-weather');
+    setTimeout(() => { if(sec && sec._tabs) sec._tabs.go('alerts'); else { const t = sec && sec.querySelector('.tab[data-tab="alerts"]'); if(t) t.click(); } }, 50);
   });
 
   // ---------- chart ----------
