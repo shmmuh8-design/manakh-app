@@ -1034,7 +1034,7 @@
       </div>
     </div>
 
-    <div class="qibla-msg" id="qiblaMsg">اضغط «تفعيل البوصلة» للبدء</div>
+    <div class="qibla-msg" id="qiblaMsg">جاري تشغيل البوصلة…</div>
     <div class="qibla-stats">
       <div><b id="qiblaDeg" dir="ltr">--°</b><span>اتجاه القبلة</span></div>
       <div><b id="qiblaHeading" dir="ltr">--°</b><span>اتجاه جوالك</span></div>
@@ -2923,8 +2923,19 @@
     }
     function openQibla(){
       if(!qLoc || qiblaUsingCity) setQiblaLoc(cityPos(), false);
-      // Android & desktop don't need a permission tap
-      if(!(window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function')) startCompass();
+      if(listening) return;
+      // أندرويد والكمبيوتر: تشتغل على طول. الآيفون: نطلب الإذن مباشرة لأن فتح تبويب القبلة نفسه ضغطة،
+      // وإذا أبل رفضت الطلب (ما كان من ضغطة) تشتغل البوصلة مع أول لمسة في أي مكان بالصفحة — بدون زر.
+      startCompass(true);
+    }
+    let autoArmed = false;
+    function armOnFirstTouch(){
+      if(autoArmed || listening) return;
+      autoArmed = true;
+      $('qiblaMsg').textContent = 'المس الشاشة لتشغيل البوصلة 🧭';
+      const go = () => { document.removeEventListener('touchend', go, true); document.removeEventListener('click', go, true); autoArmed = false; if(!listening) startCompass(); };
+      document.addEventListener('touchend', go, true);
+      document.addEventListener('click', go, true);
     }
 
     function onAbsolute(e){
@@ -2970,6 +2981,7 @@
     function listen(){
       if(listening) return;
       listening = true;
+      $('qiblaStart').style.display = 'none';
       window.addEventListener('deviceorientationabsolute', onAbsolute, true);
       window.addEventListener('deviceorientation', onOrientation, true);
       $('qiblaMsg').textContent = 'حرّك الجوال على شكل رقم 8 لمعايرة البوصلة';
@@ -2979,18 +2991,19 @@
         }
       }, 2500);
     }
-    function startCompass(){
+    function startCompass(auto){
+      if(listening) return;
       if(window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function'){
         DeviceOrientationEvent.requestPermission()
           .then(r => { if(r === 'granted') listen(); else $('qiblaMsg').textContent = 'لازم تسمح بالوصول لحساسات الحركة عشان تشتغل البوصلة'; })
-          .catch(() => { $('qiblaMsg').textContent = 'تعذّر تفعيل البوصلة'; });
+          .catch(() => { if(auto === true) armOnFirstTouch(); else $('qiblaMsg').textContent = 'تعذّر تفعيل البوصلة'; });
       } else if('ondeviceorientationabsolute' in window || 'ondeviceorientation' in window){
         listen();
       } else {
         $('qiblaMsg').textContent = 'البوصلة غير متاحة — القبلة على ' + Math.round(qBearing) + '° من الشمال';
       }
     }
-    $('qiblaStart').addEventListener('click', startCompass);
+    $('qiblaStart').addEventListener('click', () => startCompass());
     $('qiblaGps').addEventListener('click', () => {
       if(!navigator.geolocation){ showToast('تحديد الموقع غير مدعوم'); return; }
       $('qiblaSrc').textContent = 'جاري تحديد موقعك…';
