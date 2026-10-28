@@ -617,6 +617,7 @@
   .sp-body{ flex:1; min-width:0; } .sp-name{ font-size:.86rem; font-weight:800; } .sp-path{ font-size:.78rem; margin:3px 0; } .sp-path b{ color:#fff; }
   .sp-meta{ font-size:.7rem; color:var(--text-2); }
   .native-app #notifLink, .native-app #rowNtfy, .native-app #notifTest{ display:none !important; }
+  #notifTestNative{ display:none; } .native-app #notifTestNative{ display:flex; }
   .tabs{ top:env(safe-area-inset-top,0px); }
   .sbar-cover{ position:fixed; top:0; inset-inline-start:0; inset-inline-end:0; height:env(safe-area-inset-top,0px); background:var(--bg-deep); z-index:70; pointer-events:none; }
   /* ---------- tides ---------- */
@@ -904,6 +905,7 @@
       <div class="notif-status" id="notifStatus"></div>
       <div class="qibla-btns" style="margin-top:10px">
         <button class="muzna-btn primary" id="notifTest" type="button">🔔 إرسال إشعار تجريبي</button>
+        <button class="muzna-btn primary" id="notifTestNative" type="button" onclick="window.manakhNative && window.manakhNative.test()">🔔 جرّب إشعار على جوالك</button>
         <button class="muzna-btn" id="notifLink" type="button">📲 ربط ntfy</button>
       </div>
       <div class="alert-note" id="alertNote">هذي المفاتيح للتنبيهات داخل التطبيق. أما التنبيهات على جوالك والتطبيق مقفول فتجيك من GitHub (ملف alerts.yml).</div>
