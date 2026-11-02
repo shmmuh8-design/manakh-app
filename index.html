@@ -788,7 +788,7 @@
   <!-- ============ WEATHER PAGE ============ -->
   <section class="page tabbed" id="page-weather">
     <div class="back-row"><h1>الطقس</h1></div>
-    <div class="tabs" role="tablist"><button class="tab on" type="button" data-tab="now">🌡️ الآن</button><button class="tab" type="button" data-tab="map">🗺️ الخريطة</button><button class="tab" type="button" data-tab="alerts">🔔 التنبيهات</button><button class="tab" type="button" data-tab="sea">🌊 البحر</button></div>
+    <div class="tabs" role="tablist"><button class="tab on" type="button" data-tab="now">🌡️ الآن</button><button class="tab" type="button" data-tab="map">🗺️ الخريطة</button><button class="tab" type="button" data-tab="sea">🌊 البحر</button></div>
     <div class="panes">
     <div class="pane" data-pane="now">
     <p style="color:var(--text-2); font-size:.82rem; margin:-8px 0 16px;">قراءة مباشرة من موقعك الحالي</p>
@@ -889,40 +889,6 @@
     </div>
 
 
-    </div>
-    <div class="pane" data-pane="alerts">    <div class="card">
-      <div class="card-head"><h2>التنبيهات</h2></div>
-      <div class="alert-row" id="alertThunderRow"><span style="font-size:1.2rem">⚡</span><span class="name">تنبيه الرعد والبرق</span><div class="toggle" id="alertThunderTg"></div></div>
-      <div class="alert-row" id="alertRainRow"><span style="font-size:1.2rem">🌧️</span><span class="name">تنبيه الأمطار</span><div class="toggle" id="alertRainTg"></div></div>
-      <div class="alert-row" data-pref="wind"><span style="font-size:1.2rem">💨</span><span class="name">الرياح واتجاهها<small>تغيّر الاتجاه والرياح القوية · <a href="#" id="windPickAreas" style="color:var(--cool-1)">اختر المناطق</a></small></span><div class="toggle"></div></div>
-      <div class="alert-row" data-pref="tides"><span style="font-size:1.2rem">🌊</span><span class="name">المد والجزر<small>قبل المد العالي والجزر</small></span><div class="toggle"></div></div>
-      <div class="alert-row" data-pref="prayer"><span style="font-size:1.2rem">🕌</span><span class="name">أوقات الصلاة<small>إشعار عند دخول وقت كل صلاة</small></span><div class="toggle"></div></div>
-      <div class="alert-row" data-pref="moon"><span style="font-size:1.2rem">🌓</span><span class="name">أطوار القمر<small>المحاق والتربيعان والبدر</small></span><div class="toggle"></div></div>
-      <div class="alert-row" data-pref="anwaa"><span style="font-size:1.2rem">✦</span><span class="name">الطوالع والأنواء<small>دخول نجم جديد ونهايته</small></span><div class="toggle"></div></div>
-      <div class="alert-row" data-pref="conj"><span style="font-size:1.2rem">🪐</span><span class="name">اقترانات القمر<small>قبلها بيوم وقبل وقت المشاهدة بساعة</small></span><div class="toggle"></div></div>
-      <div class="alert-row" data-pref="meteors"><span style="font-size:1.2rem">☄️</span><span class="name">زخات الشهب<small>مساء ليلة الذروة مع أفضل وقت وجهة</small></span><div class="toggle"></div></div>
-      <div class="alert-row" data-pref="space"><span style="font-size:1.2rem">🛰️</span><span class="name">مرور محطة الفضاء<small>قبل المرور الظاهر بـ١٠ دقائق</small></span><div class="toggle"></div></div>
-      <div class="notif-status" id="notifStatus"></div>
-      <div class="qibla-btns" style="margin-top:10px">
-        <button class="muzna-btn primary" id="notifTest" type="button">🔔 إرسال إشعار تجريبي</button>
-        <button class="muzna-btn primary" id="notifTestNative" type="button" onclick="window.manakhNative && window.manakhNative.test()">🔔 جرّب إشعار على جوالك</button>
-        <button class="muzna-btn" id="notifLink" type="button">📲 ربط ntfy</button>
-      </div>
-      <div class="alert-note" id="alertNote">هذي المفاتيح للتنبيهات داخل التطبيق. أما التنبيهات على جوالك والتطبيق مقفول فتجيك من GitHub (ملف alerts.yml).</div>
-      <div class="qibla-btns" id="rateRow" hidden style="margin-top:12px"><a class="muzna-btn primary" id="rateBtn" href="https://apps.apple.com/app/id6823329197?action=write-review" target="_blank" rel="noopener">⭐ عجبك مناخ؟ قيّمه في App Store</a></div>
-      <!-- 🧪 النسخة التجريبية: حط رابط TestFlight العام هنا (من App Store Connect ← TestFlight ← External Testing ← Public Link). الزر يختفي لو الرابط فاضي -->
-      <div class="qibla-btns" id="betaRow" hidden style="margin-top:10px"><a class="muzna-btn" id="betaBtn" href="#" target="_blank" rel="noopener">🧪 جرّب النسخة التجريبية قبل الكل</a></div>
-      <div class="alert-note" id="betaNote" hidden>تنزل لك المزايا الجديدة قبل الناس عن طريق تطبيق TestFlight من أبل. ممكن يكون فيها أخطاء بسيطة، وملاحظاتك تساعدنا نحسّن مناخ 🙏</div>
-      <script>
-        (function(){
-          var BETA_LINK = ''; // مثال: 'https://testflight.apple.com/join/XXXXXXXX'
-          if(!BETA_LINK) return;
-          document.getElementById('betaBtn').href = BETA_LINK;
-          document.getElementById('betaRow').hidden = false; document.getElementById('betaNote').hidden = false;
-        })();
-      </script>
-    </div>
-  
     </div>
     <div class="pane" data-pane="sea">
     <p style="color:var(--text-2); font-size:.82rem; margin:0 0 12px;">المد والجزر وحالة البحر لأقرب نقطة بحرية لموقعك</p>
@@ -1076,6 +1042,39 @@
       <div class="settings-row" id="rowFontSize"><div class="icon3d sm gold"><svg viewBox="0 0 24 24"><path d="M6 18L10 6h1l4 12M7.2 14h6.6"/></svg></div><span class="name" id="fontRowLabel">حجم الخط (عادي)</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
       <div class="settings-row" id="rowNtfy"><div class="icon3d sm rose"><svg viewBox="0 0 24 24"><path d="M4 4l16 8-16 8V4z"/></svg></div><span class="name" id="ntfyRowLabel">ربط إشعارات فعلية عبر ntfy</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
       <div class="settings-row" id="rowAbout"><div class="icon3d sm slate"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg></div><span class="name">عن التطبيق</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+    </div>
+    <div class="card" id="alertsCard">
+      <div class="card-head"><h2>التنبيهات</h2></div>
+      <div class="alert-row" id="alertThunderRow"><span style="font-size:1.2rem">⚡</span><span class="name">تنبيه الرعد والبرق</span><div class="toggle" id="alertThunderTg"></div></div>
+      <div class="alert-row" id="alertRainRow"><span style="font-size:1.2rem">🌧️</span><span class="name">تنبيه الأمطار</span><div class="toggle" id="alertRainTg"></div></div>
+      <div class="alert-row" data-pref="wind"><span style="font-size:1.2rem">💨</span><span class="name">الرياح واتجاهها<small>تغيّر الاتجاه والرياح القوية · <a href="#" id="windPickAreas" style="color:var(--cool-1)">اختر المناطق</a></small></span><div class="toggle"></div></div>
+      <div class="alert-row" data-pref="tides"><span style="font-size:1.2rem">🌊</span><span class="name">المد والجزر<small>قبل المد العالي والجزر</small></span><div class="toggle"></div></div>
+      <div class="alert-row" data-pref="prayer"><span style="font-size:1.2rem">🕌</span><span class="name">أوقات الصلاة<small>إشعار عند دخول وقت كل صلاة</small></span><div class="toggle"></div></div>
+      <div class="alert-row" data-pref="adhan"><span style="font-size:1.2rem">📢</span><span class="name">الأذان بالصوت<small>إشعار الصلاة يطلع بصوت الأذان (وأذان خاص للفجر)</small></span><div class="toggle"></div></div>
+      <div class="alert-row" data-pref="moon"><span style="font-size:1.2rem">🌓</span><span class="name">أطوار القمر<small>المحاق والتربيعان والبدر</small></span><div class="toggle"></div></div>
+      <div class="alert-row" data-pref="anwaa"><span style="font-size:1.2rem">✦</span><span class="name">الطوالع والأنواء<small>دخول نجم جديد ونهايته</small></span><div class="toggle"></div></div>
+      <div class="alert-row" data-pref="conj"><span style="font-size:1.2rem">🪐</span><span class="name">اقترانات القمر<small>قبلها بيوم وقبل وقت المشاهدة بساعة</small></span><div class="toggle"></div></div>
+      <div class="alert-row" data-pref="meteors"><span style="font-size:1.2rem">☄️</span><span class="name">زخات الشهب<small>مساء ليلة الذروة مع أفضل وقت وجهة</small></span><div class="toggle"></div></div>
+      <div class="alert-row" data-pref="space"><span style="font-size:1.2rem">🛰️</span><span class="name">مرور محطة الفضاء<small>قبل المرور الظاهر بـ١٠ دقائق</small></span><div class="toggle"></div></div>
+      <div class="notif-status" id="notifStatus"></div>
+      <div class="qibla-btns" style="margin-top:10px">
+        <button class="muzna-btn primary" id="notifTest" type="button">🔔 إرسال إشعار تجريبي</button>
+        <button class="muzna-btn primary" id="notifTestNative" type="button" onclick="window.manakhNative && window.manakhNative.test()">🔔 جرّب إشعار على جوالك</button>
+        <button class="muzna-btn" id="notifLink" type="button">📲 ربط ntfy</button>
+      </div>
+      <div class="alert-note" id="alertNote">هذي المفاتيح للتنبيهات داخل التطبيق. أما التنبيهات على جوالك والتطبيق مقفول فتجيك من GitHub (ملف alerts.yml).</div>
+      <div class="qibla-btns" id="rateRow" hidden style="margin-top:12px"><a class="muzna-btn primary" id="rateBtn" href="https://apps.apple.com/app/id6823329197?action=write-review" target="_blank" rel="noopener">⭐ عجبك مناخ؟ قيّمه في App Store</a></div>
+      <!-- 🧪 النسخة التجريبية: حط رابط TestFlight العام هنا (من App Store Connect ← TestFlight ← External Testing ← Public Link). الزر يختفي لو الرابط فاضي -->
+      <div class="qibla-btns" id="betaRow" hidden style="margin-top:10px"><a class="muzna-btn" id="betaBtn" href="#" target="_blank" rel="noopener">🧪 جرّب النسخة التجريبية قبل الكل</a></div>
+      <div class="alert-note" id="betaNote" hidden>تنزل لك المزايا الجديدة قبل الناس عن طريق تطبيق TestFlight من أبل. ممكن يكون فيها أخطاء بسيطة، وملاحظاتك تساعدنا نحسّن مناخ 🙏</div>
+      <script>
+        (function(){
+          var BETA_LINK = ''; // مثال: 'https://testflight.apple.com/join/XXXXXXXX'
+          if(!BETA_LINK) return;
+          document.getElementById('betaBtn').href = BETA_LINK;
+          document.getElementById('betaRow').hidden = false; document.getElementById('betaNote').hidden = false;
+        })();
+      </script>
     </div>
       <div class="card">
       <div class="card-head"><h2>🔊 نغمات التنبيه</h2></div>
@@ -1657,12 +1656,11 @@
   }
   setInterval(jitter, 5000);
 
-  // 🔔 الجرس يفتح صفحة التنبيهات (الطقس ← التنبيهات) عشان تشوف وتفعّل الإشعارات
+  // 🔔 الجرس يفتح التنبيهات في صفحة الإعدادات
   document.getElementById('bellBtn').addEventListener('click', ()=>{
     document.getElementById('alertBadge').hidden = true;
-    showPage('page-weather');
-    const sec = document.getElementById('page-weather');
-    setTimeout(() => { if(sec && sec._tabs) sec._tabs.go('alerts'); else { const t = sec && sec.querySelector('.tab[data-tab="alerts"]'); if(t) t.click(); } }, 50);
+    showPage('page-settings');
+    setTimeout(() => { const c = document.getElementById('alertsCard'); if(c) c.scrollIntoView({ behavior:'smooth', block:'start' }); }, 80);
   });
 
   // ---------- chart ----------
@@ -3107,6 +3105,7 @@
     }
     paint();
     document.addEventListener('tabchange', e => { if(e.detail.tab === 'alerts') paint(); });
+    document.querySelectorAll('[data-page="page-settings"], [onclick*="page-settings"]').forEach(b => b.addEventListener('click', () => setTimeout(paint, 60)));
     document.addEventListener('manakh-native-perm', paint);
     document.getElementById('rowNtfy').addEventListener('click', () => setTimeout(paint, 300));
     document.getElementById('rowNotif').addEventListener('click', () => setTimeout(paint, 50));
@@ -4116,7 +4115,7 @@
 
 
   // ---------- per-category alert switches (in-app alerts; GitHub sends the phone push) ----------
-  function manakhAlertPrefs(){ try{ return Object.assign({ thunder:true, rain:true, wind:true, tides:true, prayer:true, moon:true, anwaa:true, conj:true, meteors:true, space:true }, JSON.parse(localStorage.getItem('manakh_alerts') || '{}')); }catch(e){ return { thunder:true, rain:true, wind:true, tides:true, prayer:true, moon:true, anwaa:true, conj:true, meteors:true, space:true }; } }
+  function manakhAlertPrefs(){ try{ return Object.assign({ thunder:true, rain:true, wind:true, tides:true, prayer:true, adhan:true, moon:true, anwaa:true, conj:true, meteors:true, space:true }, JSON.parse(localStorage.getItem('manakh_alerts') || '{}')); }catch(e){ return { thunder:true, rain:true, wind:true, tides:true, prayer:true, adhan:true, moon:true, anwaa:true, conj:true, meteors:true, space:true }; } }
   function manakhAlertOn(k){ return !!manakhAlertPrefs()[k]; }
   function manakhLocalAlert(title, msg){ if(!notifOn) return; fireLocalAlert(title, msg, 'general'); showToast(title); }
   function manakhOnce(key){ try{ const k = 'manakh_once_' + key; if(localStorage.getItem(k)) return false; localStorage.setItem(k, '1'); return true; }catch(e){ return true; } }
@@ -4342,9 +4341,27 @@
         showToast('بيوصلك إشعار بعد ٥ ثواني — تقدر تقفل التطبيق وتشوفه');
       }catch(e){ showToast('تعذر إرسال الإشعار التجريبي'); }
     } };
+    // 📢 الأذان: ملفات صوت (≤ 30 ثانية، حد أبل لصوت الإشعار) تنحفظ في Library/Sounds عشان تشتغل والتطبيق مقفل
+    const FS = Cap.Plugins && Cap.Plugins.Filesystem, ADHAN = { 'adhan.wav':false, 'adhan_fajr.wav':false };
+    function adhanSound(name){ if(/فجر/.test(name) && ADHAN['adhan_fajr.wav']) return 'adhan_fajr.wav'; return ADHAN['adhan.wav'] ? 'adhan.wav' : null; }
+    async function installAdhan(){
+      if(!FS) return;
+      try{
+        const have = await FS.readdir({ path:'Sounds', directory:'LIBRARY' }).then(r => (r.files || []).map(f => f.name || f), () => []);
+        for(const f of Object.keys(ADHAN)){
+          if(have.includes(f)){ ADHAN[f] = true; continue; }
+          const res = await fetch('sounds/' + f).catch(() => null); if(!res || !res.ok) continue;
+          const blob = await res.blob();
+          const b64 = await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(',')[1]); r.onerror = no; r.readAsDataURL(blob); });
+          await FS.writeFile({ path:'Sounds/' + f, data:b64, directory:'LIBRARY', recursive:true }); ADHAN[f] = true;
+        }
+      }catch(e){ console.log('adhan install', e); }
+    }
+    const adhanReady = installAdhan();
     function nextDate(md, from){ const d = new Date(from.getFullYear(), md[0] - 1, md[1], 8, 0, 0, 0); if(d.getTime() <= from.getTime()) d.setFullYear(d.getFullYear() + 1); return d; }
     async function reschedule(){
       try{
+        await adhanReady;
         const perm = await LN.checkPermissions();
         window.manakhNative.perm = perm.display;
         if(perm.display !== 'granted'){ const r = await LN.requestPermissions(); window.manakhNative.perm = r.display; document.dispatchEvent(new Event('manakh-native-perm')); if(r.display !== 'granted') return; }
@@ -4365,7 +4382,8 @@
         }
         if(manakhAlertOn('prayer') && window.manakhPrayerUpcoming){
           window.manakhPrayerUpcoming(4).slice(0, 15).forEach((p, i) => {
-            list.push({ id: BASE + 180 + i, title: '🕌 حان الآن وقت صلاة ' + p.name, body: 'الساعة ' + p.hm + ' حسب توقيت ' + p.place, schedule:{ at: new Date(p.t) } });
+            const snd = manakhAlertOn('adhan') ? adhanSound(p.name) : null;
+            list.push(Object.assign({ id: BASE + 180 + i, title: '🕌 حان الآن وقت صلاة ' + p.name, body: 'الساعة ' + p.hm + ' حسب توقيت ' + p.place, schedule:{ at: new Date(p.t) } }, snd ? { sound: snd } : {}));
           });
         }
         if(manakhAlertOn('moon') && typeof moonPhasesAround === 'function'){
