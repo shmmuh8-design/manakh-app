@@ -39,7 +39,7 @@ select cron.schedule(
   '* * * * *',
   $job$
     select net.http_post(
-      url     := 'https://sjnpljsnmbdhykfudebk.supabase.co/functions/v1/manakh-push',
+      url     := 'https://sjnpljsnmbdhykfudebk.supabase.co/functions/v1/manakh--push',
       headers := '{"Content-Type":"application/json"}'::jsonb,
       body    := jsonb_build_object('action', 'tick', 'secret', (select value from public.mk_config where key = 'cron_secret')),
       timeout_milliseconds := 55000

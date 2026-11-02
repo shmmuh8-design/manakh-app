@@ -4316,7 +4316,7 @@
     if(HP) document.addEventListener('click', e => { if(e.target.closest('.tab, .bottomnav a, .bottomnav button, .toggle')) HP.impact({ style:'LIGHT' }).catch(() => {}); }, true);
     if(!LN) return;
     const PN = Cap.Plugins && Cap.Plugins.PushNotifications;
-    const PUSH_URL = 'https://sjnpljsnmbdhykfudebk.supabase.co/functions/v1/manakh-push';
+    const PUSH_URL = 'https://sjnpljsnmbdhykfudebk.supabase.co/functions/v1/manakh--push';
     const ls = { get:k => { try{ return localStorage.getItem(k) || ''; }catch(e){ return ''; } }, set:(k, v) => { try{ localStorage.setItem(k, v); }catch(e){} } };
     let pushToken = ls.get('manakh-push-token');
     let pushReady = !!pushToken && ls.get('manakh-push-ok') === '1';
