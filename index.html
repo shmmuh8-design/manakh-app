@@ -668,10 +668,7 @@
         <div class="icon3d sm slate"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div>
       </button>
       <div class="brand"><div><div class="brand-name">مناخ</div><div class="brand-sub">محطة مناخ للفلك والطقس والطوالع</div></div></div>
-      <button class="icon-btn bell-wrap" id="bellBtn" aria-label="فتح مركز التنبيهات">
-        <div class="icon3d sm amber"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></div>
-        <span class="badge" id="alertBadge" hidden></span>
-      </button>
+      <span class="icon-btn" aria-hidden="true" style="visibility:hidden"><span class="icon3d sm"></span></span>
     </div>
 
     <div class="greeting">
@@ -1050,7 +1047,6 @@
       <div class="alert-row" data-pref="wind"><span style="font-size:1.2rem">💨</span><span class="name">الرياح واتجاهها<small>تغيّر الاتجاه والرياح القوية · <a href="#" id="windPickAreas" style="color:var(--cool-1)">اختر المناطق</a></small></span><div class="toggle"></div></div>
       <div class="alert-row" data-pref="tides"><span style="font-size:1.2rem">🌊</span><span class="name">المد والجزر<small>قبل المد العالي والجزر</small></span><div class="toggle"></div></div>
       <div class="alert-row" data-pref="prayer"><span style="font-size:1.2rem">🕌</span><span class="name">أوقات الصلاة<small>إشعار عند دخول وقت كل صلاة</small></span><div class="toggle"></div></div>
-      <div class="alert-row" data-pref="adhan"><span style="font-size:1.2rem">📢</span><span class="name">الأذان بالصوت<small>إشعار الصلاة يطلع بصوت الأذان (وأذان خاص للفجر)</small></span><div class="toggle"></div></div>
       <div class="alert-row" data-pref="moon"><span style="font-size:1.2rem">🌓</span><span class="name">أطوار القمر<small>المحاق والتربيعان والبدر</small></span><div class="toggle"></div></div>
       <div class="alert-row" data-pref="anwaa"><span style="font-size:1.2rem">✦</span><span class="name">الطوالع والأنواء<small>دخول نجم جديد ونهايته</small></span><div class="toggle"></div></div>
       <div class="alert-row" data-pref="conj"><span style="font-size:1.2rem">🪐</span><span class="name">اقترانات القمر<small>قبلها بيوم وقبل وقت المشاهدة بساعة</small></span><div class="toggle"></div></div>
@@ -1656,12 +1652,6 @@
   }
   setInterval(jitter, 5000);
 
-  // 🔔 الجرس يفتح التنبيهات في صفحة الإعدادات
-  document.getElementById('bellBtn').addEventListener('click', ()=>{
-    document.getElementById('alertBadge').hidden = true;
-    showPage('page-settings');
-    setTimeout(() => { const c = document.getElementById('alertsCard'); if(c) c.scrollIntoView({ behavior:'smooth', block:'start' }); }, 80);
-  });
 
   // ---------- chart ----------
   const chart = document.getElementById('chartSvg');
@@ -4115,7 +4105,7 @@
 
 
   // ---------- per-category alert switches (in-app alerts; GitHub sends the phone push) ----------
-  function manakhAlertPrefs(){ try{ return Object.assign({ thunder:true, rain:true, wind:true, tides:true, prayer:true, adhan:true, moon:true, anwaa:true, conj:true, meteors:true, space:true }, JSON.parse(localStorage.getItem('manakh_alerts') || '{}')); }catch(e){ return { thunder:true, rain:true, wind:true, tides:true, prayer:true, adhan:true, moon:true, anwaa:true, conj:true, meteors:true, space:true }; } }
+  function manakhAlertPrefs(){ try{ return Object.assign({ thunder:true, rain:true, wind:true, tides:true, prayer:true, moon:true, anwaa:true, conj:true, meteors:true, space:true }, JSON.parse(localStorage.getItem('manakh_alerts') || '{}')); }catch(e){ return { thunder:true, rain:true, wind:true, tides:true, prayer:true, moon:true, anwaa:true, conj:true, meteors:true, space:true }; } }
   function manakhAlertOn(k){ return !!manakhAlertPrefs()[k]; }
   function manakhLocalAlert(title, msg){ if(!notifOn) return; fireLocalAlert(title, msg, 'general'); showToast(title); }
   function manakhOnce(key){ try{ const k = 'manakh_once_' + key; if(localStorage.getItem(k)) return false; localStorage.setItem(k, '1'); return true; }catch(e){ return true; } }
@@ -4341,27 +4331,9 @@
         showToast('بيوصلك إشعار بعد ٥ ثواني — تقدر تقفل التطبيق وتشوفه');
       }catch(e){ showToast('تعذر إرسال الإشعار التجريبي'); }
     } };
-    // 📢 الأذان: ملفات صوت (≤ 30 ثانية، حد أبل لصوت الإشعار) تنحفظ في Library/Sounds عشان تشتغل والتطبيق مقفل
-    const FS = Cap.Plugins && Cap.Plugins.Filesystem, ADHAN = { 'adhan.wav':false, 'adhan_fajr.wav':false };
-    function adhanSound(name){ if(/فجر/.test(name) && ADHAN['adhan_fajr.wav']) return 'adhan_fajr.wav'; return ADHAN['adhan.wav'] ? 'adhan.wav' : null; }
-    async function installAdhan(){
-      if(!FS) return;
-      try{
-        const have = await FS.readdir({ path:'Sounds', directory:'LIBRARY' }).then(r => (r.files || []).map(f => f.name || f), () => []);
-        for(const f of Object.keys(ADHAN)){
-          if(have.includes(f)){ ADHAN[f] = true; continue; }
-          const res = await fetch('sounds/' + f).catch(() => null); if(!res || !res.ok) continue;
-          const blob = await res.blob();
-          const b64 = await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(',')[1]); r.onerror = no; r.readAsDataURL(blob); });
-          await FS.writeFile({ path:'Sounds/' + f, data:b64, directory:'LIBRARY', recursive:true }); ADHAN[f] = true;
-        }
-      }catch(e){ console.log('adhan install', e); }
-    }
-    const adhanReady = installAdhan();
     function nextDate(md, from){ const d = new Date(from.getFullYear(), md[0] - 1, md[1], 8, 0, 0, 0); if(d.getTime() <= from.getTime()) d.setFullYear(d.getFullYear() + 1); return d; }
     async function reschedule(){
       try{
-        await adhanReady;
         const perm = await LN.checkPermissions();
         window.manakhNative.perm = perm.display;
         if(perm.display !== 'granted'){ const r = await LN.requestPermissions(); window.manakhNative.perm = r.display; document.dispatchEvent(new Event('manakh-native-perm')); if(r.display !== 'granted') return; }
@@ -4382,8 +4354,7 @@
         }
         if(manakhAlertOn('prayer') && window.manakhPrayerUpcoming){
           window.manakhPrayerUpcoming(4).slice(0, 15).forEach((p, i) => {
-            const snd = manakhAlertOn('adhan') ? adhanSound(p.name) : null;
-            list.push(Object.assign({ id: BASE + 180 + i, title: '🕌 حان الآن وقت صلاة ' + p.name, body: 'الساعة ' + p.hm + ' حسب توقيت ' + p.place, schedule:{ at: new Date(p.t) } }, snd ? { sound: snd } : {}));
+            list.push({ id: BASE + 180 + i, title: '🕌 حان الآن وقت صلاة ' + p.name, body: 'الساعة ' + p.hm + ' حسب توقيت ' + p.place, schedule:{ at: new Date(p.t) } });
           });
         }
         if(manakhAlertOn('moon') && typeof moonPhasesAround === 'function'){

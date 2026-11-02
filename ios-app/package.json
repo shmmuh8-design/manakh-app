@@ -4,7 +4,7 @@
   "private": true,
   "description": "تطبيق مناخ للآيفون — نسخة Capacitor من موقع مناخ",
   "scripts": {
-    "build": "rm -rf www && mkdir -p www && cp ../index.html www/index.html && (cp -R ../sounds www/sounds 2>/dev/null || true)",
+    "build": "rm -rf www && mkdir -p www && cp ../index.html www/index.html",
     "assets": "capacitor-assets generate --ios --iconBackgroundColor '#0e1628' --splashBackgroundColor '#0e1628' --splashBackgroundColorDark '#0e1628'"
   },
   "dependencies": {
@@ -13,8 +13,7 @@
     "@capacitor/local-notifications": "^7.0.0",
     "@capacitor/haptics": "^7.0.0",
     "@capacitor-community/text-to-speech": "^6.1.0",
-    "@capacitor-community/in-app-review": "^7.0.1",
-    "@capacitor/filesystem": "^7.0.0"
+    "@capacitor-community/in-app-review": "^7.0.1"
   },
   "devDependencies": {
     "@capacitor/cli": "^7.0.0",
