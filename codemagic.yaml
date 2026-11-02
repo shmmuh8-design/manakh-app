@@ -46,6 +46,37 @@ workflows:
           /usr/libexec/PlistBuddy -c "Add :UISupportedInterfaceOrientations array" $PLIST
           /usr/libexec/PlistBuddy -c "Add :UISupportedInterfaceOrientations:0 string UIInterfaceOrientationPortrait" $PLIST
           /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" $PLIST || true
+      - name: الإشعارات من الخادم (Push)
+        script: |
+          # صلاحية aps-environment
+          cat > ios/App/App/App.entitlements <<'XML'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict><key>aps-environment</key><string>production</string></dict></plist>
+          XML
+          sed -i '' 's/^[[:space:]]*//' ios/App/App/App.entitlements
+          grep -q CODE_SIGN_ENTITLEMENTS ios/App/App.xcodeproj/project.pbxproj || \
+            perl -pi -e 's|(PRODUCT_BUNDLE_IDENTIFIER = "?com\.salemaljabri\.manakh"?;)|$1 CODE_SIGN_ENTITLEMENTS = App/App.entitlements;|g' ios/App/App.xcodeproj/project.pbxproj
+          grep -c "CODE_SIGN_ENTITLEMENTS = App/App.entitlements" ios/App/App.xcodeproj/project.pbxproj
+          # تمرير رمز الجهاز من iOS إلى Capacitor
+          python3 - <<'PY'
+          p = 'ios/App/App/AppDelegate.swift'
+          s = open(p).read()
+          if 'capacitorDidRegisterForRemoteNotifications' not in s:
+              add = '''
+              func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+                  NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: deviceToken)
+              }
+
+              func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+                  NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
+              }
+          '''
+              i = s.rstrip().rfind('}')
+              s = s[:i] + add + '}\n'
+              open(p, 'w').write(s)
+          print(open(p).read()[-700:])
+          PY
       - name: التوقيع
         script: xcode-project use-profiles
       - name: رقم الإصدار والبناء

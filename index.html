@@ -1045,6 +1045,7 @@
       <div class="alert-row" id="alertThunderRow"><span style="font-size:1.2rem">⚡</span><span class="name">تنبيه الرعد والبرق</span><div class="toggle" id="alertThunderTg"></div></div>
       <div class="alert-row" id="alertRainRow"><span style="font-size:1.2rem">🌧️</span><span class="name">تنبيه الأمطار</span><div class="toggle" id="alertRainTg"></div></div>
       <div class="alert-row" data-pref="wind"><span style="font-size:1.2rem">💨</span><span class="name">الرياح واتجاهها<small>تغيّر الاتجاه والرياح القوية · <a href="#" id="windPickAreas" style="color:var(--cool-1)">اختر المناطق</a></small></span><div class="toggle"></div></div>
+      <div class="alert-row" data-pref="humidity"><span style="font-size:1.2rem">💧</span><span class="name">الرطوبة العالية<small>إذا وصلت ٨٥٪ أو أكثر (مرة في اليوم)</small></span><div class="toggle"></div></div>
       <div class="alert-row" data-pref="tides"><span style="font-size:1.2rem">🌊</span><span class="name">المد والجزر<small>قبل المد العالي والجزر</small></span><div class="toggle"></div></div>
       <div class="alert-row" data-pref="prayer"><span style="font-size:1.2rem">🕌</span><span class="name">أوقات الصلاة<small>إشعار عند دخول وقت كل صلاة</small></span><div class="toggle"></div></div>
       <div class="alert-row" data-pref="moon"><span style="font-size:1.2rem">🌓</span><span class="name">أطوار القمر<small>المحاق والتربيعان والبدر</small></span><div class="toggle"></div></div>
@@ -3976,6 +3977,7 @@
     };
     const pad = n => String(n).padStart(2,'0');
     let data = null, lastKey = '', loading = false;
+    window.manakhTidePoint = () => point();
     function point(){
       const c = selectedCityRef || {}, city = c.parentName || c.name;
       if(city === 'مسقط' && c.parentName && typeof c.lat === 'number')
@@ -4105,7 +4107,7 @@
 
 
   // ---------- per-category alert switches (in-app alerts; GitHub sends the phone push) ----------
-  function manakhAlertPrefs(){ try{ return Object.assign({ thunder:true, rain:true, wind:true, tides:true, prayer:true, moon:true, anwaa:true, conj:true, meteors:true, space:true }, JSON.parse(localStorage.getItem('manakh_alerts') || '{}')); }catch(e){ return { thunder:true, rain:true, wind:true, tides:true, prayer:true, moon:true, anwaa:true, conj:true, meteors:true, space:true }; } }
+  function manakhAlertPrefs(){ try{ return Object.assign({ thunder:true, rain:true, wind:true, humidity:true, tides:true, prayer:true, moon:true, anwaa:true, conj:true, meteors:true, space:true }, JSON.parse(localStorage.getItem('manakh_alerts') || '{}')); }catch(e){ return { thunder:true, rain:true, wind:true, humidity:true, tides:true, prayer:true, moon:true, anwaa:true, conj:true, meteors:true, space:true }; } }
   function manakhAlertOn(k){ return !!manakhAlertPrefs()[k]; }
   function manakhLocalAlert(title, msg){ if(!notifOn) return; fireLocalAlert(title, msg, 'general'); showToast(title); }
   function manakhOnce(key){ try{ const k = 'manakh_once_' + key; if(localStorage.getItem(k)) return false; localStorage.setItem(k, '1'); return true; }catch(e){ return true; } }
@@ -4313,86 +4315,158 @@
     { const t = document.getElementById('toneNote'); if(t) t.textContent = 'النغمات تشتغل وأنت فاتح التطبيق — ارفع صوت الجوال. والإشعارات اللي توصلك والتطبيق مقفل تاخذ نغمة الآيفون.'; }
     if(HP) document.addEventListener('click', e => { if(e.target.closest('.tab, .bottomnav a, .bottomnav button, .toggle')) HP.impact({ style:'LIGHT' }).catch(() => {}); }, true);
     if(!LN) return;
+    const PN = Cap.Plugins && Cap.Plugins.PushNotifications;
+    const PUSH_URL = 'https://sjnpljsnmbdhykfudebk.supabase.co/functions/v1/manakh-push';
+    const ls = { get:k => { try{ return localStorage.getItem(k) || ''; }catch(e){ return ''; } }, set:(k, v) => { try{ localStorage.setItem(k, v); }catch(e){} } };
+    let pushToken = ls.get('manakh-push-token');
+    let pushReady = !!pushToken && ls.get('manakh-push-ok') === '1';
     const prevFire = fireLocalAlert;
     fireLocalAlert = function(title, message, kind){
       prevFire(title, message, kind);
-      if(document.visibilityState !== 'visible') LN.schedule({ notifications:[{ id: Math.floor(Math.random() * 1e6) + 100000, title, body: message }] }).catch(() => {});
+      // لما إشعارات الخادم شغالة، هي اللي توصل الطقس والتطبيق مقفل — ما نكرر
+      if(!pushReady && document.visibilityState !== 'visible') LN.schedule({ notifications:[{ id: Math.floor(Math.random() * 1e6) + 100000, title, body: message }] }).catch(() => {});
     };
     const BASE = 7000;
     const fT = new Intl.DateTimeFormat('ar-u-nu-latn', { hour:'numeric', minute:'2-digit', hour12:true });
     const fD = new Intl.DateTimeFormat('ar-u-nu-latn', { day:'numeric', month:'long' });
+    function where(){
+      const c = selectedCityRef || {};
+      const pos = typeof c.lat === 'number' ? { lat:c.lat, lon:c.lon } : { lat:23.588, lon:58.383 };
+      let tp = null; try{ tp = window.manakhTidePoint && window.manakhTidePoint(); }catch(e){}
+      return { lat:+pos.lat.toFixed(3), lon:+pos.lon.toFixed(3), place:c.name || 'مسقط', tide_lat: tp ? +tp.lat.toFixed(3) : null, tide_lon: tp ? +tp.lon.toFixed(3) : null };
+    }
+    async function syncPush(events, opts){
+      if(!pushToken) return false;
+      const w = where(), body = { action:'sync', token:pushToken, enabled:notifOn, prefs:manakhAlertPrefs(), events, tz:Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Muscat', ...w };
+      if(opts && opts.test) body.test = true;
+      const sig = JSON.stringify(body), last = +ls.get('manakh-push-at') || 0;
+      if(!body.test && sig === ls.get('manakh-push-sig') && Date.now() - last < 12 * 3600000 && pushReady) return true;
+      try{
+        const r = await fetch(PUSH_URL, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:sig });
+        const j = await r.json().catch(() => ({}));
+        if(!r.ok || !j.ok) throw new Error(j.error || r.status);
+        ls.set('manakh-push-sig', sig); ls.set('manakh-push-at', String(Date.now())); ls.set('manakh-push-ok', '1'); pushReady = true;
+        return body.test ? j.test : true;
+      }catch(e){ console.warn('push sync', e); return false; }
+    }
     window.manakhNative = { perm:'unknown', test: async () => {
       try{
         let perm = await LN.checkPermissions();
         if(perm.display !== 'granted') perm = await LN.requestPermissions();
         window.manakhNative.perm = perm.display;
         if(perm.display !== 'granted'){ showToast('الإشعارات غير مسموحة — فعّلها من إعدادات الآيفون ← مناخ'); return; }
+        if(pushToken){
+          showToast('جاري إرسال إشعار تجريبي من الخادم…');
+          const r = await syncPush(lastEvents, { test:true });
+          if(r === 'ok'){ showToast('✅ وصل من الخادم — الإشعارات بتوصلك والتطبيق مقفل'); return; }
+        }
         await LN.schedule({ notifications:[{ id: BASE + 199, title:'✅ إشعار تجريبي من مناخ', body:'وصلك؟ يعني الإشعارات شغالة تمام على جوالك 👌', schedule:{ at: new Date(Date.now() + 5000) } }] });
         showToast('بيوصلك إشعار بعد ٥ ثواني — تقدر تقفل التطبيق وتشوفه');
       }catch(e){ showToast('تعذر إرسال الإشعار التجريبي'); }
     } };
     function nextDate(md, from){ const d = new Date(from.getFullYear(), md[0] - 1, md[1], 8, 0, 0, 0); if(d.getTime() <= from.getTime()) d.setFullYear(d.getFullYear() + 1); return d; }
+    // كل المواعيد الفلكية القادمة (تنحسب على الجوال وتنرسل للخادم، أو تنجدول محليًا إذا الخادم مو متاح)
+    function buildEvents(){
+      const ev = [], now = Date.now();
+      const add = (k, slot, at, title, body) => { at = +at; if(at > now) ev.push({ k, slot, id: k + ':' + Math.round(at / 600000) + ':' + slot % 2, at, title, body }); };
+      if(window.manakhConjEvents){
+        const r = window.manakhConjEvents();
+        r.events.filter(e => e.best).slice(0, 8).forEach((e, i) => {
+          const t = e.best.t, name = 'القمر و' + r.NAMES[e.id], when = r.fTime.format(t), dir = r.dirOf(e.best.az), d = e.best.sep.toFixed(1) + '°';
+          const eve = new Date(t - 86400000); eve.setHours(8, 0, 0, 0);
+          add('conj', i * 2, eve, '🪐 بكرة اقتران ' + name, 'أفضل وقت للمشاهدة الساعة ' + when + ' جهة ' + dir + ' — المسافة بينهما ' + d);
+          add('conj', i * 2 + 1, t - 3600000, '🌙 بعد ساعة: ' + name, 'ارفع نظرك جهة ' + dir + ' الساعة ' + when + ' — المسافة بينهما ' + d);
+        });
+      }
+      if(typeof moonPhasesAround === 'function'){
+        const PH = { 0:'🌑 الليلة محاق', 0.25:'🌓 اليوم التربيع الأول', 0.5:'🌕 الليلة بدر', 0.75:'🌗 اليوم التربيع الأخير' };
+        moonPhasesAround(new Date()).filter(x => x.t > now).slice(0, 6).forEach((x, i) => {
+          const at = new Date(x.t); at.setHours(8, 0, 0, 0);
+          add('moon', 100 + i, at, PH[x.p], 'الساعة ' + fT.format(x.t));
+        });
+      }
+      if(typeof anwaaData !== 'undefined'){
+        const from = new Date();
+        anwaaData.map(a => ({ a, at: nextDate(a.start, from) })).sort((x, y) => x.at - y.at).slice(0, 6).forEach((x, i) => {
+          const endD = new Date(x.at.getFullYear(), x.a.end[0] - 1, x.a.end[1]); if(endD < x.at) endD.setFullYear(endD.getFullYear() + 1);
+          add('anwaa', 120 + i, x.at, '✦ دخل طالع ' + x.a.name, 'بدأ اليوم نوء ' + x.a.name + '، نجمه ' + x.a.star + '، وينتهي ' + fD.format(endD));
+        });
+      }
+      if(window.manakhMeteorEvents){
+        const r = window.manakhMeteorEvents();
+        r.list.filter(e => e.best && e.q.stars >= 1).slice(0, 6).forEach((e, i) => {
+          const eve = new Date(e.best.t - 12 * 3600000); eve.setHours(19, 0, 0, 0);
+          add('meteors', 140 + i, eve, '☄️ الليلة ذروة شهب ' + e.sh.name, 'أفضل وقت الساعة ' + r.fTime.format(e.best.t) + ' جهة ' + r.dirOf(e.best.az) + ' — حوالي ' + r.rateText(e.best) + ' شهاب/ساعة في سماء مظلمة بعيدًا عن الأضواء');
+        });
+      }
+      return ev;
+    }
+    async function spaceEvents(){
+      const ev = [];
+      if(!window.manakhSpacePasses) return ev;
+      try{
+        const r = await window.manakhSpacePasses(), now = Date.now();
+        r.list.filter(v => v.max >= 25 && v.start - 10 * 60000 > now).slice(0, 10).forEach((v, i) => {
+          const at = v.start - 10 * 60000;
+          ev.push({ k:'space', slot:160 + i, id:'space:' + Math.round(at / 600000), at, title:'🛰️ ' + v.sat.name + ' بعد ١٠ دقائق', body:'تطلع من جهة ' + r.dirOf(v.startAz) + ' الساعة ' + r.fTime.format(v.start) + ' وترتفع ' + Math.round(v.max) + '° — تبان كنجمة لامعة تتحرك بسرعة' });
+        });
+      }catch(e){}
+      return ev;
+    }
+    let lastEvents = [], busy = false, again = false;
     async function reschedule(){
+      if(busy){ again = true; return; }
+      busy = true;
       try{
         const perm = await LN.checkPermissions();
         window.manakhNative.perm = perm.display;
         if(perm.display !== 'granted'){ const r = await LN.requestPermissions(); window.manakhNative.perm = r.display; document.dispatchEvent(new Event('manakh-native-perm')); if(r.display !== 'granted') return; }
         document.dispatchEvent(new Event('manakh-native-perm'));
-        if(!notifOn) return;
+        if(PN && !pushToken){ try{ await PN.register(); }catch(e){} }
+        const events = buildEvents().concat(await spaceEvents());
+        lastEvents = events.map(({ slot, ...e }) => e);
+        const viaServer = pushToken ? await syncPush(lastEvents) : false;
         const pend = await LN.getPending();
-        const old = (pend.notifications || []).filter(n => n.id >= BASE && n.id < BASE + 199).map(n => ({ id:n.id }));
+        const old = (pend.notifications || []).filter(n => n.id >= BASE && n.id < BASE + 300 && n.id !== BASE + 199).map(n => ({ id:n.id }));
         if(old.length) await LN.cancel({ notifications: old });
-        const list = [], now = Date.now();
-        if(manakhAlertOn('conj') && window.manakhConjEvents){
-          const r = window.manakhConjEvents();
-          r.events.filter(e => e.best).slice(0, 8).forEach((e, i) => {
-            const t = e.best.t, name = 'القمر و' + r.NAMES[e.id], when = r.fTime.format(t), where = r.dirOf(e.best.az), d = e.best.sep.toFixed(1) + '°';
-            const eve = new Date(t - 86400000); eve.setHours(8, 0, 0, 0);
-            if(eve.getTime() > now) list.push({ id: BASE + i * 2, title: '🪐 بكرة اقتران ' + name, body: 'أفضل وقت للمشاهدة الساعة ' + when + ' جهة ' + where + ' — المسافة بينهما ' + d, schedule:{ at: eve } });
-            if(t - 3600000 > now) list.push({ id: BASE + i * 2 + 1, title: '🌙 بعد ساعة: ' + name, body: 'ارفع نظرك جهة ' + where + ' الساعة ' + when + ' — المسافة بينهما ' + d, schedule:{ at: new Date(t - 3600000) } });
-          });
-        }
+        if(!notifOn) return;
+        const list = [];
         if(manakhAlertOn('prayer') && window.manakhPrayerUpcoming){
-          window.manakhPrayerUpcoming(4).slice(0, 15).forEach((p, i) => {
-            list.push({ id: BASE + 180 + i, title: '🕌 حان الآن وقت صلاة ' + p.name, body: 'الساعة ' + p.hm + ' حسب توقيت ' + p.place, schedule:{ at: new Date(p.t) } });
+          // الصلاة تبقى محلية (دقيقة بالثانية): ١٢ يوم مع الخادم، و٣ أيام بدونه (حد أبل ٦٤ إشعار)
+          window.manakhPrayerUpcoming(viaServer ? 13 : 4).slice(0, viaServer ? 60 : 15).forEach((p, i) => {
+            list.push({ id: BASE + (viaServer ? 200 : 180) + i, title: '🕌 حان الآن وقت صلاة ' + p.name, body: 'الساعة ' + p.hm + ' حسب توقيت ' + p.place, schedule:{ at: new Date(p.t) } });
           });
         }
-        if(manakhAlertOn('moon') && typeof moonPhasesAround === 'function'){
-          const PH = { 0:'🌑 الليلة محاق', 0.25:'🌓 اليوم التربيع الأول', 0.5:'🌕 الليلة بدر', 0.75:'🌗 اليوم التربيع الأخير' };
-          moonPhasesAround(new Date()).filter(x => x.t > now).slice(0, 6).forEach((x, i) => {
-            const at = new Date(x.t); at.setHours(8, 0, 0, 0);
-            if(at.getTime() > now) list.push({ id: BASE + 100 + i, title: PH[x.p], body: 'الساعة ' + fT.format(x.t), schedule:{ at } });
-          });
-        }
-        if(manakhAlertOn('anwaa') && typeof anwaaData !== 'undefined'){
-          const from = new Date();
-          anwaaData.map(a => ({ a, at: nextDate(a.start, from) })).sort((x, y) => x.at - y.at).slice(0, 6).forEach((x, i) => {
-            const endD = new Date(x.at.getFullYear(), x.a.end[0] - 1, x.a.end[1]); if(endD < x.at) endD.setFullYear(endD.getFullYear() + 1);
-            list.push({ id: BASE + 120 + i, title: '✦ دخل طالع ' + x.a.name, body: 'بدأ اليوم نوء ' + x.a.name + '، نجمه ' + x.a.star + '، وينتهي ' + fD.format(endD), schedule:{ at: x.at } });
-          });
-        }
-        if(manakhAlertOn('meteors') && window.manakhMeteorEvents){
-          const r = window.manakhMeteorEvents();
-          r.list.filter(e => e.best && e.q.stars >= 1).slice(0, 6).forEach((e, i) => {
-            const eve = new Date(e.best.t - 12 * 3600000); eve.setHours(19, 0, 0, 0);
-            if(eve.getTime() > now) list.push({ id: BASE + 140 + i, title: '☄️ الليلة ذروة شهب ' + e.sh.name, body: 'أفضل وقت الساعة ' + r.fTime.format(e.best.t) + ' جهة ' + r.dirOf(e.best.az) + ' — حوالي ' + r.rateText(e.best) + ' شهاب/ساعة في سماء مظلمة بعيدًا عن الأضواء', schedule:{ at: eve } });
-          });
-        }
-        if(manakhAlertOn('space') && window.manakhSpacePasses){
-          try{
-            const r = await window.manakhSpacePasses();
-            r.list.filter(v => v.max >= 25 && v.start - 10 * 60000 > now).slice(0, 10).forEach((v, i) => {
-              list.push({ id: BASE + 160 + i, title: '🛰️ ' + v.sat.name + ' بعد ١٠ دقائق', body: 'تطلع من جهة ' + r.dirOf(v.startAz) + ' الساعة ' + r.fTime.format(v.start) + ' وترتفع ' + Math.round(v.max) + '° — تبان كنجمة لامعة تتحرك بسرعة', schedule:{ at: new Date(v.start - 10 * 60000) } });
-            });
-          }catch(e){}
-        }
+        if(!viaServer) events.filter(e => manakhAlertOn(e.k)).forEach(e => list.push({ id: BASE + e.slot, title: e.title, body: e.body, schedule:{ at: new Date(e.at) } }));
         if(list.length) await LN.schedule({ notifications: list });
+        paintNote();
       }catch(e){ console.warn('notifications', e); }
+      finally{ busy = false; if(again){ again = false; setTimeout(reschedule, 500); } }
+    }
+    function paintNote(){
+      const n = document.getElementById('alertNote'); if(!n) return;
+      n.textContent = pushReady
+        ? 'كل التنبيهات المفعّلة هنا توصلك على الآيفون حتى والتطبيق مقفل: الرعد والمطر والرياح والرطوبة والمد والجزر، وأطوار القمر والأنواء والاقترانات والشهب ومرور المحطة، وأوقات الصلاة.'
+        : 'التنبيهات المفعّلة هنا توصلك على الآيفون حتى والتطبيق مقفل: أوقات الصلاة والاقترانات وأطوار القمر والأنواء والشهب ومرور المحطة. أما الرعد والمطر والرياح والمد فتنبّهك وأنت فاتح التطبيق.';
+    }
+    if(PN){
+      PN.addListener('registration', t => {
+        const v = (t && t.value || '').trim();
+        if(!v || v === pushToken) return;
+        pushToken = v; ls.set('manakh-push-token', v); ls.set('manakh-push-sig', '');
+        setTimeout(reschedule, 300);
+      }).catch(() => {});
+      PN.addListener('registrationError', e => console.warn('push register', e)).catch(() => {});
+      // أبل تنصح بالتسجيل في كل تشغيل (الرمز ممكن يتغيّر)
+      LN.checkPermissions().then(p => { if(p.display === 'granted') PN.register().catch(() => {}); }).catch(() => {});
     }
     setTimeout(reschedule, 6000);
-    setTimeout(() => { const n = document.getElementById('alertNote'); if(n) n.textContent = 'التنبيهات المفعّلة هنا توصلك على الآيفون حتى والتطبيق مقفل: أوقات الصلاة والاقترانات وأطوار القمر والأنواء والشهب ومرور المحطة. أما الرعد والمطر والرياح والمد فتنبّهك وأنت فاتح التطبيق.'; }, 0);
+    setTimeout(paintNote, 0);
     document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') setTimeout(reschedule, 1500); });
-    document.querySelectorAll('.alert-row[data-pref]').forEach(r => r.addEventListener('click', () => setTimeout(reschedule, 300)));
+    document.querySelectorAll('.alert-row[data-pref], #alertThunderRow, #alertRainRow').forEach(r => r.addEventListener('click', () => setTimeout(reschedule, 300)));
+    // لما تتغيّر المدينة، نحدّث موقع الإشعارات
+    let lastPlace = '';
+    setInterval(() => { const w = where(), k = w.lat + ',' + w.lon; if(lastPlace && k !== lastPlace) reschedule(); lastPlace = k; }, 20000);
   })();
 
   // "choose areas" link: jump to the wind list where each area has its own bell
