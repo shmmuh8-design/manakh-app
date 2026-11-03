@@ -2863,7 +2863,9 @@
           sendNtfy('🌧️ تنبيه أمطار — ' + p.label, 'أمطار متوقعة ' + when(rIdx) + ' (الاحتمال ' + (prob[rIdx] || 0) + '%). انتبه في الطرق وابتعد عن مجاري الأودية.', ['cloud_with_rain']);
         }
         $('alertNote').textContent = 'آخر فحص ' + hhmm(new Date()) + ' لطقس ' + p.label +
-          (window.manakhNative
+          (window.manakhNative && window.manakhNative.pushReady
+            ? '. كل التنبيهات المفعّلة توصلك حتى والتطبيق مقفل: الرعد والمطر والرياح والرطوبة والمد، والصلاة والقمر والأنواء والاقترانات والشهب والمحطة.'
+            : window.manakhNative
             ? '. الرعد والمطر والرياح والمد تنبّهك وأنت فاتح التطبيق، أما أوقات الصلاة والاقترانات وأطوار القمر والأنواء والشهب ومرور المحطة فتوصلك حتى والتطبيق مقفل.'
             : '. نفحص كل 15 دقيقة للثلاث ساعات الجاية. التنبيهات تظهر والتطبيق مفتوح، وتوصل جوالك عبر ntfy إذا ربطته من الإعدادات.');
       }catch(e){ /* try again next cycle */ }
@@ -4345,12 +4347,12 @@
         const r = await fetch(PUSH_URL, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:sig });
         const j = await r.json().catch(() => ({}));
         if(!r.ok || !j.ok) throw new Error(j.error || r.status);
-        ls.set('manakh-push-sig', sig); ls.set('manakh-push-at', String(Date.now())); ls.set('manakh-push-ok', '1'); pushReady = true; pushErr = '';
+        ls.set('manakh-push-sig', sig); ls.set('manakh-push-at', String(Date.now())); ls.set('manakh-push-ok', '1'); pushReady = true; pushErr = ''; window.manakhNative.pushReady = true;
         if(body.test && j.test !== 'ok') pushErr = 'أبل: ' + j.test;
         return body.test ? j.test : true;
       }catch(e){ pushErr = 'مزامنة: ' + (e && e.message || e); paintNote(); console.warn('push sync', e); return false; }
     }
-    window.manakhNative = { perm:'unknown', test: async () => {
+    window.manakhNative = { perm:'unknown', pushReady, test: async () => {
       try{
         let perm = await LN.checkPermissions();
         if(perm.display !== 'granted') perm = await LN.requestPermissions();
