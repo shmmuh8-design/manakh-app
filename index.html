@@ -4319,7 +4319,7 @@
     const PUSH_URL = 'https://sjnpljsnmbdhykfudebk.supabase.co/functions/v1/manakh--push';
     const ls = { get:k => { try{ return localStorage.getItem(k) || ''; }catch(e){ return ''; } }, set:(k, v) => { try{ localStorage.setItem(k, v); }catch(e){} } };
     let pushToken = ls.get('manakh-push-token');
-    let pushReady = !!pushToken && ls.get('manakh-push-ok') === '1';
+    let pushReady = !!pushToken && ls.get('manakh-push-ok') === '1', pushErr = PN ? '' : 'إضافة الإشعارات غير موجودة في النسخة';
     const prevFire = fireLocalAlert;
     fireLocalAlert = function(title, message, kind){
       prevFire(title, message, kind);
@@ -4345,9 +4345,10 @@
         const r = await fetch(PUSH_URL, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:sig });
         const j = await r.json().catch(() => ({}));
         if(!r.ok || !j.ok) throw new Error(j.error || r.status);
-        ls.set('manakh-push-sig', sig); ls.set('manakh-push-at', String(Date.now())); ls.set('manakh-push-ok', '1'); pushReady = true;
+        ls.set('manakh-push-sig', sig); ls.set('manakh-push-at', String(Date.now())); ls.set('manakh-push-ok', '1'); pushReady = true; pushErr = '';
+        if(body.test && j.test !== 'ok') pushErr = 'أبل: ' + j.test;
         return body.test ? j.test : true;
-      }catch(e){ console.warn('push sync', e); return false; }
+      }catch(e){ pushErr = 'مزامنة: ' + (e && e.message || e); paintNote(); console.warn('push sync', e); return false; }
     }
     window.manakhNative = { perm:'unknown', test: async () => {
       try{
@@ -4445,6 +4446,9 @@
     }
     function paintNote(){
       const n = document.getElementById('alertNote'); if(!n) return;
+      let st = document.getElementById('pushState');
+      if(!st){ st = document.createElement('div'); st.id = 'pushState'; st.style.cssText = 'font-size:.72rem;opacity:.6;margin-top:6px;direction:rtl'; n.after(st); }
+      st.textContent = 'حالة الخادم: ' + (pushReady ? 'متصل ✅' : pushToken ? 'جاري الربط…' : 'بانتظار رمز أبل') + (pushErr ? ' — ' + pushErr : '');
       n.textContent = pushReady
         ? 'كل التنبيهات المفعّلة هنا توصلك على الآيفون حتى والتطبيق مقفل: الرعد والمطر والرياح والرطوبة والمد والجزر، وأطوار القمر والأنواء والاقترانات والشهب ومرور المحطة، وأوقات الصلاة.'
         : 'التنبيهات المفعّلة هنا توصلك على الآيفون حتى والتطبيق مقفل: أوقات الصلاة والاقترانات وأطوار القمر والأنواء والشهب ومرور المحطة. أما الرعد والمطر والرياح والمد فتنبّهك وأنت فاتح التطبيق.';
@@ -4456,7 +4460,7 @@
         pushToken = v; ls.set('manakh-push-token', v); ls.set('manakh-push-sig', '');
         setTimeout(reschedule, 300);
       }).catch(() => {});
-      PN.addListener('registrationError', e => console.warn('push register', e)).catch(() => {});
+      PN.addListener('registrationError', e => { pushErr = 'تسجيل: ' + ((e && (e.error || e.message)) || 'خطأ'); paintNote(); }).catch(() => {});
       // أبل تنصح بالتسجيل في كل تشغيل (الرمز ممكن يتغيّر)
       LN.checkPermissions().then(p => { if(p.display === 'granted') PN.register().catch(() => {}); }).catch(() => {});
     }
