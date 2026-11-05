@@ -612,6 +612,15 @@
   .met-row .mq{ text-align:center; flex-shrink:0; } .met-row .mq small{ display:block; font-size:.64rem; color:var(--text-2); }
   .met-q{ color:#ffcf7a; letter-spacing:1px; font-size:.85rem; } .met-q i{ font-style:normal; color:rgba(255,255,255,.18); }
   .sp-card{ display:flex; gap:12px; align-items:center; padding:12px; margin-bottom:8px; border-radius:16px; background:linear-gradient(160deg,#20294a,#2a2f50); border:1px solid rgba(255,255,255,.06); }
+  .sat-radar{ position:relative; max-width:360px; margin:0 auto; }
+  .sat-radar svg{ width:100%; height:auto; display:block; touch-action:manipulation; }
+  .sat-radar .rd-dot{ cursor:pointer; }
+  .sat-legend{ display:flex; flex-wrap:wrap; gap:6px 14px; justify-content:center; font-size:.7rem; color:var(--text-2); margin-top:8px; }
+  .sat-legend i{ display:inline-block; width:9px; height:9px; border-radius:50%; margin-inline-end:5px; vertical-align:-1px; }
+  .sat-info{ margin-top:10px; padding:10px 12px; border-radius:14px; background:rgba(255,255,255,.05); font-size:.8rem; line-height:1.7; min-height:2.4em; }
+  .sat-info b{ color:#ffcf7a; }
+  .sat-count{ font-size:.72rem; color:var(--text-2); text-align:center; margin-top:6px; }
+  .sp-card{ cursor:pointer; }
   .sp-card.live{ border-color:#ffcf7a; box-shadow:0 0 0 1px rgba(255,207,122,.4) inset; }
   .sp-time{ width:78px; flex-shrink:0; text-align:center; } .sp-time b{ display:block; font-family:"Sora",sans-serif; font-size:.95rem; color:#fff; } .sp-time span{ font-size:.66rem; color:var(--text-2); }
   .sp-body{ flex:1; min-width:0; } .sp-name{ font-size:.86rem; font-weight:800; } .sp-path{ font-size:.78rem; margin:3px 0; } .sp-path b{ color:#fff; }
@@ -1186,7 +1195,14 @@
     <div class="alert-note" style="text-align:center">العدد تقديري لسماء مظلمة بعيدًا عن أضواء المدن، وفي المدينة تشوف أقل بكثير. استلقِ وانظر للسماء كلها، واعطِ عينك ٢٠ دقيقة تتعود على الظلام.</div>
     </div>
     <div class="pane" data-pane="space">
-    <p style="color:var(--text-2); font-size:.82rem; margin:0 0 12px;">مرور محطات الفضاء المأهولة فوق <b id="spPlace">موقعك</b> — تبان كنجمة لامعة تتحرك بسرعة وبدون وميض</p>
+    <p style="color:var(--text-2); font-size:.82rem; margin:0 0 12px;">الأقمار الصناعية ومحطات الفضاء فوق <b id="spPlace">موقعك</b> — تبان كنجمة لامعة تتحرك بسرعة وبدون وميض</p>
+    <div class="card">
+      <div class="card-head"><h2>📡 رادار الأقمار الصناعية</h2><span class="chip live"><i class="dot-live"></i>مباشر</span></div>
+      <div class="sat-radar"><svg id="satRadar" viewBox="-120 -120 240 240" role="img" aria-label="رادار الأقمار الصناعية فوق أفقك"></svg></div>
+      <div class="sat-count" id="satCount">جارٍ تحميل مدارات الأقمار…</div>
+      <div class="sat-legend"><span><i style="background:#ffd27a"></i>محطات فضاء</span><span><i style="background:#7af0da"></i>تبان بالعين الحين</span><span><i style="background:#8a93b8"></i>ما تبان (نهار أو ظل الأرض)</span><span>— الخط: اتجاه حركته الدقيقتين الجاية</span></div>
+      <div class="sat-info" id="satInfo">المركز فوق راسك، والحافة هي الأفق. الشمال فوق مثل البوصلة. اضغط على أي قمر تعرف اسمه واتجاهه وسرعته، أو اضغط على موعد مرور تحت عشان تشوف مساره.</div>
+    </div>
     <div class="card">
       <div class="card-head"><h2>🛰️ وين المحطات الحين</h2><span class="chip live"><i class="dot-live"></i>مباشر</span></div>
       <div id="spNow"><div class="alert-note">جارٍ التحميل…</div></div>
@@ -3929,7 +3945,7 @@
       list.slice(0, 14).forEach(v => {
         const d = fDay.format(v.start); if(d !== lastDay){ html += `<div class="conj-month">${d}</div>`; lastDay = d; }
         const mins = Math.max(1, Math.round((v.end - v.start) / 60000)), live = now >= v.start && now <= v.end;
-        html += `<div class="sp-card${live ? ' live' : ''}">
+        html += `<div class="sp-card${live ? ' live' : ''}" data-sid="${v.sat.id}" data-s="${v.start}" data-e="${v.end}">
           <div class="sp-time"><b dir="ltr">${fTime.format(v.start)}</b><span>${live ? 'تمر الحين!' : mins === 1 ? 'دقيقة' : mins === 2 ? 'دقيقتين' : mins + (mins <= 10 ? ' دقائق' : ' دقيقة')}</span></div>
           <div class="sp-body"><div class="sp-name" style="color:${v.sat.color}">${v.sat.name}</div>
           <div class="sp-path">من <b>${dirOf(v.startAz)}</b> ← إلى <b>${dirOf(v.endAz)}</b></div>
@@ -3937,6 +3953,7 @@
       });
       document.getElementById('spList').innerHTML = html;
     }
+    window.manakhSatRec = id => { const s = SATS.find(x => x.id === id); return s && s.rec ? { rec:s.rec, name:s.name, color:s.color } : null; };
     window.manakhSpacePasses = async () => { const st = await compute(false); return { list: st.list, dirOf, fTime }; };
     const isOpen = () => { const sec = document.getElementById('page-seasons'); return sec && sec.classList.contains('active') && sec._tabs && sec._tabs.current() === 'space'; };
     document.addEventListener('tabchange', e => { if(e.detail.tab === 'space' || (e.detail.page === 'page-seasons' && isOpen())) render(false); });
@@ -3953,6 +3970,131 @@
       });
     }
     setTimeout(check, 13000); setInterval(check, 5 * 60 * 1000);
+  })();
+
+  // ---------- live satellite radar: bright satellites above your horizon now ----------
+  (function(){
+    const D2R = Math.PI / 180, R2D = 180 / Math.PI, HOUR = 3600000;
+    const DIRS = ['الشمال','الشمال الشرقي','الشرق','الجنوب الشرقي','الجنوب','الجنوب الغربي','الغرب','الشمال الغربي'];
+    const dirOf = az => DIRS[Math.round(((az % 360) + 360) % 360 / 45) % 8];
+    const NAMES = { 25544:'محطة الفضاء الدولية', 48274:'محطة تيانغونغ الصينية', 20580:'تلسكوب هابل' };
+    const STATIONS = new Set([25544, 48274]);
+    const fTime = new Intl.DateTimeFormat('ar-u-nu-latn', { hour:'numeric', minute:'2-digit', hour12:true });
+    const KEY = 'manakh_tle_visual';
+    let sats = [], loaded = false, picked = null, track = null, timer = null;
+    function pos(){
+      const c = (typeof selectedCityRef !== 'undefined') ? selectedCityRef : null;
+      return (c && typeof c.lat === 'number') ? { lat:c.lat, lon:c.lon } : { lat:23.588, lon:58.383 };
+    }
+    function parse3(txt){
+      const L = String(txt).split(/\r?\n/).map(x => x.trimEnd()).filter(x => x.trim()), out = [];
+      for(let i = 0; i + 2 < L.length + 1; i++){
+        if(L[i + 1] && L[i + 2] && L[i + 1].startsWith('1 ') && L[i + 2].startsWith('2 ')){ out.push({ n:L[i].trim(), l1:L[i + 1], l2:L[i + 2] }); i += 2; }
+      }
+      return out;
+    }
+    async function load(){
+      let c = null; try{ c = JSON.parse(localStorage.getItem(KEY) || 'null'); }catch(e){}
+      if(!c || Date.now() - c.ts > 24 * HOUR){
+        try{
+          const t = await (await fetch('https://celestrak.org/NORAD/elements/gp.php?GROUP=visual&FORMAT=tle', { cache:'no-store' })).text();
+          const list = parse3(t);
+          if(list.length > 20){ c = { ts:Date.now(), list }; try{ localStorage.setItem(KEY, JSON.stringify(c)); }catch(e){} }
+        }catch(e){}
+      }
+      const out = [];
+      ((c && c.list) || []).forEach(x => {
+        try{ const rec = satellite.twoline2satrec(x.l1, x.l2), id = +x.l1.substring(2, 7); out.push({ id, rec, name: NAMES[id] || x.n.replace(/\s+/g, ' ') }); }catch(e){}
+      });
+      [25544, 48274].forEach(id => { // the crewed stations always, even if the group download failed
+        if(!out.some(s => s.id === id) && window.manakhSatRec){ const r = window.manakhSatRec(id); if(r) out.push({ id, rec:r.rec, name:r.name }); }
+      });
+      sats = out; loaded = true;
+    }
+    function sunVec(t){ const T = Sky.TofJd(Sky.jdOf(t)), s = Sky.sunEq(T); return [Math.cos(s.dec * D2R) * Math.cos(s.ra * D2R), Math.cos(s.dec * D2R) * Math.sin(s.ra * D2R), Math.sin(s.dec * D2R)]; }
+    function sunlit(r, s){ const d = r.x * s[0] + r.y * s[1] + r.z * s[2]; if(d > 0) return true; return Math.hypot(r.x - d * s[0], r.y - d * s[1], r.z - d * s[2]) > 6371; }
+    function look(rec, t, obs){
+      const d = new Date(t), pv = satellite.propagate(rec, d);
+      if(!pv || !pv.position || typeof pv.position === 'boolean') return null;
+      const g = satellite.gstime(d), la = satellite.ecfToLookAngles(obs, satellite.eciToEcf(pv.position, g));
+      return { alt: la.elevation * R2D, az: la.azimuth * R2D, r: pv.position, v: pv.velocity, g };
+    }
+    const xy = (alt, az) => { const r = (90 - Math.max(0, alt)) / 90 * 100; return [r * Math.sin(az * D2R), -r * Math.cos(az * D2R)]; };
+    function grid(){
+      let g = '<circle r="100" fill="rgba(20,30,60,.55)" stroke="rgba(255,255,255,.25)"/>'
+        + '<circle r="66.7" fill="none" stroke="rgba(255,255,255,.1)"/><circle r="33.3" fill="none" stroke="rgba(255,255,255,.1)"/>'
+        + '<line x1="-100" y1="0" x2="100" y2="0" stroke="rgba(255,255,255,.08)"/><line x1="0" y1="-100" x2="0" y2="100" stroke="rgba(255,255,255,.08)"/>';
+      [['ش', 0, -110], ['ق', 110, 0], ['ج', 0, 112], ['غ', -110, 0]].forEach(([t, x, y]) => g += `<text x="${x}" y="${y}" fill="#ffcf7a" font-size="10" font-weight="700" text-anchor="middle" dominant-baseline="middle">${t}</text>`);
+      g += '<text x="3" y="-62" fill="rgba(255,255,255,.35)" font-size="6">30°</text><text x="3" y="-29" fill="rgba(255,255,255,.35)" font-size="6">60°</text><circle r="1.6" fill="rgba(255,255,255,.5)"/>';
+      return g;
+    }
+    function frame(){
+      const svg = document.getElementById('satRadar'); if(!svg) return;
+      if(typeof satellite === 'undefined' || typeof Sky === 'undefined'){ document.getElementById('satCount').textContent = 'تعذر تحميل حاسبة المدارات'; return; }
+      const p = pos(), obs = { latitude:p.lat * D2R, longitude:p.lon * D2R, height:0.05 }, now = Date.now(), sv = sunVec(now);
+      const ss = Sky.snapshot(now, p.lat, p.lon), dark = Sky.altAz(ss.sun.ra, ss.sun.dec, ss.jd, p.lat, p.lon).alt < -6;
+      let html = grid(), up = 0, vis = 0, top = '';
+      if(track && track.pts.length > 1){
+        html += `<polyline points="${track.pts.map(q => xy(q.alt, q.az).join(',')).join(' ')}" fill="none" stroke="#ffd27a" stroke-width="1.6" stroke-dasharray="3 2" opacity=".9"/>`;
+        const a = xy(track.pts[0].alt, track.pts[0].az), b = xy(track.pts[track.pts.length - 1].alt, track.pts[track.pts.length - 1].az);
+        html += `<circle cx="${a[0]}" cy="${a[1]}" r="2.5" fill="#7af0da"/><circle cx="${b[0]}" cy="${b[1]}" r="2.5" fill="#ff8a8a"/>`;
+      }
+      sats.forEach(s => {
+        const a = look(s.rec, now, obs); if(!a || a.alt <= 0) return;
+        up++;
+        const lit = sunlit(a.r, sv), seen = dark && lit && a.alt >= 10; if(seen) vis++;
+        const st = STATIONS.has(s.id), col = st ? '#ffd27a' : seen ? '#7af0da' : '#8a93b8';
+        const b = look(s.rec, now + 120000, obs), [x, y] = xy(a.alt, a.az);
+        if(b){ const [x2, y2] = xy(b.alt, b.az); html += `<line x1="${x}" y1="${y}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${st ? 1.4 : .8}" opacity=".7"/>`; }
+        const sel = picked === s.id;
+        html += `<circle class="rd-dot" data-id="${s.id}" cx="${x}" cy="${y}" r="${st ? 4.5 : 2.8}" fill="${col}" stroke="${sel ? '#fff' : 'none'}" stroke-width="1.4"/>`;
+        if(st || sel) html += `<text x="${x + 6}" y="${y + 2}" fill="${col}" font-size="6.5" font-weight="700">${s.name.split(' ').slice(0, 2).join(' ')}</text>`;
+        if(sel) top = s;
+        // a generous invisible hit target for fingers
+        html += `<circle class="rd-dot" data-id="${s.id}" cx="${x}" cy="${y}" r="8" fill="transparent"/>`;
+      });
+      svg.innerHTML = html;
+      document.getElementById('satCount').textContent = !loaded ? 'جارٍ تحميل مدارات الأقمار…'
+        : !sats.length ? 'نحتاج اتصال بالإنترنت أول مرة عشان نجيب مدارات الأقمار'
+        : `${up} قمر فوق أفقك الحين` + (dark ? ` · ${vis} منها تبان بالعين` : ' · الحين نهار، الأقمار تبان بعد الغروب');
+      if(picked){ const s = sats.find(x => x.id === picked); if(s) info(s, obs, now, dark, sv); }
+    }
+    function info(s, obs, now, dark, sv){
+      const a = look(s.rec, now, obs), el = document.getElementById('satInfo'); if(!a) return;
+      const geo = satellite.eciToGeodetic(a.r, a.g), sp = Math.hypot(a.v.x, a.v.y, a.v.z) * 3600, b = look(s.rec, now + 60000, obs);
+      const lit = sunlit(a.r, sv), heading = b ? dirOf(b.az) : '';
+      let next = '';
+      if(a.alt <= 0){ // when does it rise next?
+        for(let t = now; t < now + 12 * HOUR; t += 30000){ const q = look(s.rec, t, obs); if(q && q.alt > 0){ next = ` · يطلع فوق أفقك الساعة <bdi dir="ltr">${fTime.format(t)}</bdi> من جهة ${dirOf(q.az)}`; break; } }
+      }
+      el.innerHTML = `<b>${s.name}</b><br>`
+        + (a.alt > 0 ? `الحين جهة <b>${dirOf(a.az)}</b> على ارتفاع <bdi dir="ltr">${Math.round(a.alt)}°</bdi> فوق الأفق، ويتحرك باتجاه ${heading}` : 'الحين تحت أفقك' + next)
+        + `<br>بعيد عن الأرض <bdi dir="ltr">${Math.round(geo.height).toLocaleString('en')}</bdi> كم · سرعته <bdi dir="ltr">${Math.round(sp).toLocaleString('en')}</bdi> كم/س`
+        + (a.alt > 0 ? `<br>${dark && lit && a.alt >= 10 ? '👀 تقدر تشوفه بالعين الحين كنقطة لامعة تتحرك' : !dark ? '☀️ ما يبان الحين لأن السماء منورة' : '🌑 ما يبان الحين لأنه في ظل الأرض'}` : '');
+    }
+    function showTrack(id, start, end){
+      const r = window.manakhSatRec && window.manakhSatRec(id); if(!r) return;
+      const p = pos(), obs = { latitude:p.lat * D2R, longitude:p.lon * D2R, height:0.05 }, pts = [];
+      for(let t = start; t <= end; t += 10000){ const q = look(r.rec, t, obs); if(q && q.alt > 0) pts.push(q); }
+      track = { id, pts };
+      document.getElementById('satInfo').innerHTML = `<b>${r.name}</b><br>مسار المرور الساعة <bdi dir="ltr">${fTime.format(start)}</bdi>: يطلع من <b>${pts.length ? dirOf(pts[0].az) : ''}</b> (🟢) ويختفي جهة <b>${pts.length ? dirOf(pts[pts.length - 1].az) : ''}</b> (🔴). الخط المنقّط هو طريقه في السماء.`;
+      picked = null; frame();
+      document.getElementById('satRadar').scrollIntoView({ behavior:'smooth', block:'center' });
+    }
+    document.addEventListener('click', e => {
+      const d = e.target.closest && e.target.closest('#satRadar .rd-dot');
+      if(d){ picked = +d.dataset.id; track = null; frame(); return; }
+      const c = e.target.closest && e.target.closest('#spList .sp-card');
+      if(c) showTrack(+c.dataset.sid, +c.dataset.s, +c.dataset.e);
+    });
+    const isOpen = () => { const sec = document.getElementById('page-seasons'); return sec && sec.classList.contains('active') && sec._tabs && sec._tabs.current() === 'space'; };
+    async function start(){
+      if(!loaded) await load();
+      frame();
+      clearInterval(timer); timer = setInterval(() => { if(isOpen() && document.visibilityState === 'visible') frame(); else clearInterval(timer); }, 2000);
+    }
+    document.addEventListener('tabchange', e => { if(e.detail.tab === 'space' || (e.detail.page === 'page-seasons' && isOpen())) setTimeout(start, 400); });
+    window.manakhSatRadar = { start, frame, count: () => sats.length };
   })();
 
   // ---------- home: next moon conjunction (real calculation) ----------
