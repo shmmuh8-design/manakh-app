@@ -612,28 +612,6 @@
   .met-row .mq{ text-align:center; flex-shrink:0; } .met-row .mq small{ display:block; font-size:.64rem; color:var(--text-2); }
   .met-q{ color:#ffcf7a; letter-spacing:1px; font-size:.85rem; } .met-q i{ font-style:normal; color:rgba(255,255,255,.18); }
   .sp-card{ display:flex; gap:12px; align-items:center; padding:12px; margin-bottom:8px; border-radius:16px; background:linear-gradient(160deg,#20294a,#2a2f50); border:1px solid rgba(255,255,255,.06); }
-  .dish-pick{ display:flex; flex-wrap:wrap; gap:6px; }
-  .dish-pick button{ border:1px solid var(--line); background:rgba(255,255,255,.04); color:var(--text-1); border-radius:12px; padding:8px 10px; font:inherit; font-size:.8rem; font-weight:700; cursor:pointer; }
-  .dish-pick button small{ display:block; font-weight:400; font-size:.66rem; color:var(--text-2); direction:ltr; }
-  .dish-pick button.on{ border-color:#ffcf7a; background:rgba(255,207,122,.14); color:#ffcf7a; }
-  .dish-pick button.off{ opacity:.45; }
-  .dish-res{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:12px 0 4px; }
-  .dish-res div{ background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:14px; padding:10px 6px; text-align:center; }
-  .dish-res b{ display:block; font-family:"Sora",sans-serif; font-size:1.15rem; color:#ffcf7a; }
-  .dish-res span{ font-size:.68rem; color:var(--text-2); line-height:1.4; display:block; }
-  .dish-dir{ text-align:center; font-size:.85rem; margin:6px 0 2px; }
-  .dish-comp{ max-width:250px; margin:8px auto 0; }
-  .dish-comp svg{ width:100%; height:auto; display:block; }
-  .dish-msg{ text-align:center; font-weight:700; min-height:26px; margin-top:6px; }
-  .dish-msg.ok{ color:#3ee08f; }
-  .dish-tbl{ width:100%; border-collapse:collapse; font-size:.78rem; }
-  .dish-tbl th{ color:var(--text-2); font-weight:600; font-size:.7rem; text-align:center; padding:6px 2px; border-bottom:1px solid var(--line); }
-  .dish-tbl td{ text-align:center; padding:8px 2px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums; }
-  .dish-tbl td:first-child{ text-align:start; font-weight:700; }
-  .dish-tbl tr.on td{ color:#ffcf7a; }
-  .dish-tbl tr{ cursor:pointer; }
-  .dish-custom{ display:flex; gap:6px; margin-top:8px; }
-  .dish-custom input{ flex:1; min-width:0; background:rgba(255,255,255,.05); border:1px solid var(--line); border-radius:12px; color:var(--text-1); padding:9px 12px; font:inherit; direction:ltr; }
   .sat-radar{ position:relative; max-width:360px; margin:0 auto; }
   .sat-radar svg{ width:100%; height:auto; display:block; touch-action:manipulation; }
   .sat-radar .rd-dot{ cursor:pointer; }
@@ -1124,7 +1102,7 @@
   <!-- ============ SEASONS SUBPAGE ============ -->
   <section class="page tabbed" id="page-seasons">
     <div class="back-row"><h1>الأنواء والفلك</h1></div>
-    <div class="tabs" role="tablist"><button class="tab on" type="button" data-tab="anwaa">✦ الأنواء</button><button class="tab" type="button" data-tab="seasons">🍂 الفصول</button><button class="tab" type="button" data-tab="zodiac">♈ الأبراج</button><button class="tab" type="button" data-tab="stars">⭐ النجوم</button><button class="tab" type="button" data-tab="moon">🌙 القمر</button><button class="tab" type="button" data-tab="conj">🪐 الاقترانات</button><button class="tab" type="button" data-tab="meteors">☄️ الشهب</button><button class="tab" type="button" data-tab="space">🛰️ الفضاء</button><button class="tab" type="button" data-tab="dish">📡 الستلايت</button></div>
+    <div class="tabs" role="tablist"><button class="tab on" type="button" data-tab="anwaa">✦ الأنواء</button><button class="tab" type="button" data-tab="seasons">🍂 الفصول</button><button class="tab" type="button" data-tab="zodiac">♈ الأبراج</button><button class="tab" type="button" data-tab="stars">⭐ النجوم</button><button class="tab" type="button" data-tab="moon">🌙 القمر</button><button class="tab" type="button" data-tab="conj">🪐 الاقترانات</button><button class="tab" type="button" data-tab="meteors">☄️ الشهب</button><button class="tab" type="button" data-tab="space">🛰️ الفضاء</button></div>
     <div class="panes">
     <div class="pane" data-pane="anwaa">
     <p style="color:var(--text-2); font-size:.82rem; margin:-8px 0 16px;">التقويم الفلكي الزراعي التقليدي — 28 نوءًا، كل واحد نجمه ووصفه وإرشاداته الزراعية</p>
@@ -1234,37 +1212,6 @@
       <div id="spList"><div class="alert-note">جارٍ الحساب…</div></div>
     </div>
     <div class="alert-note" style="text-align:center">المحطة تبان بعد الغروب أو قبل الشروق، لما تكون السماء مظلمة والمحطة تعكس ضوء الشمس. المواعيد محسوبة من بيانات المدار الحديثة وتتحدث تلقائيًا.</div>
-    </div>
-    <div class="pane" data-pane="dish">
-    <p style="color:var(--text-2); font-size:.82rem; margin:0 0 12px;">وجّه دش الستلايت على أقمار البث التلفزيوني من <b id="dishPlace">موقعك</b> — زاوية الاتجاه والميلان ولفّة الـ LNB</p>
-    <div class="card">
-      <div class="card-head"><h2>📡 اختار القمر</h2></div>
-      <div class="dish-pick" id="dishPick"></div>
-      <div class="dish-custom"><input id="dishCustom" inputmode="decimal" placeholder="قمر ثاني؟ اكتب موقعه مثل 20E أو 5W" aria-label="موقع قمر ثاني"><button class="muzna-btn" id="dishCustomBtn" type="button">احسب</button></div>
-      <div class="dish-res" id="dishRes"></div>
-      <div class="dish-dir" id="dishDir"></div>
-    </div>
-    <div class="card">
-      <div class="card-head"><h2>🧭 بوصلة الدش</h2></div>
-      <div class="dish-comp"><svg id="dishComp" viewBox="-110 -110 220 220" role="img" aria-label="بوصلة توجيه الدش"></svg></div>
-      <div class="dish-msg" id="dishMsg">اضغط «تفعيل البوصلة» ووجّه أعلى الجوال جهة الدش</div>
-      <div class="qibla-btns">
-        <button class="muzna-btn primary" id="dishStart" type="button">🧭 تفعيل البوصلة</button>
-        <button class="muzna-btn" id="dishGps" type="button">📍 موقعي الدقيق</button>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><h2>🛰️ كل الأقمار من موقعك</h2></div>
-      <table class="dish-tbl" id="dishTbl"></table>
-    </div>
-    <div class="alert-note">
-      <b>طريقة الضبط:</b><br>
-      1) ثبّت قاعدة الدش رأسية تمامًا (استخدم ميزان الماء).<br>
-      2) وجّه الدش على <b>زاوية الاتجاه</b> بالبوصلة، وابعد الجوال عن الحديد والدش نفسه لأنها تخرّب البوصلة.<br>
-      3) اضبط <b>زاوية الميلان</b> على المقياس اللي على ظهر الدش.<br>
-      4) لفّ الـ <b>LNB</b> بالزاوية المكتوبة، وبعدها حرّك الدش شوي شوي يمين ويسار وأنت تشوف قوة الإشارة على الرسيفر لين توصل لأعلى قوة.<br>
-      الزوايا محسوبة لموقعك بالضبط، والاتجاه من الشمال الحقيقي. الفرق عن الشمال المغناطيسي في عُمان أقل من درجتين.
-    </div>
     </div>
     </div>
   </section>
@@ -4148,121 +4095,6 @@
     }
     document.addEventListener('tabchange', e => { if(e.detail.tab === 'space' || (e.detail.page === 'page-seasons' && isOpen())) setTimeout(start, 400); });
     window.manakhSatRadar = { start, frame, count: () => sats.length };
-  })();
-
-  // ---------- satellite TV dish pointing (geostationary satellites) ----------
-  (function(){
-    const D2R = Math.PI / 180, R2D = 180 / Math.PI, RE = 6378.137, RG = 42164.17;
-    const SATS = [
-      { lon:-7,    name:'نايل سات',          sub:'7°W' },
-      { lon:13,    name:'هوت بيرد',          sub:'13°E' },
-      { lon:26,    name:'عرب سات بدر / سهيل سات', sub:'26°E' },
-      { lon:30.5,  name:'عرب سات',           sub:'30.5°E' },
-      { lon:36,    name:'يوتل سات 36',       sub:'36°E' },
-      { lon:42,    name:'ترك سات',           sub:'42°E' },
-      { lon:52.5,  name:'الياه سات',         sub:'52.5°E' },
-      { lon:68.5,  name:'إنتل سات 20',       sub:'68.5°E' },
-      { lon:105.5, name:'آسيا سات 7',        sub:'105.5°E' }
-    ];
-    const DIRS = ['الشمال','الشمال الشرقي','الشرق','الجنوب الشرقي','الجنوب','الجنوب الغربي','الغرب','الشمال الغربي'];
-    const dirOf = az => DIRS[Math.round(((az % 360) + 360) % 360 / 45) % 8];
-    let gps = null, sel = 3, custom = null, heading = null, shown = 0, listening = false, raf = false, lastOk = false;
-    const $ = id => document.getElementById(id);
-    function loc(){
-      if(gps) return gps;
-      const c = (typeof selectedCityRef !== 'undefined') ? selectedCityRef : null;
-      return (c && typeof c.lat === 'number') ? { lat:c.lat, lon:c.lon, label:c.name } : { lat:23.588, lon:58.383, label:'مسقط' };
-    }
-    // look angles from the observer (WGS84) to a geostationary point, via ENU
-    function point(lat, lon, slon){
-      const f = 1 / 298.257223563, e2 = f * (2 - f), sp = Math.sin(lat * D2R), cp = Math.cos(lat * D2R), sl = Math.sin(lon * D2R), cl = Math.cos(lon * D2R);
-      const N = RE / Math.sqrt(1 - e2 * sp * sp), ox = N * cp * cl, oy = N * cp * sl, oz = N * (1 - e2) * sp;
-      const sx = RG * Math.cos(slon * D2R), sy = RG * Math.sin(slon * D2R), dx = sx - ox, dy = sy - oy, dz = -oz;
-      const e = -sl * dx + cl * dy, n = -sp * cl * dx - sp * sl * dy + cp * dz, u = cp * cl * dx + cp * sl * dy + sp * dz;
-      const az = (Math.atan2(e, n) * R2D + 360) % 360, el = Math.atan2(u, Math.hypot(e, n)) * R2D;
-      const d = (slon - lon) * D2R, skew = Math.atan2(Math.sin(d), Math.tan(lat * D2R)) * R2D;
-      return { az, el, skew, dist: Math.hypot(dx, dy, dz) };
-    }
-    const fmt = (x, n = 1) => (Math.round(x * 10 ** n) / 10 ** n).toFixed(n);
-    const cur = () => custom || SATS[sel];
-    function render(){
-      const p = loc();
-      $('dishPlace').textContent = p.label;
-      $('dishPick').innerHTML = SATS.map((s, i) => { const r = point(p.lat, p.lon, s.lon); return `<button type="button" data-i="${i}" class="${!custom && i === sel ? 'on' : ''}${r.el < 0 ? ' off' : ''}">${s.name}<small>${s.sub}</small></button>`; }).join('');
-      const s = cur(), r = point(p.lat, p.lon, s.lon);
-      if(r.el < 0){
-        $('dishRes').innerHTML = '';
-        $('dishDir').innerHTML = `⚠️ <b>${s.name}</b> تحت الأفق من موقعك، ما تقدر تلقطه.`;
-      } else {
-        $('dishRes').innerHTML = `<div><b dir="ltr">${fmt(r.az)}°</b><span>الاتجاه (Azimuth)<br>من الشمال مع عقارب الساعة</span></div>`
-          + `<div><b dir="ltr">${fmt(r.el)}°</b><span>الميلان (Elevation)<br>ارتفاع عن الأفق</span></div>`
-          + `<div><b dir="ltr">${fmt(Math.abs(r.skew))}°</b><span>لفّة الـ LNB<br>(Skew)</span></div>`;
-        $('dishDir').innerHTML = `وجّه الدش جهة <b>${dirOf(r.az)}</b>${r.el < 10 ? ' · ⚠️ القمر واطي جدًا، تأكد ما فيه مباني أو جبال قدامه' : ''} · بُعد القمر <bdi dir="ltr">${Math.round(r.dist).toLocaleString('en')}</bdi> كم`;
-      }
-      const rows = SATS.map((x, i) => ({ x, i, r: point(p.lat, p.lon, x.lon) }));
-      $('dishTbl').innerHTML = '<tr><th>القمر</th><th>الاتجاه</th><th>الميلان</th><th>LNB</th></tr>' + rows.map(({ x, i, r }) =>
-        `<tr data-i="${i}" class="${!custom && i === sel ? 'on' : ''}"><td>${x.name}<br><small style="color:var(--text-2);font-weight:400" dir="ltr">${x.sub}</small></td>`
-        + (r.el < 0 ? '<td colspan="3" style="color:var(--text-3)">تحت الأفق</td>' : `<td dir="ltr">${fmt(r.az)}°<br><small style="color:var(--text-2)">${dirOf(r.az)}</small></td><td dir="ltr">${fmt(r.el)}°</td><td dir="ltr">${fmt(Math.abs(r.skew))}°</td>`) + '</tr>').join('');
-      paint();
-    }
-    function paint(){
-      const p = loc(), s = cur(), r = point(p.lat, p.lon, s.lon), h = heading === null ? 0 : shown;
-      const ticks = Array.from({ length:36 }, (_, k) => { const a = k * 10 * D2R, l = k % 9 === 0 ? 12 : 6; return `<line x1="${Math.sin(a) * 96}" y1="${-Math.cos(a) * 96}" x2="${Math.sin(a) * (96 - l)}" y2="${-Math.cos(a) * (96 - l)}" stroke="rgba(255,255,255,${k % 9 === 0 ? .7 : .25})" stroke-width="${k % 9 === 0 ? 2 : 1}"/>`; }).join('');
-      const lbl = [['ش', 0], ['ق', 90], ['ج', 180], ['غ', 270]].map(([t, a]) => `<text x="${Math.sin(a * D2R) * 72}" y="${-Math.cos(a * D2R) * 72}" fill="${t === 'ش' ? '#ff8a8a' : '#cfd6f5'}" font-size="13" font-weight="700" text-anchor="middle" dominant-baseline="middle">${t}</text>`).join('');
-      const tgt = r.el >= 0 ? `<g transform="rotate(${r.az})"><line x1="0" y1="0" x2="0" y2="-88" stroke="#ffcf7a" stroke-width="4" stroke-linecap="round"/><circle cx="0" cy="-92" r="9" fill="#ffcf7a"/><text x="0" y="-91" font-size="10" text-anchor="middle" dominant-baseline="middle">📡</text></g>` : '';
-      $('dishComp').innerHTML = `<circle r="100" fill="rgba(20,30,60,.55)" stroke="rgba(255,255,255,.2)"/><g transform="rotate(${-h})">${ticks}${lbl}${tgt}</g>`
-        + '<path d="M0 -106 L-7 -94 L7 -94 Z" fill="#fff"/><circle r="4" fill="#fff"/>';
-      if(heading === null || r.el < 0) return;
-      const hm = ((h % 360) + 360) % 360, delta = ((r.az - hm) + 540) % 360 - 180, ok = Math.abs(delta) <= 3;
-      const m = $('dishMsg'); m.classList.toggle('ok', ok);
-      m.textContent = ok ? '✓ الجوال الحين باتجاه القمر — ثبّت الدش على هالاتجاه' : 'لفّ ' + (delta > 0 ? 'يمين' : 'يسار') + ' ' + Math.round(Math.abs(delta)) + '°  ·  جوالك على ' + Math.round(hm) + '°';
-      if(ok && !lastOk && navigator.vibrate) navigator.vibrate(60);
-      lastOk = ok;
-    }
-    function feed(v){
-      const scr = (screen.orientation && typeof screen.orientation.angle === 'number') ? screen.orientation.angle : (window.orientation || 0);
-      v = (v + scr + 360) % 360;
-      if(heading === null){ heading = v; shown = v; } else heading += ((v - (heading % 360)) + 540) % 360 - 180;
-      if(!raf){ raf = true; requestAnimationFrame(step); }
-    }
-    function step(){ shown += (heading - shown) * 0.18; paint(); if(Math.abs(heading - shown) > 0.05) requestAnimationFrame(step); else raf = false; }
-    let gotAbs = false;
-    function listen(){
-      if(listening) return; listening = true; $('dishStart').style.display = 'none';
-      window.addEventListener('deviceorientationabsolute', e => { if(e.alpha != null){ gotAbs = true; feed(360 - e.alpha); } }, true);
-      window.addEventListener('deviceorientation', e => { if(typeof e.webkitCompassHeading === 'number') feed(e.webkitCompassHeading); else if(!gotAbs && e.absolute && e.alpha != null) feed(360 - e.alpha); }, true);
-      $('dishMsg').textContent = 'حرّك الجوال على شكل رقم 8 لمعايرة البوصلة';
-      setTimeout(() => { if(heading === null) $('dishMsg').textContent = 'البوصلة غير متاحة على هذا الجهاز — استخدم زاوية الاتجاه مع بوصلة عادية'; }, 2500);
-    }
-    $('dishStart').addEventListener('click', () => {
-      if(window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function')
-        DeviceOrientationEvent.requestPermission().then(r => { if(r === 'granted') listen(); else $('dishMsg').textContent = 'لازم تسمح بالوصول لحساسات الحركة عشان تشتغل البوصلة'; }).catch(() => { $('dishMsg').textContent = 'تعذّر تفعيل البوصلة'; });
-      else listen();
-    });
-    $('dishGps').addEventListener('click', () => {
-      if(!navigator.geolocation){ showToast('تحديد الموقع غير مدعوم'); return; }
-      $('dishPlace').textContent = 'جاري تحديد موقعك…';
-      navigator.geolocation.getCurrentPosition(q => { gps = { lat:q.coords.latitude, lon:q.coords.longitude, label:'موقعك الحالي (GPS)' }; render(); },
-        () => { showToast('لم نتمكن من تحديد موقعك'); render(); }, { enableHighAccuracy:true, timeout:10000 });
-    });
-    document.addEventListener('click', e => {
-      const b = e.target.closest && (e.target.closest('#dishPick button') || e.target.closest('#dishTbl tr[data-i]'));
-      if(b){ sel = +b.dataset.i; custom = null; lastOk = false; render(); }
-    });
-    function parseCustom(v){
-      const m = String(v).trim().toUpperCase().replace(/[°\s]/g, '').replace(/[٠-٩]/g, c => '٠١٢٣٤٥٦٧٨٩'.indexOf(c)).match(/^(-?\d+(?:[.,]\d+)?)([EW]|شرق|غرب)?$/);
-      if(!m) return null;
-      let x = parseFloat(m[1].replace(',', '.')); if(m[2] === 'W' || m[2] === 'غرب') x = -Math.abs(x);
-      return Math.abs(x) <= 180 ? x : null;
-    }
-    $('dishCustomBtn').addEventListener('click', () => {
-      const x = parseCustom($('dishCustom').value);
-      if(x === null){ showToast('اكتب الموقع مثل 20E أو 5W'); return; }
-      custom = { lon:x, name:'قمر على ' + Math.abs(x) + '°' + (x < 0 ? 'W' : 'E'), sub:'' }; lastOk = false; render();
-    });
-    const isOpen = () => { const sec = $('page-seasons'); return sec && sec.classList.contains('active') && sec._tabs && sec._tabs.current() === 'dish'; };
-    document.addEventListener('tabchange', e => { if(e.detail.tab === 'dish' || (e.detail.page === 'page-seasons' && isOpen())) render(); });
-    window.manakhDish = { point, SATS };
   })();
 
   // ---------- home: next moon conjunction (real calculation) ----------
