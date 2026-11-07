@@ -625,8 +625,8 @@
   .sp-time{ width:78px; flex-shrink:0; text-align:center; } .sp-time b{ display:block; font-family:"Sora",sans-serif; font-size:.95rem; color:#fff; } .sp-time span{ font-size:.66rem; color:var(--text-2); }
   .sp-body{ flex:1; min-width:0; } .sp-name{ font-size:.86rem; font-weight:800; } .sp-path{ font-size:.78rem; margin:3px 0; } .sp-path b{ color:#fff; }
   .sp-meta{ font-size:.7rem; color:var(--text-2); }
-  .native-app #notifLink, .native-app #rowNtfy, .native-app #notifTest{ display:none !important; }
-  #notifTestNative{ display:none; } .native-app #notifTestNative{ display:flex; }
+  /* أزرار الإشعار التجريبي وربط ntfy مخفية للمستخدمين */
+  #notifLink, #rowNtfy, #notifTest, #notifTestNative, #notifBtns{ display:none !important; }
   .tabs{ top:env(safe-area-inset-top,0px); }
   .sbar-cover{ position:fixed; top:0; inset-inline-start:0; inset-inline-end:0; height:env(safe-area-inset-top,0px); background:var(--bg-deep); z-index:70; pointer-events:none; }
   /* ---------- tides ---------- */
@@ -1063,12 +1063,12 @@
       <div class="alert-row" data-pref="meteors"><span style="font-size:1.2rem">☄️</span><span class="name">زخات الشهب<small>مساء ليلة الذروة مع أفضل وقت وجهة</small></span><div class="toggle"></div></div>
       <div class="alert-row" data-pref="space"><span style="font-size:1.2rem">🛰️</span><span class="name">مرور محطة الفضاء<small>قبل المرور الظاهر بـ١٠ دقائق</small></span><div class="toggle"></div></div>
       <div class="notif-status" id="notifStatus"></div>
-      <div class="qibla-btns" style="margin-top:10px">
+      <div class="qibla-btns" id="notifBtns" style="margin-top:10px">
         <button class="muzna-btn primary" id="notifTest" type="button">🔔 إرسال إشعار تجريبي</button>
         <button class="muzna-btn primary" id="notifTestNative" type="button" onclick="window.manakhNative && window.manakhNative.test()">🔔 جرّب إشعار على جوالك</button>
         <button class="muzna-btn" id="notifLink" type="button">📲 ربط ntfy</button>
       </div>
-      <div class="alert-note" id="alertNote">هذي المفاتيح للتنبيهات داخل التطبيق. أما التنبيهات على جوالك والتطبيق مقفول فتجيك من GitHub (ملف alerts.yml).</div>
+      <div class="alert-note" id="alertNote">فعّل التنبيهات اللي تهمك، وتوصلك على جوالك.</div>
       <div class="qibla-btns" id="rateRow" hidden style="margin-top:12px"><a class="muzna-btn primary" id="rateBtn" href="https://apps.apple.com/app/id6823329197?action=write-review" target="_blank" rel="noopener">⭐ عجبك مناخ؟ قيّمه في App Store</a></div>
       <!-- 🧪 النسخة التجريبية: حط رابط TestFlight العام هنا (من App Store Connect ← TestFlight ← External Testing ← Public Link). الزر يختفي لو الرابط فاضي -->
       <div class="qibla-btns" id="betaRow" hidden style="margin-top:10px"><a class="muzna-btn" id="betaBtn" href="#" target="_blank" rel="noopener">🧪 جرّب النسخة التجريبية قبل الكل</a></div>
@@ -1088,7 +1088,7 @@
       <div class="tone-row"><span class="tone-ic">🌧️</span><div class="tone-meta"><div class="tone-name">المطر</div><div class="tone-sub">أولوية عالية</div></div><select class="tone-sel" data-kind="rain"></select><button class="tone-play" type="button" data-kind="rain" aria-label="جرّب">▶</button></div>
       <div class="tone-row"><span class="tone-ic">🔔</span><div class="tone-meta"><div class="tone-name">باقي التنبيهات</div><div class="tone-sub">الحرارة والرطوبة والأبراج</div></div><select class="tone-sel" data-kind="general"></select><button class="tone-play" type="button" data-kind="general" aria-label="جرّب">▶</button></div>
       <div class="tone-vol"><span>🔈</span><input type="range" id="toneVol" min="10" max="100" step="5" aria-label="مستوى الصوت" /><span>🔊</span><b id="toneVolTxt" dir="ltr">90%</b></div>
-      <div class="alert-note" id="toneNote">الصوت يشتغل والتطبيق مفتوح. على الآيفون ارفع صوت الجهاز، والتنبيهات اللي توصل عبر ntfy تاخذ نغمة برنامج ntfy، وتنبيه الرعد يوصل بأعلى أولوية.</div>
+      <div class="alert-note" id="toneNote">الصوت يشتغل والتطبيق مفتوح. على الآيفون ارفع صوت الجهاز، وتنبيه الرعد يوصل بأعلى أولوية.</div>
     </div>
   </section>
 
@@ -2883,7 +2883,7 @@
             ? '. كل التنبيهات المفعّلة توصلك حتى والتطبيق مقفل: الرعد والمطر والرياح والرطوبة والمد، والصلاة والقمر والأنواء والاقترانات والشهب والمحطة.'
             : window.manakhNative
             ? '. الرعد والمطر والرياح والمد تنبّهك وأنت فاتح التطبيق، أما أوقات الصلاة والاقترانات وأطوار القمر والأنواء والشهب ومرور المحطة فتوصلك حتى والتطبيق مقفل.'
-            : '. نفحص كل 15 دقيقة للثلاث ساعات الجاية. التنبيهات تظهر والتطبيق مفتوح، وتوصل جوالك عبر ntfy إذا ربطته من الإعدادات.');
+            : '. نفحص كل 15 دقيقة للثلاث ساعات الجاية، والتنبيهات تظهر لك والتطبيق مفتوح.');
       }catch(e){ /* try again next cycle */ }
     }
     setTimeout(checkAlerts, 6000);
@@ -3107,8 +3107,6 @@
           : '<span class="warn">⚠️ الإشعارات غير مسموحة — افتح الإعدادات ← مناخ ← الإشعارات وفعّل «السماح بالإشعارات»</span>');
         st.innerHTML = lines.join('<br>'); return;
       }
-      lines.push(ntfyTopic ? ('✅ مربوط بقناة ntfy: <b dir="ltr">' + ntfyTopic + '</b>')
-                           : '<span class="warn">⚠️ ntfy غير مربوط — الإشعارات ما بتوصل جوالك</span>');
       st.innerHTML = lines.join('<br>');
       document.getElementById('notifLink').textContent = ntfyTopic ? '✏️ تغيير القناة' : '📲 ربط ntfy';
     }
