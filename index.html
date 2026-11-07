@@ -68,8 +68,10 @@
   /* ---------- top bar ---------- */
   .topbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
   .topbar .brand{ display:flex; align-items:center; gap:10px; }
-  .brand-name{ font-family:"IBM Plex Sans Arabic","Sora",sans-serif; font-weight:700; font-size:1.3rem; line-height:1.2; text-align:center;}
-  .brand-sub{ font-size:.72rem; color:var(--text-3); margin-top:1px; text-align:center;}
+  .brand-name{ font-family:"IBM Plex Sans Arabic","Sora",sans-serif; font-weight:800; font-size:2.1rem; line-height:1.15; text-align:center;
+    background:linear-gradient(180deg,#bfe9ff 0%,#4fc3ff 55%,#1e90ff 100%); -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 0 10px rgba(79,195,255,.55)); }
+  .brand-sub{ font-size:.98rem; font-weight:700; color:#5cc8ff; margin-top:3px; text-align:center; text-shadow:0 0 10px rgba(92,200,255,.45); }
   .icon-btn{ background:transparent; border:none; padding:0; cursor:pointer; }
   .bell-wrap{ position:relative; }
   .badge{ position:absolute; top:-3px; inset-inline-end:-3px; background:var(--heat-2); color:#fff; font-size:.62rem; font-weight:700;
