@@ -1049,7 +1049,6 @@
       <div class="settings-row" id="rowUnit"><div class="icon3d sm violet"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 000 18"/></svg></div><span class="name" id="unitRowLabel">وحدة الحرارة (مئوية)</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
       <div class="settings-row" id="rowFontSize"><div class="icon3d sm gold"><svg viewBox="0 0 24 24"><path d="M6 18L10 6h1l4 12M7.2 14h6.6"/></svg></div><span class="name" id="fontRowLabel">حجم الخط (عادي)</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
       <div class="settings-row" id="rowNtfy"><div class="icon3d sm rose"><svg viewBox="0 0 24 24"><path d="M4 4l16 8-16 8V4z"/></svg></div><span class="name" id="ntfyRowLabel">ربط إشعارات فعلية عبر ntfy</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
-      <div class="settings-row" id="rowAbout"><div class="icon3d sm slate"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg></div><span class="name">عن التطبيق</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
     </div>
     <div class="card" id="alertsCard">
       <div class="card-head"><h2>التنبيهات</h2></div>
@@ -1071,7 +1070,6 @@
         <button class="muzna-btn" id="notifLink" type="button">📲 ربط ntfy</button>
       </div>
       <div class="alert-note" id="alertNote">فعّل التنبيهات اللي تهمك، وتوصلك على جوالك.</div>
-      <div class="qibla-btns" id="rateRow" hidden style="margin-top:12px"><a class="muzna-btn primary" id="rateBtn" href="https://apps.apple.com/app/id6823329197?action=write-review" target="_blank" rel="noopener">⭐ عجبك مناخ؟ قيّمه في App Store</a></div>
       <!-- 🧪 النسخة التجريبية: حط رابط TestFlight العام هنا (من App Store Connect ← TestFlight ← External Testing ← Public Link). الزر يختفي لو الرابط فاضي -->
       <div class="qibla-btns" id="betaRow" hidden style="margin-top:10px"><a class="muzna-btn" id="betaBtn" href="#" target="_blank" rel="noopener">🧪 جرّب النسخة التجريبية قبل الكل</a></div>
       <div class="alert-note" id="betaNote" hidden>تنزل لك المزايا الجديدة قبل الناس عن طريق تطبيق TestFlight من أبل. ممكن يكون فيها أخطاء بسيطة، وملاحظاتك تساعدنا نحسّن مناخ 🙏</div>
@@ -1091,6 +1089,10 @@
       <div class="tone-row"><span class="tone-ic">🔔</span><div class="tone-meta"><div class="tone-name">باقي التنبيهات</div><div class="tone-sub">الحرارة والرطوبة والأبراج</div></div><select class="tone-sel" data-kind="general"></select><button class="tone-play" type="button" data-kind="general" aria-label="جرّب">▶</button></div>
       <div class="tone-vol"><span>🔈</span><input type="range" id="toneVol" min="10" max="100" step="5" aria-label="مستوى الصوت" /><span>🔊</span><b id="toneVolTxt" dir="ltr">90%</b></div>
       <div class="alert-note" id="toneNote">الصوت يشتغل والتطبيق مفتوح. على الآيفون ارفع صوت الجهاز، وتنبيه الرعد يوصل بأعلى أولوية.</div>
+    </div>
+    <div class="card" id="aboutCard">
+      <div class="settings-row" id="rowAbout"><div class="icon3d sm slate"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg></div><span class="name">عن التطبيق</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+      <div class="qibla-btns" style="margin-top:12px" id="rateRow" hidden><a class="muzna-btn primary" id="rateBtn" href="https://apps.apple.com/app/id6823329197?action=write-review" target="_blank" rel="noopener">⭐ عجبك مناخ؟ قيّمه في App Store</a></div>
     </div>
   </section>
 
@@ -1380,7 +1382,7 @@
 
   // ---------- settings interactions ----------
 
-  document.getElementById('rowAbout').addEventListener('click', ()=> showToast('مناخ — الإصدار 2.1 · تصميم محدَّث بأيقونات 3D'));
+  document.getElementById('rowAbout').addEventListener('click', ()=> showToast('مناخ — الإصدار 1.3 · © سالم الجابري، مسقط · techlights.app'));
 
   document.getElementById('toggleNotif').addEventListener('click', (e)=>{
     notifOn = !notifOn;
