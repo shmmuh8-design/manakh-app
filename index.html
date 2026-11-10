@@ -667,14 +667,18 @@
   h1,h2,h3,.brand-name,.greeting-title,.muzna-name,.qt-title,.uv-level,.wx-mz-t b,.wx-tiles b,.wx-quick b,.mx-now-loc b,.wx-wind-loc b,.wx-half b,.mx-now-t b,.gauge-center .num,.compass-center .num,.uv-badge,.nav-btn span,.tab,.chip,.muzna-btn,.mx-date b,.wx-g-h,.wx-wind-info b{ font-family:"Cairo","Tajawal",sans-serif; }
   h1,h2,h3,.greeting-title,.muzna-name,.qt-title,.wx-mz-t b,.wx-tiles b,.wx-quick b,.mx-now-loc b,.wx-wind-loc b,.wx-half b,.wx-g-h{ font-weight:700; }
 
-  .mx-hero{ position:relative; margin:calc(-18px - env(safe-area-inset-top,0px)) -16px 0; aspect-ratio:851/428; overflow:hidden; }
+  .mx-hero{ position:relative; margin:calc(-18px - env(safe-area-inset-top,0px)) -16px 0; aspect-ratio:1290/650; overflow:hidden; }
   .mx-sky{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
   .mx-hero::after{ content:""; position:absolute; inset:auto 0 0; height:22%; background:linear-gradient(180deg,transparent,var(--bg-deep)); }
   .mx-menu{ position:absolute; top:calc(env(safe-area-inset-top,0px) + 8px); inset-inline-start:14px; width:46px; height:46px; border-radius:15px; display:grid; place-items:center; cursor:pointer;
     background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.35); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); box-shadow:0 6px 16px rgba(0,0,0,.25); z-index:2; }
   html[data-tod="night"] .mx-menu{ background:rgba(120,70,190,.45); border-color:rgba(200,160,255,.5); }
+  .mx-heroic{ display:none; position:absolute; left:50%; top:9%; width:20%; transform:translateX(-50%); z-index:1; filter:drop-shadow(0 8px 16px rgba(0,0,0,.3)); }
   .mx-menu svg{ width:22px; height:22px; stroke:#fff; stroke-width:2.4; fill:none; stroke-linecap:round; }
-  .mx-brand{ position:absolute; left:0; right:0; top:41%; text-align:center; z-index:1; }
+  .mx-brand{ position:absolute; left:0; right:0; top:calc(env(safe-area-inset-top,0px)*.6 + 13%); text-align:center; z-index:1; }
+  .mx-brand::before{ content:""; position:absolute; left:14%; right:14%; top:-6%; bottom:-14%; z-index:-1; border-radius:50%;
+    background:radial-gradient(closest-side,rgba(20,8,45,.55),rgba(20,8,45,0)); }
+  html[data-tod="day"] .mx-brand::before{ background:radial-gradient(closest-side,rgba(6,50,120,.45),rgba(6,50,120,0)); }
   .mx-brand .brand-name{ font-size:clamp(2.8rem,14vw,3.8rem); line-height:1.1; font-weight:900; background:none; -webkit-background-clip:initial; background-clip:initial;
     color:#fff6e6; filter:none; text-shadow:0 3px 0 rgba(0,0,0,.12),0 6px 18px rgba(0,0,0,.35),0 0 26px rgba(255,220,160,.35); }
   html[data-tod="day"] .mx-brand .brand-name{ color:#fff; text-shadow:0 3px 0 rgba(10,70,150,.25),0 6px 18px rgba(8,60,140,.35),0 0 24px rgba(255,255,255,.45); }
@@ -695,7 +699,7 @@
   .mx-now-loc > span svg{ stroke:#e8ddff; } html[data-tod="day"] .mx-now-loc > span svg{ stroke:#fff; } html[data-tod="day"] .mx-now-loc b svg{ stroke:#fff; }
   .mx-drop{ font-style:normal; font-size:.95rem; }
   .mx-now-ic{ width:96px; height:84px; display:grid; place-items:center; margin:0 6px; }
-  .mx-now-ic img{ max-width:100%; max-height:100%; filter:drop-shadow(0 6px 14px rgba(255,190,80,.35)); }
+  .mx-now-ic img{ width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 6px 14px rgba(0,0,0,.25)); }
   .mx-now-ic .emo{ font-size:3.4rem; line-height:1; }
   .mx-now-t{ text-align:center; padding-inline-start:12px; border-inline-start:1px solid rgba(255,255,255,.18); display:flex; flex-direction:column; align-items:center; }
   .mx-now-t b{ font-family:"Cairo","Tajawal","Sora",sans-serif; font-size:3rem; font-weight:800; line-height:1; direction:ltr; color:#fff; }
@@ -728,11 +732,9 @@
   /* مزنة */
   #page-home .muzna{ padding-top:16px; }
   html[data-tod="night"] #page-home .muzna{ background:linear-gradient(160deg,rgba(98,58,160,.72),rgba(52,28,100,.82)); border:1.5px solid rgba(255,206,130,.32); }
-  #page-home .muzna::before{ content:""; position:absolute; top:0; left:0; width:42%; height:190px; background:url(art/lantern-night.jpg) left top/cover no-repeat; pointer-events:none;
-    -webkit-mask-image:linear-gradient(90deg,#000 45%,transparent), linear-gradient(180deg,#000 70%,transparent); -webkit-mask-composite:source-in; mask-image:linear-gradient(90deg,#000 45%,transparent), linear-gradient(180deg,#000 70%,transparent); mask-composite:intersect; opacity:.95; }
-  html[data-tod="day"] #page-home .muzna::before{ background-image:url(art/lantern-day.jpg); }
+  #page-home .muzna::before{ content:""; position:absolute; top:10px; left:8px; width:88px; height:126px; background:url(art/lantern-arch.png) left top/contain no-repeat; pointer-events:none; filter:drop-shadow(0 8px 16px rgba(0,0,0,.3)); }
   #page-home .muzna-top{ position:relative; z-index:1; }
-  #page-home .muzna-head{ text-align:start; }
+  #page-home .muzna-head{ text-align:start; padding-inline-end:92px; }
   #page-home .muzna-name{ font-size:1.7rem; font-weight:800; }
   html[data-tod="night"] #page-home .muzna-role{ color:#7fe3ff; }
   #page-home .muzna-live{ background:rgba(255,255,255,.08); border:1px solid var(--line); padding:4px 12px; border-radius:999px; }
@@ -758,8 +760,8 @@
 
   /* ---------- صفحة الطقس: لوحة مناخ ---------- */
   #page-weather .wx-hero{ margin-bottom:10px; }
-  .wx-appicon{ position:absolute; left:50%; top:12%; width:19%; transform:translateX(-50%); border-radius:22%; box-shadow:0 10px 24px rgba(0,0,0,.35),0 0 0 2px rgba(255,255,255,.35); z-index:1; }
-  #page-weather .mx-brand{ top:46%; }
+  .wx-appicon{ position:absolute; left:50%; top:calc(env(safe-area-inset-top,0px)*.6 + 6%); width:17%; transform:translateX(-50%); border-radius:22%; box-shadow:0 10px 24px rgba(0,0,0,.35),0 0 0 2px rgba(255,255,255,.35); z-index:1; }
+  #page-weather .mx-brand{ top:44%; }
   #page-weather .mx-brand .brand-name{ font-size:clamp(2.2rem,11vw,3rem); }
   #page-weather .tabs{ margin-top:4px; }
   .wq-ic{ display:inline-grid; place-items:center; width:46px; height:46px; border-radius:14px; flex:none; font-size:1.5rem; box-shadow:0 8px 16px -6px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.4); }
@@ -827,6 +829,7 @@
   html[data-tod="night"] .wx-mz-play i{ background:#5a2a7a; }
   .wx-tiles{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:4px 0 6px; }
   .wx-tiles button{ display:flex; flex-direction:column; align-items:center; gap:4px; padding:12px 4px; }
+  .wx-tiles img{ width:44px; height:44px; filter:drop-shadow(0 6px 8px rgba(0,0,0,.3)); }
   .wx-tiles i{ font-style:normal; font-size:2.1rem; line-height:1; filter:drop-shadow(0 6px 8px rgba(0,0,0,.3)); } .wx-tiles b{ font-size:.95rem; }
 </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
@@ -856,6 +859,7 @@
   <section class="page active" id="page-home">
     <div class="mx-hero">
       <img class="mx-sky" id="mxSky" src="art/hero-night.jpg" alt="" decoding="async">
+      <img class="mx-heroic" id="mxHeroIc" src="art/ic-moon.png" alt="">
       <button class="mx-menu" type="button" onclick="showPage('page-settings')" aria-label="الإعدادات"><svg viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h14"/></svg></button>
       <div class="mx-brand"><div class="brand-name">مناخ</div><div class="brand-sub">محطة مناخ للفلك والطقس والطوالع</div></div>
     </div>
@@ -1081,7 +1085,7 @@
     </div>
 
     <div class="wx-tiles">
-      <button type="button" onclick="showPage('page-prayer')"><i>🕌</i><b>الصلاة</b></button>
+      <button type="button" onclick="showPage('page-prayer')"><img src="art/ic-mosque.png" alt=""><b>الصلاة</b></button>
       <button type="button" onclick="showPage('page-seasons')"><i>🌠</i><b>الأنواء</b></button>
       <button type="button" onclick="showPage('page-settings')"><i>⚙️</i><b>الإعدادات</b></button>
       <button type="button" onclick="showPage('page-observe')"><i>🔭</i><b>الرصد</b></button>
@@ -1606,7 +1610,7 @@
     if(code >= 95) return 'عواصف رعدية';
     return day ? 'مشمس' : 'صافي';
   };
-  const MX_EMO = code => (code === 45 || code === 48) ? '🌫️' : (code >= 51 && code <= 57) ? '🌦️' : ((code >= 61 && code <= 67) || (code >= 80 && code <= 82)) ? '🌧️' : ((code >= 71 && code <= 77) || code === 85 || code === 86) ? '❄️' : code >= 95 ? '⛈️' : code === 3 ? '☁️' : '';
+  const MX_EMO = code => (code === 45 || code === 48) ? 'fog' : ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) ? 'rain' : ((code >= 71 && code <= 77) || code === 85 || code === 86) ? '❄️' : code >= 95 ? 'storm' : '';
   let mxLast = '';
   function mxUpdate(){
     let st = null, c = null;
@@ -1617,6 +1621,7 @@
     if(document.documentElement.dataset.tod !== tod){
       document.documentElement.dataset.tod = tod;
       document.getElementById('mxSky').src = 'art/hero-' + tod + '.jpg';
+      document.getElementById('mxHeroIc').src = day ? 'art/ic-sun-cloud.png' : 'art/ic-moon.png';
       const m = document.querySelector('meta[name="theme-color"]'); if(m) m.content = day ? '#1f7fe0' : '#1d1140';
     }
     const code = (st && typeof st.code === 'number') ? st.code : null;
@@ -1630,7 +1635,8 @@
     if(key !== mxLast){
       mxLast = key;
       const ic = document.getElementById('mxIc');
-      ic.innerHTML = emo ? '<span class="emo">' + emo + '</span>' : '<img src="art/wx-' + tod + '.png" alt="">';
+      const im = emo === '' ? (day ? 'sun-cloud' : 'moon') : (/^[a-z]+$/.test(emo) ? emo : '');
+      ic.innerHTML = im ? '<img src="art/ic-' + im + '.png" alt="">' : '<span class="emo">' + emo + '</span>';
     }
     try{ wx2Update(st, code, day, tod); }catch(e){}
   }
