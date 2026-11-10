@@ -654,9 +654,9 @@
 
   /* ===================== مناخ 1.4: نهاري / ليلي ===================== */
   html[data-tod="night"]{ --bg-deep:#1c1038; --bg-panel:rgba(74,44,128,.55); --bg-panel-2:rgba(44,24,86,.62); --line:rgba(255,214,150,.16); --text-2:#cdbfe8; --text-3:#ab9bcf; }
-  html[data-tod="day"]{ --bg-deep:#1a73d9; --bg-panel:rgba(255,255,255,.17); --bg-panel-2:rgba(255,255,255,.09); --line:rgba(255,255,255,.3); --text-2:#e6f2ff; --text-3:#d3e8ff; }
+  html[data-tod="day"]{ --bg-deep:#155fbf; --bg-panel:rgba(4,40,105,.42); --bg-panel-2:rgba(4,40,105,.3); --line:rgba(255,255,255,.22); --text-2:#e3efff; --text-3:#cfe2ff; }
   html[data-tod="night"] body{ background:linear-gradient(180deg,#1d1140 0%,#2a1650 45%,#180c30 100%) fixed; }
-  html[data-tod="day"] body{ background:linear-gradient(180deg,#1f7fe0 0%,#3d9cf0 45%,#1667c9 100%) fixed; }
+  html[data-tod="day"] body{ background:linear-gradient(180deg,#1b74d6 0%,#1f6fd0 45%,#0f55b0 100%) fixed; }
   html[data-tod] body::before{ background:#ffb347; opacity:.12; } html[data-tod="night"] body::after{ background:#7b3fe0; opacity:.25; }
   html[data-tod="day"] body::after{ background:#9fe3ff; opacity:.3; }
   .num{ font-variant-numeric:tabular-nums; }
@@ -777,7 +777,14 @@
   .wx-more summary::-webkit-details-marker{ display:none; } .wx-more[open] summary{ margin-bottom:8px; }
   .wx-card{ border-radius:22px !important; }
   html[data-tod="night"] #page-weather .card{ background:linear-gradient(160deg,rgba(98,58,160,.62),rgba(52,28,100,.72)); border:1.5px solid rgba(255,206,130,.22); }
-  html[data-tod="day"] #page-weather .card{ background:linear-gradient(160deg,rgba(255,255,255,.24),rgba(255,255,255,.1)); border:1.5px solid rgba(255,255,255,.38); }
+  html[data-tod="day"] #page-weather .card, html[data-tod="day"] .wx-quick button, html[data-tod="day"] .wx-tiles button{ --text-1:#0b2a55; --text-2:#33507a; --text-3:#4d6b94; --line:rgba(10,70,150,.14);
+    background:linear-gradient(180deg,rgba(240,249,255,.96),rgba(212,236,255,.94)); border:1.5px solid #fff; color:#0b2a55; box-shadow:0 14px 30px -18px rgba(0,40,110,.6); }
+  html[data-tod="day"] #page-weather .card .gauge .track{ stroke:rgba(10,70,150,.12); }
+  html[data-tod="day"] #page-weather .card .gauge-center .num{ color:#0b2a55; }
+  html[data-tod="day"] #page-weather .wx-pill{ background:rgba(10,90,200,.08); }
+  html[data-tod="day"] #page-weather .wx-wind-loc svg{ stroke:#0a6fd6; }
+  html[data-tod="day"] #page-weather .wx-more summary{ background:rgba(10,90,200,.08); }
+  html[data-tod="day"] .wx-quick small{ color:#0a6fd6; }
   .wx-comfort .card-head h2{ display:flex; align-items:center; font-size:1.1rem; }
   .wx-tri{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
   .wx-g{ margin:0 !important; padding:10px 6px 12px !important; display:flex; flex-direction:column; align-items:center; text-align:center; }
