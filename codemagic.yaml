@@ -88,7 +88,7 @@ workflows:
       - name: رقم الإصدار والبناء
         script: |
           cd ios/App
-          sed -i '' 's/MARKETING_VERSION = [0-9.]*;/MARKETING_VERSION = 1.3;/g' App.xcodeproj/project.pbxproj
+          sed -i '' 's/MARKETING_VERSION = [0-9.]*;/MARKETING_VERSION = 1.4;/g' App.xcodeproj/project.pbxproj
           agvtool new-version -all $((BUILD_NUMBER + 1))
       - name: بناء ملف IPA
         script: |
