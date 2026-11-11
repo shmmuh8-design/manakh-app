@@ -209,6 +209,8 @@
   .zg-row .zg-sym{ width:38px;height:38px; border-radius:12px; background:linear-gradient(150deg,#cfa4ff,#7a4fe0 70%); display:flex;align-items:center;justify-content:center; font-size:1.1rem; color:#fff; flex-shrink:0; }
   .zg-row .zg-name{ font-weight:700; font-size:1rem; }
   .zg-row .zg-range{ font-size:.86rem; color:var(--text-3); margin-top:2px; }
+  .zg-row .zg-desc{ font-size:.88rem; line-height:1.75; color:var(--text-2); margin-top:6px; }
+  .zg-row{ align-items:flex-start; } .zg-row .zg-sym{ margin-top:4px; }
   .zg-row .zg-days{ margin-inline-start:auto; font-size:.79rem; font-weight:700; padding:3px 9px; border-radius:999px; background:rgba(255,140,80,.18); color:var(--heat-1); flex-shrink:0; white-space:nowrap; }
 
   .anwaa-hero-card{ border-radius:24px; padding:20px 18px; background:linear-gradient(180deg,var(--bg-panel),var(--bg-panel-2)); border:1px solid var(--line); text-align:center; margin-bottom:14px; box-shadow:0 24px 40px -28px var(--amber-glow); }
@@ -836,7 +838,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" defer></script>
 </head>
 <body>
-<script>try{var _h=new Date().getHours();document.documentElement.dataset.tod=(_h>=6&&_h<18)?"day":"night";}catch(e){}</script>
+<script>try{var _h=new Date().getHours(),_t=localStorage.getItem("manakh_theme");document.documentElement.dataset.tod=_t==="day"?"day":_t==="night"?"night":((_h>=6&&_h<18)?"day":"night");}catch(e){}</script>
 <div class="share-sheet" id="shareSheet" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
   <div class="in">
     <h3><span id="shareTitle">📤 مشاركة</span><button type="button" id="shareClose" aria-label="إغلاق">✕</button></h3>
@@ -1280,6 +1282,7 @@
       <div class="settings-row" id="rowLocation"><div class="icon3d sm blue"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.5 7-11a7 7 0 10-14 0c0 4.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg></div><span class="name">الموقع والمدن المفضّلة</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
       <div class="settings-row" id="rowNotif"><div class="icon3d sm amber"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></div><span class="name">التنبيهات والإشعارات</span><div class="toggle on" id="toggleNotif"></div></div>
       <div class="settings-row" id="rowUnit"><div class="icon3d sm violet"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 000 18"/></svg></div><span class="name" id="unitRowLabel">وحدة الحرارة (مئوية)</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+      <div class="settings-row" id="rowTheme"><div class="icon3d sm violet"><svg viewBox="0 0 24 24"><path d="M21 12.5A8.5 8.5 0 1111.5 3a7 7 0 009.5 9.5z"/></svg></div><span class="name" id="themeRowLabel">المظهر (تلقائي)</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
       <div class="settings-row" id="rowFontSize"><div class="icon3d sm gold"><svg viewBox="0 0 24 24"><path d="M6 18L10 6h1l4 12M7.2 14h6.6"/></svg></div><span class="name" id="fontRowLabel">حجم الخط (عادي)</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
       <div class="settings-row" id="rowNtfy"><div class="icon3d sm rose"><svg viewBox="0 0 24 24"><path d="M4 4l16 8-16 8V4z"/></svg></div><span class="name" id="ntfyRowLabel">ربط إشعارات فعلية عبر ntfy</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
     </div>
@@ -1612,11 +1615,25 @@
   };
   const MX_EMO = code => (code === 45 || code === 48) ? 'fog' : ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) ? 'rain' : ((code >= 71 && code <= 77) || code === 85 || code === 86) ? '❄️' : code >= 95 ? 'storm' : '';
   let mxLast = '';
+  const MX_THEMES = [['auto','تلقائي حسب الشمس'],['day','نهاري دايمًا'],['night','ليلي دايمًا']];
+  let MX_THEME = 'auto'; try{ MX_THEME = localStorage.getItem('manakh_theme') || 'auto'; }catch(e){}
+  function mxThemeLabel(){ const t = MX_THEMES.find(x => x[0] === MX_THEME) || MX_THEMES[0]; const el = document.getElementById('themeRowLabel'); if(el) el.textContent = 'المظهر (' + t[1] + ')'; }
+  setTimeout(() => {
+    mxThemeLabel();
+    const r = document.getElementById('rowTheme');
+    if(r) r.addEventListener('click', () => {
+      const i = MX_THEMES.findIndex(x => x[0] === MX_THEME);
+      MX_THEME = MX_THEMES[(i + 1) % MX_THEMES.length][0];
+      try{ localStorage.setItem('manakh_theme', MX_THEME); }catch(e){}
+      mxThemeLabel(); mxUpdate(); showToast('المظهر: ' + MX_THEMES.find(x => x[0] === MX_THEME)[1]);
+    });
+  }, 0);
   function mxUpdate(){
     let st = null, c = null;
     try{ st = state; c = selectedCityRef; }catch(e){ return; }
     const h = new Date().getHours();
-    const day = (c && c.live && typeof c.isDay === 'boolean') ? c.isDay : (h >= 6 && h < 18);
+    let day = (c && c.live && typeof c.isDay === 'boolean') ? c.isDay : (h >= 6 && h < 18);
+    if(MX_THEME === 'day') day = true; else if(MX_THEME === 'night') day = false;
     const tod = day ? 'day' : 'night';
     if(document.documentElement.dataset.tod !== tod){
       document.documentElement.dataset.tod = tod;
@@ -1757,6 +1774,7 @@
   // ---------- live prayer times: calculated daily for the selected city ----------
   const PRAYER_CITY = {
     'مسقط':['Asia/Muscat',23.588,58.383,'oman'], 'الرياض':['Asia/Riyadh',24.714,46.675,'uaq'], 'جدة':['Asia/Riyadh',21.486,39.193,'uaq'],
+    'مكة المكرمة':['Asia/Riyadh',21.4225,39.8262,'uaq'], 'المدينة المنورة':['Asia/Riyadh',24.4686,39.6142,'uaq'], 'الدمام':['Asia/Riyadh',26.4207,50.0888,'uaq'], 'الخبر':['Asia/Riyadh',26.2172,50.1971,'uaq'], 'الظهران':['Asia/Riyadh',26.2361,50.0393,'uaq'], 'الأحساء':['Asia/Riyadh',25.3833,49.5864,'uaq'], 'الجبيل':['Asia/Riyadh',27.0046,49.6460,'uaq'], 'القطيف':['Asia/Riyadh',26.5196,50.0115,'uaq'], 'حفر الباطن':['Asia/Riyadh',28.4328,45.9708,'uaq'], 'الطائف':['Asia/Riyadh',21.2703,40.4158,'uaq'], 'تبوك':['Asia/Riyadh',28.3835,36.5662,'uaq'], 'بريدة':['Asia/Riyadh',26.3260,43.9750,'uaq'], 'عنيزة':['Asia/Riyadh',26.0840,43.9930,'uaq'], 'حائل':['Asia/Riyadh',27.5114,41.7208,'uaq'], 'أبها':['Asia/Riyadh',18.2164,42.5053,'uaq'], 'خميس مشيط':['Asia/Riyadh',18.3060,42.7290,'uaq'], 'جازان':['Asia/Riyadh',16.8892,42.5511,'uaq'], 'نجران':['Asia/Riyadh',17.4917,44.1322,'uaq'], 'الباحة':['Asia/Riyadh',20.0129,41.4677,'uaq'], 'سكاكا':['Asia/Riyadh',29.9697,40.2064,'uaq'], 'عرعر':['Asia/Riyadh',30.9753,41.0381,'uaq'], 'ينبع':['Asia/Riyadh',24.0895,38.0618,'uaq'],
     'دبي':['Asia/Dubai',25.205,55.271,'uae'], 'أبوظبي':['Asia/Dubai',24.454,54.377,'uae'], 'الدوحة':['Asia/Qatar',25.285,51.531,'qatar'],
     'المنامة':['Asia/Bahrain',26.229,50.586,'oman'], 'الكويت':['Asia/Kuwait',29.376,47.977,'kuwait'], 'القاهرة':['Africa/Cairo',30.044,31.236,'egypt'],
     'عمّان':['Asia/Amman',31.954,35.911,'mwl'], 'بيروت':['Asia/Beirut',33.894,35.502,'mwl'], 'بغداد':['Asia/Baghdad',33.315,44.366,'mwl'],
@@ -2000,8 +2018,30 @@
   // ---------- cities: Gulf, Arab & international, wired to wind + humidity ----------
   const citiesData = [
     {region:'خليجية', name:'مسقط', t:33, h:66, deg:90, speed:8, areas:['مطرح','بوشر','العامرات','السيب','قريات','المعبيلة','الخوض','روي']},
-    {region:'خليجية', name:'الرياض', t:34.6, h:22, deg:45, speed:7, areas:['العليا','الملز','الديرة','النسيم','الملقا','السويدي']},
-    {region:'خليجية', name:'جدة', t:35, h:55, deg:270, speed:12, areas:['الروضة','الشرفية','أبحر','الحمراء','السلامة']},
+    {region:'السعودية', name:'الرياض', t:34.6, h:22, deg:45, speed:7, areas:['العليا','الملز','الديرة','النسيم','الملقا','السويدي']},
+    {region:'السعودية', name:'جدة', t:35, h:55, deg:270, speed:12, areas:['الروضة','الشرفية','أبحر','الحمراء','السلامة']},
+    {region:'السعودية', name:'مكة المكرمة', t:30, h:35, deg:0, speed:10, areas:[]},
+    {region:'السعودية', name:'المدينة المنورة', t:30, h:35, deg:0, speed:10, areas:[]},
+    {region:'السعودية', name:'الدمام', t:30, h:35, deg:0, speed:10, areas:['الفيصلية','الشاطئ','المزروعية','الريان','النزهة']},
+    {region:'السعودية', name:'الخبر', t:30, h:35, deg:0, speed:10, areas:[]},
+    {region:'السعودية', name:'الظهران', t:30, h:35, deg:0, speed:10, areas:[]},
+    {region:'السعودية', name:'الأحساء', t:30, h:35, deg:0, speed:10, areas:['الهفوف','المبرز','العيون','الجفر','الطرف']},
+    {region:'السعودية', name:'الجبيل', t:30, h:35, deg:0, speed:10, areas:[]},
+    {region:'السعودية', name:'القطيف', t:30, h:35, deg:0, speed:10, areas:[]},
+    {region:'السعودية', name:'حفر الباطن', t:30, h:35, deg:0, speed:10, areas:[]},
+    {region:'السعودية', name:'الطائف', t:30, h:35, deg:0, speed:10, areas:[]},
+    {region:'السعودية', name:'تبوك', t:30, h:35, deg:0, speed:10, areas:[]},
+    {region:'السعودية', name:'بريدة', t:30, h:35, deg:0, speed:10, areas:[]},
+    {region:'السعودية', name:'عنيزة', t:30, h:35, deg:0, speed:10, areas:[]},
+    {region:'السعودية', name:'حائل', t:30, h:35, deg:0, speed:10, areas:[]},
+    {region:'السعودية', name:'أبها', t:30, h:35, deg:0, speed:10, areas:[]},
+    {region:'السعودية', name:'خميس مشيط', t:30, h:35, deg:0, speed:10, areas:[]},
+    {region:'السعودية', name:'جازان', t:30, h:35, deg:0, speed:10, areas:[]},
+    {region:'السعودية', name:'نجران', t:30, h:35, deg:0, speed:10, areas:[]},
+    {region:'السعودية', name:'الباحة', t:30, h:35, deg:0, speed:10, areas:[]},
+    {region:'السعودية', name:'سكاكا', t:30, h:35, deg:0, speed:10, areas:[]},
+    {region:'السعودية', name:'عرعر', t:30, h:35, deg:0, speed:10, areas:[]},
+    {region:'السعودية', name:'ينبع', t:30, h:35, deg:0, speed:10, areas:[]},
     {region:'خليجية', name:'دبي', t:37.1, h:52, deg:315, speed:10, areas:['ديرة','بردبي','الجميرا','مرسى دبي','البرشاء']},
     {region:'خليجية', name:'أبوظبي', t:36, h:58, deg:300, speed:9, areas:['الخالدية','الكورنيش','مصفح','الشامخة','الريف']},
     {region:'خليجية', name:'الدوحة', t:36.4, h:58, deg:60, speed:11, areas:['الدفنة','الوكرة','الخليج الغربي','مشيرب']},
@@ -2180,7 +2220,7 @@
   const cityOpen = {};
   function renderCitiesList(){
     const wrap = document.getElementById('citiesListWrap');
-    const regions = ['خليجية','عربية','أجنبية'];
+    const regions = ['خليجية','السعودية','عربية','أجنبية'];
     const curCity = selectedCityRef ? (selectedCityRef.parentName || selectedCityRef.name) : '';
     const curArea = selectedCityRef ? selectedCityRef.areaName : null;
     const coords = areaCoordsTable();
@@ -2318,18 +2358,18 @@
 
   // ---------- full zodiac guide (start/end/duration + change notification) ----------
   const zodiacGuide = [
-    {name:'الحمل', sym:'♈', start:[3,21], end:[4,19]},
-    {name:'الثور', sym:'♉', start:[4,20], end:[5,20]},
-    {name:'الجوزاء', sym:'♊', start:[5,21], end:[6,20]},
-    {name:'السرطان', sym:'♋', start:[6,21], end:[7,22]},
-    {name:'الأسد', sym:'♌', start:[7,23], end:[8,22]},
-    {name:'العذراء', sym:'♍', start:[8,23], end:[9,22]},
-    {name:'الميزان', sym:'♎', start:[9,23], end:[10,22]},
-    {name:'العقرب', sym:'♏', start:[10,23], end:[11,21]},
-    {name:'القوس', sym:'♐', start:[11,22], end:[12,21]},
-    {name:'الجدي', sym:'♑', start:[12,22], end:[1,19]},
-    {name:'الدلو', sym:'♒', start:[1,20], end:[2,18]},
-    {name:'الحوت', sym:'♓', start:[2,19], end:[3,20]}
+    {name:'الحمل', sym:'♈', start:[3,21], end:[4,19], desc:'كوكبة صغيرة على شكل كبش، أشهر نجومها «الحمَل» و«الشَّرَطان». من البروج النارية، وتُرى مساءً في الخريف وأول الشتاء.'},
+    {name:'الثور', sym:'♉', start:[4,20], end:[5,20], desc:'فيها نجم «الدَّبَران» الأحمر (عين الثور)، وعنقود «الثريا» المشهور عند العرب. من البروج الترابية، وتزيّن سماء الشتاء.'},
+    {name:'الجوزاء', sym:'♊', start:[5,21], end:[6,20], desc:'فيها نجما التوأمين «رأس التوأم المقدَّم» و«رأس التوأم المؤخَّر». من البروج الهوائية، وتُرى في ليالي الشتاء.'},
+    {name:'السرطان', sym:'♋', start:[6,21], end:[7,22], desc:'كوكبة خافتة، أشهر ما فيها عنقود «النَّثرة» (خلية النحل). من البروج المائية، وتُرى آخر الشتاء والربيع.'},
+    {name:'الأسد', sym:'♌', start:[7,23], end:[8,22], desc:'نجمها اللامع «قلب الأسد»، وفي ذيلها نجم «الصَّرفة». من البروج النارية، وتظهر بوضوح في سماء الربيع.'},
+    {name:'العذراء', sym:'♍', start:[8,23], end:[9,22], desc:'أكبر البروج مساحة، ونجمها الأشهر «السِّماك الأعزل» الأزرق اللامع. من البروج الترابية، وتُرى في الربيع وأول الصيف.'},
+    {name:'الميزان', sym:'♎', start:[9,23], end:[10,22], desc:'نجماها «الزُّبانى الشمالي» و«الزُّبانى الجنوبي»، وكانت قديمًا كفّتي العقرب. من البروج الهوائية، وتُرى أول الصيف.'},
+    {name:'العقرب', sym:'♏', start:[10,23], end:[11,21], desc:'من أجمل الكوكبات، قلبها النجم الأحمر «قلب العقرب» وذيلها «الشَّولة». من البروج المائية، وتلمع جنوب السماء صيفًا.'},
+    {name:'القوس', sym:'♐', start:[11,22], end:[12,21], desc:'نجومها على شكل «إبريق»، وباتجاهها مركز درب التبانة، وفيها نجوم «النعائم». من البروج النارية، وتُرى آخر الصيف.'},
+    {name:'الجدي', sym:'♑', start:[12,22], end:[1,19], desc:'من نجومها «سعد الذابح» و«ذنب الجدي». من البروج الترابية، وتُرى في أول الخريف مساءً.'},
+    {name:'الدلو', sym:'♒', start:[1,20], end:[2,18], desc:'فيها نجوم «سعد السعود» و«سعد الملك» المعروفة في الأنواء. من البروج الهوائية، وتُرى في الخريف.'},
+    {name:'الحوت', sym:'♓', start:[2,19], end:[3,20], desc:'كوكبة طويلة خافتة، من نجومها «بطن الحوت» (الرِّشاء). من البروج المائية، وتُرى في الخريف وأول الشتاء.'}
   ];
   function zodiacDuration(z){
     const y = 2025; // non-leap reference year, only used for day-count math
@@ -2352,6 +2392,7 @@
         <div style="flex:1">
           <div class="zg-name">${z.name}</div>
           <div class="zg-range">${fmt(z.start)} – ${fmt(z.end)} · ${zodiacDuration(z)} يوم</div>
+          ${z.desc ? `<div class="zg-desc">${z.desc}</div>` : ''}
         </div>
         ${isCur ? `<span class="zg-days">باقي ${days} يوم</span>` : ''}
       </div>`;
@@ -2786,6 +2827,7 @@
   (function(){
     const coords = {
       'مسقط':[23.588,58.383], 'الرياض':[24.714,46.675], 'جدة':[21.486,39.193], 'دبي':[25.205,55.271],
+      'مكة المكرمة':[21.4225,39.8262], 'المدينة المنورة':[24.4686,39.6142], 'الدمام':[26.4207,50.0888], 'الخبر':[26.2172,50.1971], 'الظهران':[26.2361,50.0393], 'الأحساء':[25.3833,49.5864], 'الجبيل':[27.0046,49.6460], 'القطيف':[26.5196,50.0115], 'حفر الباطن':[28.4328,45.9708], 'الطائف':[21.2703,40.4158], 'تبوك':[28.3835,36.5662], 'بريدة':[26.3260,43.9750], 'عنيزة':[26.0840,43.9930], 'حائل':[27.5114,41.7208], 'أبها':[18.2164,42.5053], 'خميس مشيط':[18.3060,42.7290], 'جازان':[16.8892,42.5511], 'نجران':[17.4917,44.1322], 'الباحة':[20.0129,41.4677], 'سكاكا':[29.9697,40.2064], 'عرعر':[30.9753,41.0381], 'ينبع':[24.0895,38.0618],
       'أبوظبي':[24.454,54.377], 'الدوحة':[25.285,51.531], 'المنامة':[26.229,50.586], 'الكويت':[29.376,47.977],
       'القاهرة':[30.044,31.236], 'عمّان':[31.954,35.911], 'بيروت':[33.894,35.502], 'بغداد':[33.315,44.366],
       'الرباط':[34.021,-6.842], 'تونس':[36.807,10.182], 'الجزائر':[36.754,3.059], 'دمشق':[33.514,36.277],
@@ -3666,6 +3708,8 @@
               'الغبرة':[23.592,58.390], 'بوشر':[23.578,58.400], 'العذيبة':[23.590,58.364], 'الأنصب':[23.557,58.331], 'العامرات':[23.522,58.499],
               'الخوض':[23.587,58.158], 'الحيل':[23.651,58.181], 'السيب':[23.670,58.189], 'الموالح':[23.627,58.250], 'المعبيلة':[23.636,58.118], 'قريات':[23.264,58.919] },
     'الرياض': { 'العليا':[24.690,46.685], 'الملز':[24.663,46.733], 'الديرة':[24.630,46.713], 'النسيم':[24.732,46.828], 'الملقا':[24.808,46.612], 'السويدي':[24.584,46.678] },
+    'الدمام': { 'الفيصلية':[26.424,50.042], 'الشاطئ':[26.459,50.104], 'المزروعية':[26.432,50.097], 'الريان':[26.395,50.081], 'النزهة':[26.418,50.066] },
+    'الأحساء': { 'الهفوف':[25.383,49.587], 'المبرز':[25.411,49.580], 'العيون':[25.600,49.565], 'الجفر':[25.374,49.722], 'الطرف':[25.362,49.731] },
     'جدة': { 'الروضة':[21.555,39.162], 'الشرفية':[21.505,39.190], 'أبحر':[21.750,39.120], 'الحمراء':[21.522,39.160], 'السلامة':[21.586,39.150] },
     'دبي': { 'ديرة':[25.271,55.315], 'بردبي':[25.255,55.297], 'الجميرا':[25.210,55.250], 'مرسى دبي':[25.080,55.140], 'البرشاء':[25.110,55.200] },
     'أبوظبي': { 'الخالدية':[24.471,54.352], 'الكورنيش':[24.483,54.340], 'مصفح':[24.358,54.508], 'الشامخة':[24.395,54.712], 'الريف':[24.450,54.660] },
