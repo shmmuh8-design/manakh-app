@@ -109,6 +109,61 @@
   .trend{ display:flex; align-items:center; gap:5px; font-size:.89rem; color:var(--text-2); } .trend svg{ width:12px;height:12px; stroke-width:3; }
   .trend.up svg{ stroke:var(--heat-1); } .trend.down svg{ stroke:var(--cool-1); }
 
+  /* ---------- مناخ برو ---------- */
+  .mx-lock{ text-align:center; padding:26px 18px; }
+  .mx-lock-ic{ font-size:3rem; line-height:1; margin-bottom:8px; }
+  .mx-lock h3{ margin:4px 0 6px; font-size:1.25rem; }
+  .mx-lock p{ color:var(--text-2); margin:0 0 16px; font-size:1rem; line-height:1.7; }
+  .mx-unlock{ border:0; border-radius:14px; padding:13px 20px; font:800 1.02rem "Cairo",sans-serif; color:#3b2600; background:linear-gradient(135deg,#ffd36b,#f0a52c); box-shadow:0 8px 22px rgba(240,165,44,.35); cursor:pointer; }
+  .mx-blur{ filter:blur(3px); opacity:.6; pointer-events:none; user-select:none; }
+  .agri-row{ display:flex; gap:12px; align-items:flex-start; padding:12px 0; border-top:1px solid var(--line); }
+  .card-head + .agri-row{ border-top:0; padding-top:2px; }
+  .agri-e{ font-size:1.7rem; line-height:1.2; width:36px; text-align:center; flex-shrink:0; }
+  .agri-n{ flex:1; min-width:0; }
+  .agri-n b{ display:block; font-size:1.05rem; }
+  .agri-n small{ display:block; color:var(--text-2); font-size:.92rem; margin-top:2px; line-height:1.6; }
+  .agri-n small.agri-tip{ color:var(--text-3); font-size:.88rem; }
+  .agri-now{ font-style:normal; font-size:.75rem; font-weight:800; background:rgba(90,220,150,.18); color:#7be8ab; padding:2px 8px; border-radius:999px; margin-inline-start:6px; vertical-align:middle; }
+  .agri-bar{ display:grid; grid-template-columns:repeat(12,1fr); gap:3px; margin:7px 0 4px; direction:rtl; }
+  .agri-bar i{ height:7px; border-radius:4px; background:rgba(255,255,255,.1); }
+  .agri-bar i.on{ background:linear-gradient(90deg,#7be8ab,#3fc58a); }
+  .agri-bar i.now{ outline:2px solid #ffd36b; outline-offset:1px; }
+  .agri-bell{ border:1px solid var(--line); background:rgba(255,255,255,.06); border-radius:12px; width:42px; height:42px; font-size:1.15rem; flex-shrink:0; cursor:pointer; }
+  .agri-bell.on{ background:rgba(255,211,107,.18); border-color:rgba(255,211,107,.5); }
+  .agri-empty{ color:var(--text-2); margin:0; text-align:center; padding:8px 0; }
+  .agri-note{ color:var(--text-3); font-size:.88rem; line-height:1.8; margin:6px 4px 14px; }
+  .f14-row{ display:flex; align-items:center; gap:10px; padding:10px 0; border-top:1px solid var(--line); }
+  .card-head + .f14-row{ border-top:0; }
+  .f14-d{ flex:1; min-width:0; font-weight:700; font-size:1rem; }
+  .f14-d small{ display:block; font-weight:500; color:var(--text-2); font-size:.86rem; }
+  .f14-ic{ font-size:1.5rem; width:34px; text-align:center; }
+  .f14-t{ display:flex; align-items:center; gap:6px; width:44%; max-width:190px; font-size:.95rem; }
+  .f14-t b{ width:32px; text-align:center; } .f14-t small{ width:32px; text-align:center; color:var(--text-2); font-size:.92rem; }
+  .f14-t i{ flex:1; height:6px; border-radius:4px; background:rgba(255,255,255,.1); position:relative; overflow:hidden; }
+  .f14-t i::after{ content:""; position:absolute; top:0; bottom:0; right:var(--a); left:calc(100% - var(--b)); border-radius:4px; background:linear-gradient(270deg,#6fc8ff,#ffb84d); }
+  #mxWall{ position:fixed; inset:0; z-index:9999; overflow-y:auto; background:linear-gradient(180deg,#0e1628,#1b2a52 60%,#22305e); color:#fff; padding:calc(env(safe-area-inset-top,0px) + 10px) 18px calc(env(safe-area-inset-bottom,0px) + 24px); }
+  #mxWall[hidden]{ display:none; }
+  body.mx-wall-open{ overflow:hidden; }
+  .mxw-in{ max-width:480px; margin:0 auto; }
+  .mxw-top{ display:flex; justify-content:flex-start; }
+  .mxw-x{ border:0; background:rgba(255,255,255,.12); color:#fff; width:40px; height:40px; border-radius:50%; font-size:1.1rem; cursor:pointer; }
+  .mxw-hero{ text-align:center; font-size:4rem; margin-top:4px; filter:drop-shadow(0 8px 18px rgba(255,200,80,.45)); }
+  .mxw-h{ text-align:center; font:900 2rem "Cairo",sans-serif; margin:4px 0 4px; }
+  .mxw-sub{ text-align:center; color:rgba(255,255,255,.75); font-size:1.02rem; margin:0 0 16px; line-height:1.7; }
+  .mxw-list{ background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:20px; padding:4px 14px; }
+  .mxw-f{ display:flex; gap:12px; align-items:center; padding:12px 0; border-top:1px solid rgba(255,255,255,.1); } .mxw-f:first-child{ border-top:0; }
+  .mxw-f i{ font-style:normal; font-size:1.5rem; width:44px; height:44px; display:grid; place-items:center; border-radius:13px; background:rgba(255,255,255,.1); flex-shrink:0; }
+  .mxw-f b{ display:block; font-size:1.05rem; } .mxw-f small{ color:rgba(255,255,255,.72); font-size:.94rem; line-height:1.6; }
+  .mxw-plans{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:18px 0 12px; }
+  .mxw-plan{ position:relative; border:2px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06); color:#fff; border-radius:18px; padding:16px 8px 12px; text-align:center; cursor:pointer; font-family:"Cairo",sans-serif; }
+  .mxw-plan.sel{ border-color:#ffd36b; box-shadow:0 0 0 3px rgba(255,211,107,.2); }
+  .mxw-plan b{ display:block; font-size:1.1rem; } .mxw-plan .pr{ display:block; font-size:1.35rem; font-weight:800; margin-top:4px; direction:ltr; } .mxw-plan small{ color:rgba(255,255,255,.7); font-size:.9rem; }
+  .mxw-plan em{ position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:#ffd36b; color:#3b2600; font-style:normal; font-size:.78rem; font-weight:800; padding:2px 10px; border-radius:999px; white-space:nowrap; }
+  .mxw-buy{ width:100%; border:0; border-radius:16px; padding:15px; font:800 1.1rem "Cairo",sans-serif; color:#3b2600; background:linear-gradient(135deg,#ffd36b,#f0a52c); cursor:pointer; }
+  .mxw-rest{ width:100%; margin-top:10px; border:1px solid rgba(255,255,255,.25); background:transparent; color:#fff; border-radius:16px; padding:13px; font:700 1rem "Cairo",sans-serif; cursor:pointer; }
+  .mxw-ok{ text-align:center; margin:18px 0 6px; color:#7be8ab; font-weight:800; font-size:1.1rem; } .mxw-ok small{ display:block; color:rgba(255,255,255,.7); font-weight:500; font-size:.9rem; margin-top:4px; }
+  .mxw-legal{ text-align:center; color:rgba(255,255,255,.6); font-size:.84rem; line-height:1.8; margin-top:14px; } .mxw-legal a{ color:#9fd0ff; }
+
   /* ---------- generic card ---------- */
   .card{ background:linear-gradient(180deg,var(--bg-panel),var(--bg-panel-2)); border:1px solid var(--line); border-radius:20px; padding:16px; margin-bottom:12px; }
   .card-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; } .card-head h2{ font-size:1rem; margin:0; font-weight:700; }
@@ -1000,7 +1055,7 @@
       <div class="mx-brand"><div class="brand-name">مناخ</div><div class="brand-sub">محطة مناخ للفلك والطقس والطوالع</div></div>
     </div>
     <div class="back-row" hidden><h1>الطقس</h1></div>
-    <div class="tabs" role="tablist"><button class="tab on" type="button" data-tab="now">🌡️ الآن</button><button class="tab" type="button" data-tab="map">🗺️ الخريطة</button><button class="tab" type="button" data-tab="sea">🌊 البحر</button></div>
+    <div class="tabs" role="tablist"><button class="tab on" type="button" data-tab="now">🌡️ الآن</button><button class="tab" type="button" data-tab="f14">📅 14 يوم 👑</button><button class="tab" type="button" data-tab="map">🗺️ الخريطة</button><button class="tab" type="button" data-tab="sea">🌊 البحر</button></div>
     <div class="panes">
     <div class="pane" data-pane="now">
     <div class="ticker-wrap" hidden><div class="ticker-track" id="windTicker"><span></span><span></span></div></div>
@@ -1102,6 +1157,7 @@
     
   
     </div>
+    <div class="pane" data-pane="f14"><div id="mx14"></div></div>
     <div class="pane" data-pane="map">
     <p style="color:var(--text-2); font-size:.98rem; margin:-8px 0 12px;">رادار الأمطار لآخر ساعتين، ومناطق العواصف الرعدية المتوقعة</p>
     <div class="map-chips">
@@ -1279,6 +1335,7 @@
   <section class="page" id="page-settings">
     <div class="back-row"><h1>الإعدادات</h1></div>
     <div class="card">
+      <div class="settings-row" id="rowPro"><div class="icon3d sm gold"><span style="font-size:1.1rem">👑</span></div><span class="name">مناخ برو</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
       <div class="settings-row" id="rowLocation"><div class="icon3d sm blue"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.5 7-11a7 7 0 10-14 0c0 4.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg></div><span class="name">الموقع والمدن المفضّلة</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
       <div class="settings-row" id="rowNotif"><div class="icon3d sm amber"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></div><span class="name">التنبيهات والإشعارات</span><div class="toggle on" id="toggleNotif"></div></div>
       <div class="settings-row" id="rowUnit"><div class="icon3d sm violet"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 000 18"/></svg></div><span class="name" id="unitRowLabel">وحدة الحرارة (مئوية)</span><svg class="arrow" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
@@ -1342,7 +1399,7 @@
   <!-- ============ SEASONS SUBPAGE ============ -->
   <section class="page tabbed" id="page-seasons">
     <div class="back-row"><h1>الأنواء والفلك</h1></div>
-    <div class="tabs" role="tablist"><button class="tab on" type="button" data-tab="anwaa">✦ الأنواء</button><button class="tab" type="button" data-tab="seasons">🍂 الفصول</button><button class="tab" type="button" data-tab="zodiac">♈ الأبراج</button><button class="tab" type="button" data-tab="stars">⭐ النجوم</button><button class="tab" type="button" data-tab="moon">🌙 القمر</button><button class="tab" type="button" data-tab="conj">🪐 الاقترانات</button><button class="tab" type="button" data-tab="meteors">☄️ الشهب</button><button class="tab" type="button" data-tab="space">🛰️ الفضاء</button></div>
+    <div class="tabs" role="tablist"><button class="tab on" type="button" data-tab="anwaa">✦ الأنواء</button><button class="tab" type="button" data-tab="agri">🌾 الزراعة 👑</button><button class="tab" type="button" data-tab="seasons">🍂 الفصول</button><button class="tab" type="button" data-tab="zodiac">♈ الأبراج</button><button class="tab" type="button" data-tab="stars">⭐ النجوم</button><button class="tab" type="button" data-tab="moon">🌙 القمر</button><button class="tab" type="button" data-tab="conj">🪐 الاقترانات</button><button class="tab" type="button" data-tab="meteors">☄️ الشهب</button><button class="tab" type="button" data-tab="space">🛰️ الفضاء</button></div>
     <div class="panes">
     <div class="pane" data-pane="anwaa">
     <p style="color:var(--text-2); font-size:.98rem; margin:-8px 0 16px;">التقويم الفلكي الزراعي التقليدي — 28 نوءًا، كل واحد نجمه ووصفه وإرشاداته الزراعية</p>
@@ -1362,6 +1419,7 @@
     </div>
   
     </div>
+    <div class="pane" data-pane="agri"><p style="color:var(--text-2); font-size:.98rem; margin:-8px 0 16px;">تقويم الزراعة في عُمان — متى تزرع كل محصول، مع تذكير بداية الموسم</p><div id="mxAgri"></div></div>
     <div class="pane" data-pane="seasons">
     <p style="color:var(--text-2); font-size:.98rem; margin:-8px 0 16px;">الأبراج ومنازل القمر لكل فصل — التقويم الفلكي التقليدي</p>
 
@@ -4788,6 +4846,219 @@
       window.open(url, '_blank');
     });
     tick(); setInterval(() => { const sec = document.getElementById('page-prayer'); if(!sec || sec.classList.contains('active') || document.visibilityState === 'visible') tick(); }, 1000);
+  })();
+
+
+  // ================= مناخ برو: الاشتراك + تقويم الزراعة + توقعات 14 يوم =================
+  (function(){
+    const IDS = { m:'com.salemaljabri.manakh.pro.monthly', y:'com.salemaljabri.manakh.pro.annual' };
+    const EULA = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
+    const NATIVE = !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform());
+    const P = { on:false, ready:false, prices:{}, plan:'y', busy:false };
+    try{ P.on = localStorage.getItem('manakh_pro') === '1'; }catch(e){}
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+    function setPro(v){ P.on = !!v; try{ localStorage.setItem('manakh_pro', v ? '1' : '0'); }catch(e){} paintAll(); if(P.on) scheduleAgri(); }
+    window.manakhIsPro = () => P.on;
+
+    // ---------- المتجر ----------
+    const store = () => window.CdvPurchase && CdvPurchase.store;
+    function initStore(){
+      if(!NATIVE) return;
+      const go = () => {
+        const st = store(); if(!st) return;
+        const { ProductType, Platform } = CdvPurchase;
+        st.register([{ id:IDS.m, type:ProductType.PAID_SUBSCRIPTION, platform:Platform.APPLE_APPSTORE }, { id:IDS.y, type:ProductType.PAID_SUBSCRIPTION, platform:Platform.APPLE_APPSTORE }]);
+        st.when().approved(t => t.finish()).finished(refresh).productUpdated(() => { readPrices(); refresh(); }).receiptUpdated(refresh);
+        st.error(e => { P.busy = false; paintWall(); if(e && e.code !== 6777006) showToast('تعذّر الاتصال بالمتجر'); });
+        st.initialize([Platform.APPLE_APPSTORE]).then(() => { P.ready = true; readPrices(); refresh(); });
+      };
+      if(window.CdvPurchase) go(); else document.addEventListener('deviceready', go, { once:true });
+    }
+    function readPrices(){ const st = store(); if(!st) return; ['m','y'].forEach(k => { const p = st.get(IDS[k]); if(p && p.pricing) P.prices[k] = p.pricing.price; }); paintWall(); }
+    function refresh(){
+      const st = store(); if(!st || !P.ready) return;
+      const own = !!(st.owned(IDS.m) || st.owned(IDS.y));
+      if(own !== P.on){ setPro(own); if(own){ P.busy = false; closeWall(); showToast('مرحباً بك في مناخ برو 👑'); } }
+    }
+    async function buy(){
+      if(!NATIVE){ showToast('الاشتراك متوفر في تطبيق مناخ على الآيفون'); return; }
+      const st = store(), p = st && st.get(IDS[P.plan]), o = p && p.getOffer();
+      if(!o){ showToast('المتجر غير جاهز، حاول بعد لحظات'); return; }
+      P.busy = true; paintWall();
+      const err = await o.order();
+      if(err){ P.busy = false; paintWall(); if(err.code !== CdvPurchase.ErrorCode.PAYMENT_CANCELLED) showToast('ما تمت العملية'); }
+    }
+    async function restore(){
+      if(!NATIVE){ showToast('الاسترجاع من تطبيق الآيفون'); return; }
+      const st = store(); if(!st) return; showToast('جارٍ استرجاع المشتريات…');
+      try{ await st.restorePurchases(); }catch(e){}
+      setTimeout(() => { refresh(); showToast(P.on ? 'تم استرجاع اشتراكك ✓' : 'ما لقينا اشتراك على هذا الحساب'); }, 1500);
+    }
+
+    // ---------- شاشة الاشتراك ----------
+    const FEATS = [
+      ['🌾','تقويم الزراعة العُماني','متى تزرع كل محصول في عُمان، مع تذكير يوصلك أول الموسم'],
+      ['📅','توقعات 14 يوم','الحرارة والمطر والرياح لأسبوعين قدّام لولايتك'],
+      ['🔔','تنبيهات الزراعة','إشعار بداية موسم كل محصول تختاره، حتى والتطبيق مقفل'],
+      ['💛','تدعم تطبيق عُماني','وكل المميزات الحالية تظل مجانية'],
+    ];
+    function openWall(){ let w = $('mxWall'); if(!w){ w = document.createElement('div'); w.id = 'mxWall'; document.body.appendChild(w); } w.hidden = false; document.body.classList.add('mx-wall-open'); paintWall(); }
+    function closeWall(){ const w = $('mxWall'); if(w) w.hidden = true; document.body.classList.remove('mx-wall-open'); }
+    function paintWall(){
+      const w = $('mxWall'); if(!w || w.hidden) return;
+      const pr = k => P.prices[k] || '—';
+      w.innerHTML = `<div class="mxw-in">
+        <div class="mxw-top"><button class="mxw-x" type="button" id="mxwClose" aria-label="إغلاق">✕</button></div>
+        <div class="mxw-hero">👑</div>
+        <h2 class="mxw-h">مناخ برو</h2>
+        <p class="mxw-sub">مميزات إضافية للمزارعين وعشّاق الطقس — وكل المميزات الحالية تظل مجانية</p>
+        <div class="mxw-list">${FEATS.map(([i,b,s]) => `<div class="mxw-f"><i>${i}</i><span><b>${b}</b><small>${s}</small></span></div>`).join('')}</div>
+        ${P.on ? `<div class="mxw-ok">✓ أنت مشترك في مناخ برو<small>تقدر تدير أو تلغي اشتراكك من إعدادات حسابك في آبل</small></div>` : `
+        <div class="mxw-plans">
+          <button type="button" class="mxw-plan ${P.plan==='m'?'sel':''}" data-plan="m"><b>شهري</b><span class="pr">${pr('m')}</span><small>كل شهر</small></button>
+          <button type="button" class="mxw-plan ${P.plan==='y'?'sel':''}" data-plan="y"><em>الأوفر</em><b>سنوي</b><span class="pr">${pr('y')}</span><small>كل سنة</small></button>
+        </div>
+        <button type="button" class="mxw-buy" id="mxwBuy" ${P.busy?'disabled':''}>${P.busy?'جارٍ…':'اشترك الحين'}</button>`}
+        <button type="button" class="mxw-rest" id="mxwRestore">استرجاع المشتريات</button>
+        <p class="mxw-legal">${NATIVE?'':'الاشتراك متوفر داخل تطبيق مناخ على الآيفون.<br>'}الاشتراك يتجدد تلقائياً بنفس السعر في نهاية كل فترة، إلا إذا ألغيته قبل نهايتها بـ 24 ساعة على الأقل من إعدادات حسابك في آبل. المبلغ يُخصم من حساب Apple ID عند تأكيد الشراء.<br>
+        <a href="${EULA}" target="_blank" rel="noopener">شروط الاستخدام (EULA)</a> · <a href="privacy.html" target="_blank" rel="noopener">سياسة الخصوصية</a></p>
+      </div>`;
+      $('mxwClose').onclick = closeWall;
+      w.querySelectorAll('[data-plan]').forEach(b => b.onclick = () => { P.plan = b.dataset.plan; paintWall(); });
+      const bb = $('mxwBuy'); if(bb) bb.onclick = buy;
+      $('mxwRestore').onclick = restore;
+    }
+    window.manakhOpenPro = openWall;
+
+    // ---------- تقويم الزراعة (إرشادات عامة لسلطنة عُمان) ----------
+    // w: نوافذ الزراعة [شهر البداية، يوم، شهر النهاية، يوم]
+    const CROPS = [
+      { id:'tomato',  n:'الطماطم',      e:'🍅', g:'خضار', w:[[9,1,11,30]],            t:'أفضل زراعة في الجو المعتدل؛ الشتلات بعد 4–6 أسابيع من البذر، والري بالتنقيط منتظم.' },
+      { id:'cucumber',n:'الخيار',       e:'🥒', g:'خضار', w:[[9,15,12,15],[1,15,3,15]], t:'يحب الحرارة المعتدلة؛ مناسب للبيوت المحمية في الشتاء.' },
+      { id:'pepper',  n:'الفلفل',       e:'🌶️', g:'خضار', w:[[9,1,11,15]],            t:'يزرع شتلات؛ يحتاج تربة جيدة الصرف وتسميد خفيف متكرر.' },
+      { id:'eggplant',n:'الباذنجان',    e:'🍆', g:'خضار', w:[[8,15,10,31],[1,15,3,15]], t:'يتحمل الحرارة أكثر من الطماطم؛ يُقطف وهو لامع.' },
+      { id:'zucchini',n:'الكوسا',       e:'🥬', g:'خضار', w:[[9,15,11,30],[1,15,2,28]], t:'بذر مباشر؛ يثمر بعد قرابة 45–55 يوم.' },
+      { id:'onion',   n:'البصل',        e:'🧅', g:'خضار', w:[[10,1,11,30]],           t:'يزرع في الشتاء ويُحصد مع بداية الصيف بعد ما تذبل الأوراق.' },
+      { id:'garlic',  n:'الثوم',        e:'🧄', g:'خضار', w:[[10,1,11,15]],           t:'فصوص على عمق 3–5 سم؛ يقلل الري قبل الحصاد.' },
+      { id:'carrot',  n:'الجزر',        e:'🥕', g:'خضار', w:[[10,1,12,15]],           t:'بذر مباشر في تربة رملية ناعمة؛ يحتاج خفّ للنباتات.' },
+      { id:'radish',  n:'الفجل',        e:'🌱', g:'خضار', w:[[10,1,2,15]],            t:'سريع؛ جاهز خلال 4–6 أسابيع، وتقدر تزرعه على دفعات.' },
+      { id:'lettuce', n:'الخس والجرجير', e:'🥗', g:'خضار', w:[[10,1,2,15]],            t:'يحب البرودة؛ ازرعه على دفعات كل أسبوعين.' },
+      { id:'cabbage', n:'الملفوف والقرنبيط', e:'🥦', g:'خضار', w:[[9,15,11,30]],       t:'شتلات؛ يحتاج تسميد نيتروجيني وري منتظم.' },
+      { id:'potato',  n:'البطاطس',      e:'🥔', g:'خضار', w:[[10,15,12,15]],          t:'درنات صحية؛ التحضين بالتربة حول الساق يزيد الإنتاج.' },
+      { id:'okra',    n:'الباميا',      e:'🌿', g:'خضار', w:[[2,1,4,30],[7,15,8,31]],  t:'تحب الحر؛ القطف كل يومين وهي صغيرة.' },
+      { id:'melon',   n:'البطيخ والشمام', e:'🍉', g:'خضار', w:[[1,1,3,15]],           t:'يحتاج شمس ومساحة؛ قلّل الري وقت النضج عشان تزيد الحلاوة.' },
+      { id:'corn',    n:'الذرة',        e:'🌽', g:'حبوب وأعلاف', w:[[2,1,3,31],[8,1,9,15]], t:'زراعة في صفوف؛ تحتاج ري أكثر وقت التزهير.' },
+      { id:'wheat',   n:'القمح والشعير', e:'🌾', g:'حبوب وأعلاف', w:[[11,1,12,15]],    t:'محصول شتوي؛ يُحصد في الربيع.' },
+      { id:'alfalfa', n:'البرسيم (القت)', e:'🍀', g:'حبوب وأعلاف', w:[[10,1,11,30]],   t:'علف معمّر؛ يُحش كل 3–5 أسابيع.' },
+      { id:'rhodes',  n:'حشيشة رودس',    e:'🌾', g:'حبوب وأعلاف', w:[[3,1,4,30]],      t:'علف يتحمل الحر والملوحة؛ يزرع مع بداية الدفء.' },
+      { id:'palmpol', n:'النخيل: التنبيت (التلقيح)', e:'🌴', g:'النخيل والفاكهة', w:[[2,1,4,15]], t:'تلقيح الطلع أول ما تنشق الأغاريض.' },
+      { id:'palmoff', n:'النخيل: غرس الفسائل', e:'🌴', g:'النخيل والفاكهة', w:[[2,15,4,30],[9,15,10,31]], t:'اختر فسيلة بوزن مناسب وجذور؛ ري متقارب أول شهرين.' },
+      { id:'palmhar', n:'النخيل: الجداد (الحصاد)', e:'🌴', g:'النخيل والفاكهة', w:[[6,1,9,30]], t:'يختلف حسب الصنف: المبكر من يونيو والمتأخر لين سبتمبر.' },
+      { id:'lime',    n:'الليمون العُماني', e:'🍋', g:'النخيل والفاكهة', w:[[2,1,3,31],[9,15,10,31]], t:'غرس الشتلات في الجو المعتدل؛ حماية من شمس الصيف أول سنة.' },
+      { id:'mango',   n:'المانجو (الهمبا)', e:'🥭', g:'النخيل والفاكهة', w:[[2,1,3,31]], t:'غرس الشتلات قبل الصيف؛ ري منتظم وتسميد عضوي.' },
+      { id:'banana',  n:'الموز',        e:'🍌', g:'النخيل والفاكهة', w:[[2,15,4,15],[9,1,10,15]], t:'يحتاج ماء وفير ومصد رياح.' },
+    ];
+    const MON = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+    const md = (m, d) => m * 100 + d;
+    function inWin(w, dt){ const x = md(dt.getMonth() + 1, dt.getDate()), a = md(w[0], w[1]), b = md(w[2], w[3]); return a <= b ? (x >= a && x <= b) : (x >= a || x <= b); }
+    const cropNow = (c, dt) => c.w.some(w => inWin(w, dt));
+    function nextStart(c, now){
+      let best = null;
+      c.w.forEach(w => { for(let y = now.getFullYear(); y <= now.getFullYear() + 1; y++){ const t = new Date(y, w[0] - 1, w[1], 8, 0, 0); if(t > now && (!best || t < best)) best = t; } });
+      return best;
+    }
+    const winText = c => c.w.map(w => `${w[1]} ${MON[w[0]-1]} – ${w[3]} ${MON[w[2]-1]}`).join(' و ');
+    function monthBar(c){
+      return `<div class="agri-bar">${MON.map((m, i) => { const on = c.w.some(w => { for(let d = 1; d <= 28; d += 9){ if(inWin(w, new Date(2025, i, d))) return true; } return false; }); return `<i class="${on?'on':''}${i === new Date().getMonth() ? ' now' : ''}" title="${m}"></i>`; }).join('')}</div>`;
+    }
+    function remSet(){ try{ return JSON.parse(localStorage.getItem('manakh_agri_rem') || '[]'); }catch(e){ return []; } }
+    function remSave(a){ try{ localStorage.setItem('manakh_agri_rem', JSON.stringify(a)); }catch(e){} }
+
+    function lockHTML(icon, title, sub){
+      return `<div class="card mx-lock"><div class="mx-lock-ic">${icon}</div><h3>${title}</h3><p>${sub}</p>
+        <button type="button" class="mx-unlock" data-mx-pro>👑 افتح مع مناخ برو</button></div>`;
+    }
+    function paintAgri(){
+      const el = $('mxAgri'); if(!el) return;
+      const now = new Date(), rem = remSet();
+      if(!P.on){
+        const sample = CROPS.filter(c => cropNow(c, now)).slice(0, 4);
+        el.innerHTML = lockHTML('🌾', 'تقويم الزراعة العُماني', 'متى تزرع الطماطم والبصل والبرسيم والنخيل وغيرها، مع تذكير بداية كل موسم.')
+          + `<div class="card mx-blur"><div class="card-head"><h2>ازرع الحين</h2></div>${sample.map(c => `<div class="agri-row"><span class="agri-e">${c.e}</span><span class="agri-n"><b>${c.n}</b><small>${winText(c)}</small></span></div>`).join('')}</div>`;
+        return;
+      }
+      const nowList = CROPS.filter(c => cropNow(c, now));
+      const groups = [...new Set(CROPS.map(c => c.g))];
+      const row = c => `<div class="agri-row">
+          <span class="agri-e">${c.e}</span>
+          <span class="agri-n"><b>${c.n}${cropNow(c, now) ? ' <em class="agri-now">موسمه الحين</em>' : ''}</b><small>${winText(c)}</small>${monthBar(c)}<small class="agri-tip">${esc(c.t)}</small></span>
+          <button type="button" class="agri-bell ${rem.includes(c.id) ? 'on' : ''}" data-rem="${c.id}" aria-label="تذكير ${c.n}">${rem.includes(c.id) ? '🔔' : '🔕'}</button>
+        </div>`;
+      el.innerHTML = `<div class="card"><div class="card-head"><h2>🌱 ازرع الحين — ${MON[now.getMonth()]}</h2></div>
+          ${nowList.length ? nowList.map(row).join('') : '<p class="agri-empty">ما فيه محاصيل رئيسية في موسمها هالأيام — الصيف وقت العناية والري.</p>'}</div>
+        ${groups.map(g => `<div class="card"><div class="card-head"><h2>${g}</h2></div>${CROPS.filter(c => c.g === g).map(row).join('')}</div>`).join('')}
+        <p class="agri-note">🔔 اضغط الجرس عند أي محصول، ويوصلك تذكير الساعة 8 الصبح أول يوم من موسم زراعته.<br>هذي إرشادات عامة لسلطنة عُمان، والمواعيد تختلف شوي بين الساحل والداخل والجبال — استشر مرشد زراعي في ولايتك.</p>`;
+      el.querySelectorAll('[data-rem]').forEach(b => b.onclick = async () => {
+        const id = b.dataset.rem, a = remSet(), i = a.indexOf(id);
+        if(i >= 0) a.splice(i, 1); else a.push(id);
+        remSave(a); paintAgri();
+        const c = CROPS.find(x => x.id === id);
+        if(i < 0){ const ok = await askNotif(); showToast(ok || !NATIVE ? '🔔 بنذكّرك بموسم ' + c.n : 'فعّل الإشعارات لمناخ من إعدادات الآيفون'); }
+        else showToast('تم إيقاف تذكير ' + c.n);
+        scheduleAgri();
+      });
+    }
+    const LN = () => NATIVE && Capacitor.Plugins && Capacitor.Plugins.LocalNotifications;
+    async function askNotif(){ const L = LN(); if(!L) return false; try{ let p = await L.checkPermissions(); if(p.display !== 'granted') p = await L.requestPermissions(); return p.display === 'granted'; }catch(e){ return false; } }
+    async function scheduleAgri(){
+      const L = LN(); if(!L) return;
+      const ids = []; for(let k = 0; k < CROPS.length; k++) ids.push({ id:9100 + k });
+      try{ await L.cancel({ notifications:ids }); }catch(e){}
+      if(!P.on) return;
+      try{ if((await L.checkPermissions()).display !== 'granted') return; }catch(e){ return; }
+      const rem = remSet(), now = new Date(), list = [];
+      CROPS.forEach((c, k) => { if(!rem.includes(c.id)) return; const t = nextStart(c, now); if(t) list.push({ id:9100 + k, title:`🌱 بدأ موسم زراعة ${c.n}`, body:`${c.e} ${c.t}`, schedule:{ at:t } }); });
+      try{ if(list.length) await L.schedule({ notifications:list }); }catch(e){}
+    }
+
+    // ---------- توقعات 14 يوم ----------
+    const WX = c => c === 0 ? ['☀️','صحو'] : c <= 2 ? ['🌤️','غائم جزئياً'] : c === 3 ? ['☁️','غائم'] : c <= 48 ? ['🌫️','ضباب'] : c <= 57 ? ['🌦️','رذاذ'] : c <= 67 ? ['🌧️','مطر'] : c <= 77 ? ['🌨️','ثلج'] : c <= 82 ? ['🌧️','زخات مطر'] : c <= 86 ? ['🌨️','زخات'] : ['⛈️','عواصف رعدية'];
+    let f14 = { key:'', data:null, busy:false };
+    async function load14(){
+      const el = $('mx14'); if(!el || !P.on) return;
+      const c = (typeof selectedCityRef !== 'undefined' && selectedCityRef) || {};
+      const lat = typeof c.lat === 'number' ? c.lat : 23.588, lon = typeof c.lon === 'number' ? c.lon : 58.383;
+      const key = lat.toFixed(2) + ',' + lon.toFixed(2) + ',' + new Date().toDateString();
+      if(f14.key === key && f14.data) return paint14(c.name);
+      if(f14.busy) return; f14.busy = true;
+      el.innerHTML = '<div class="card"><p class="agri-empty">جارٍ تحميل التوقعات…</p></div>';
+      try{
+        const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max&forecast_days=14&wind_speed_unit=kmh&timezone=auto';
+        const d = await (await fetch(url)).json();
+        if(!d || !d.daily) throw 0;
+        f14 = { key, data:d.daily, busy:false }; paint14(c.name);
+      }catch(e){ f14.busy = false; el.innerHTML = '<div class="card"><p class="agri-empty">تعذّر تحميل التوقعات — تأكد من الإنترنت.</p></div>'; }
+    }
+    function paint14(place){
+      const el = $('mx14'), d = f14.data; if(!el || !d) return;
+      const fD = new Intl.DateTimeFormat('ar-u-nu-latn', { weekday:'long', day:'numeric', month:'short' });
+      const mx = Math.max(...d.temperature_2m_max), mn = Math.min(...d.temperature_2m_min), span = Math.max(1, mx - mn);
+      el.innerHTML = `<div class="card"><div class="card-head"><h2>📅 14 يوم — ${esc(place || 'مسقط')}</h2></div>
+        ${d.time.map((t, i) => { const [ic, tx] = WX(d.weather_code[i]), lo = d.temperature_2m_min[i], hi = d.temperature_2m_max[i], pp = d.precipitation_probability_max[i];
+          return `<div class="f14-row"><span class="f14-d">${i === 0 ? 'اليوم' : i === 1 ? 'بكرة' : fD.format(new Date(t + 'T12:00:00'))}<small>${tx}${pp >= 20 ? ` · 💧${pp}%` : ''}${d.wind_speed_10m_max[i] >= 30 ? ` · 💨${Math.round(d.wind_speed_10m_max[i])}` : ''}</small></span>
+            <span class="f14-ic">${ic}</span><span class="f14-t"><b>${Math.round(hi)}°</b><i style="--a:${((lo - mn) / span * 100).toFixed(0)}%;--b:${((hi - mn) / span * 100).toFixed(0)}%"></i><small>${Math.round(lo)}°</small></span></div>`; }).join('')}
+        <p class="agri-note">التوقعات البعيدة (بعد 7 أيام) تقريبية وتتغير — راجعها كل يوم.</p></div>`;
+    }
+
+    // ---------- الربط بالصفحات ----------
+    function paint14Pane(){ const el = $('mx14'); if(!el) return; if(!P.on){ el.innerHTML = lockHTML('📅', 'توقعات 14 يوم', 'الحرارة والمطر والرياح لأسبوعين قدّام لولايتك — خطط لرحلتك ومزرعتك.'); return; } f14.key = ''; load14(); }
+    function paintRow(){ const r = $('rowPro'); if(r) r.querySelector('.name').innerHTML = P.on ? 'مناخ برو <small style="color:#7be8ab">مفعّل ✓</small>' : 'مناخ برو <small>تقويم الزراعة · توقعات 14 يوم</small>'; }
+    function paintAll(){ paintAgri(); paint14Pane(); paintRow(); paintWall(); }
+    document.addEventListener('click', e => { if(e.target.closest('[data-mx-pro], #rowPro')) openWall(); });
+    document.addEventListener('tabchange', e => { const d = e.detail || {}; if(d.page === 'page-weather' && d.tab === 'f14' && P.on) load14(); });
+    if(typeof selectCity === 'function'){ const prev = selectCity; selectCity = function(c){ prev(c); f14.key = ''; const sec = $('page-weather'); if(P.on && sec && sec._tabs && sec._tabs.current() === 'f14') load14(); }; }
+    paintAll(); initStore(); if(P.on) setTimeout(scheduleAgri, 3000);
   })();
 
   // ---------- iPhone app (Capacitor): real notifications scheduled ahead, so they arrive even when the app is closed ----------
