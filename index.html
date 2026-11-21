@@ -4854,11 +4854,14 @@
     const IDS = { m:'com.salemaljabri.manakh.pro.m', y:'com.salemaljabri.manakh.pro.an' };
     const EULA = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
     const NATIVE = !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform());
+    // 🎁 فترة الإطلاق: كل ميزات برو مفتوحة للجميع مجاناً (نخليها false لما نفعّل الاشتراك)
+    const FREE = true;
     const P = { on:false, ready:false, prices:{}, plan:'y', busy:false };
     try{ P.on = localStorage.getItem('manakh_pro') === '1'; }catch(e){}
+    if(FREE) P.on = true;
     const $ = id => document.getElementById(id);
     const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
-    function setPro(v){ P.on = !!v; try{ localStorage.setItem('manakh_pro', v ? '1' : '0'); }catch(e){} paintAll(); if(P.on) scheduleAgri(); }
+    function setPro(v){ if(FREE) v = true; P.on = !!v; try{ localStorage.setItem('manakh_pro', v ? '1' : '0'); }catch(e){} paintAll(); if(P.on) scheduleAgri(); }
     window.manakhIsPro = () => P.on;
 
     // ---------- المتجر ----------
@@ -4914,20 +4917,20 @@
         <h2 class="mxw-h">مناخ برو</h2>
         <p class="mxw-sub">مميزات إضافية للمزارعين وعشّاق الطقس — وكل المميزات الحالية تظل مجانية</p>
         <div class="mxw-list">${FEATS.map(([i,b,s]) => `<div class="mxw-f"><i>${i}</i><span><b>${b}</b><small>${s}</small></span></div>`).join('')}</div>
-        ${P.on ? `<div class="mxw-ok">✓ أنت مشترك في مناخ برو<small>تقدر تدير أو تلغي اشتراكك من إعدادات حسابك في آبل</small></div>` : `
+        ${FREE ? `<div class="mxw-ok">🎁 مناخ برو مجاني الحين للجميع<small>كل المميزات مفتوحة لك لفترة محدودة — استمتع فيها 🌾</small></div>` : P.on ? `<div class="mxw-ok">✓ أنت مشترك في مناخ برو<small>تقدر تدير أو تلغي اشتراكك من إعدادات حسابك في آبل</small></div>` : `
         <div class="mxw-plans">
           <button type="button" class="mxw-plan ${P.plan==='m'?'sel':''}" data-plan="m"><b>شهري</b><span class="pr">${pr('m')}</span><small>كل شهر</small></button>
           <button type="button" class="mxw-plan ${P.plan==='y'?'sel':''}" data-plan="y"><em>الأوفر</em><b>سنوي</b><span class="pr">${pr('y')}</span><small>كل سنة</small></button>
         </div>
         <button type="button" class="mxw-buy" id="mxwBuy" ${P.busy?'disabled':''}>${P.busy?'جارٍ…':'اشترك الحين'}</button>`}
-        <button type="button" class="mxw-rest" id="mxwRestore">استرجاع المشتريات</button>
+        ${FREE ? '' : `<button type="button" class="mxw-rest" id="mxwRestore">استرجاع المشتريات</button>
         <p class="mxw-legal">${NATIVE?'':'الاشتراك متوفر داخل تطبيق مناخ على الآيفون.<br>'}الاشتراك يتجدد تلقائياً بنفس السعر في نهاية كل فترة، إلا إذا ألغيته قبل نهايتها بـ 24 ساعة على الأقل من إعدادات حسابك في آبل. المبلغ يُخصم من حساب Apple ID عند تأكيد الشراء.<br>
-        <a href="${EULA}" target="_blank" rel="noopener">شروط الاستخدام (EULA)</a> · <a href="privacy.html" target="_blank" rel="noopener">سياسة الخصوصية</a></p>
+        <a href="${EULA}" target="_blank" rel="noopener">شروط الاستخدام (EULA)</a> · <a href="privacy.html" target="_blank" rel="noopener">سياسة الخصوصية</a></p>`}
       </div>`;
       $('mxwClose').onclick = closeWall;
       w.querySelectorAll('[data-plan]').forEach(b => b.onclick = () => { P.plan = b.dataset.plan; paintWall(); });
       const bb = $('mxwBuy'); if(bb) bb.onclick = buy;
-      $('mxwRestore').onclick = restore;
+      const rs = $('mxwRestore'); if(rs) rs.onclick = restore;
     }
     window.manakhOpenPro = openWall;
 
@@ -5053,12 +5056,12 @@
 
     // ---------- الربط بالصفحات ----------
     function paint14Pane(){ const el = $('mx14'); if(!el) return; if(!P.on){ el.innerHTML = lockHTML('📅', 'توقعات 14 يوم', 'الحرارة والمطر والرياح لأسبوعين قدّام لولايتك — خطط لرحلتك ومزرعتك.'); return; } f14.key = ''; load14(); }
-    function paintRow(){ const r = $('rowPro'); if(r) r.querySelector('.name').innerHTML = P.on ? 'مناخ برو <small style="color:#7be8ab">مفعّل ✓</small>' : 'مناخ برو <small>تقويم الزراعة · توقعات 14 يوم</small>'; }
+    function paintRow(){ const r = $('rowPro'); if(r) r.querySelector('.name').innerHTML = FREE ? 'مناخ برو <small style="color:#7be8ab">🎁 مجاني الحين</small>' : P.on ? 'مناخ برو <small style="color:#7be8ab">مفعّل ✓</small>' : 'مناخ برو <small>تقويم الزراعة · توقعات 14 يوم</small>'; }
     function paintAll(){ paintAgri(); paint14Pane(); paintRow(); paintWall(); }
     document.addEventListener('click', e => { if(e.target.closest('[data-mx-pro], #rowPro')) openWall(); });
     document.addEventListener('tabchange', e => { const d = e.detail || {}; if(d.page === 'page-weather' && d.tab === 'f14' && P.on) load14(); });
     if(typeof selectCity === 'function'){ const prev = selectCity; selectCity = function(c){ prev(c); f14.key = ''; const sec = $('page-weather'); if(P.on && sec && sec._tabs && sec._tabs.current() === 'f14') load14(); }; }
-    paintAll(); initStore(); if(P.on) setTimeout(scheduleAgri, 3000);
+    paintAll(); if(!FREE) initStore(); if(P.on) setTimeout(scheduleAgri, 3000);
   })();
 
   // ---------- iPhone app (Capacitor): real notifications scheduled ahead, so they arrive even when the app is closed ----------
