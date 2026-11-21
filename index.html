@@ -5196,13 +5196,17 @@
         if(old.length) await LN.cancel({ notifications: old });
         if(!notifOn) return;
         const list = [];
+        // حد أبل ٦٤ إشعار معلّق: نحسب اللي محجوز لتذكير الزراعة، والباقي نوزعه على الأقرب وقتاً
+        const agri = (pend.notifications || []).filter(n => n.id >= 9100 && n.id < 9200).length;
+        const room = Math.max(10, 62 - agri);
         if(manakhAlertOn('prayer') && window.manakhPrayerUpcoming){
-          // الصلاة تبقى محلية (دقيقة بالثانية): ١٢ يوم مع الخادم، و٣ أيام بدونه (حد أبل ٦٤ إشعار)
-          window.manakhPrayerUpcoming(viaServer ? 13 : 4).slice(0, viaServer ? 60 : 15).forEach((p, i) => {
-            list.push({ id: BASE + (viaServer ? 200 : 180) + i, title: '🕌 حان الآن وقت صلاة ' + p.name, body: 'الساعة ' + p.hm + ' حسب توقيت ' + p.place, schedule:{ at: new Date(p.t) } });
+          // الصلاة محلية (دقيقة بالثانية) — لين ١٢ يوم قدّام، عشان توصل حتى لو ما فتحت التطبيق أيام
+          window.manakhPrayerUpcoming(13).slice(0, 60).forEach((p, i) => {
+            list.push({ id: BASE + 200 + i, title: '🕌 حان الآن وقت صلاة ' + p.name, body: 'الساعة ' + p.hm + ' حسب توقيت ' + p.place, schedule:{ at: new Date(p.t) } });
           });
         }
         if(!viaServer) events.filter(e => manakhAlertOn(e.k)).forEach(e => list.push({ id: BASE + e.slot, title: e.title, body: e.body, schedule:{ at: new Date(e.at) } }));
+        list.sort((a, b) => a.schedule.at - b.schedule.at); list.splice(room);
         if(list.length) await LN.schedule({ notifications: list });
         paintNote();
       }catch(e){ console.warn('notifications', e); }
